@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@pixi/filter-kawase-blur": "^5.1.1",
+    "debounce": "^2.0.0",
+    "hsl-to-hex": "^1.0.0",
+    "pixi.js": "^8.1.0",
+    "simplex-noise": "^4.0.1"
+  }
+}

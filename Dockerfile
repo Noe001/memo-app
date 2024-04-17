@@ -1,6 +1,7 @@
 FROM ruby:3.2.3
 
-RUN apt-get update -qq && apt-get install -y default-mysql-client
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
+RUN apt-get update -qq && apt-get install -y default-mysql-client && apt-get install -y nodejs
 
 ENV APP_ROOT /rails_app
 RUN mkdir $APP_ROOT
