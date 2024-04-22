@@ -1,13 +1,17 @@
 #circle_1 {
   position: absolute;
-  width: 100px;
+  width: 200px;
   background-color: aqua;
-  height: 100px;
+  height: 200px;
   border-radius: 50%;
 }
 
 #circle_2 {
-
+  position: absolute;
+  width: 150px;
+  background-color: blue;
+  height: 150px;
+  border-radius: 50%;
 }
 
 #circle_3 {
