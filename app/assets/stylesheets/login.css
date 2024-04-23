@@ -4,13 +4,19 @@
   height: 100%;
   z-index: -1;
   border-radius: 0rem;
-  background: radial-gradient(49.19% 88.28% at 72.99% 113.54%, rgba(98, 241, 251, 0.73) 0%, rgba(93, 226, 236, 0.317) 59.78%, rgba(93, 227, 236, 0) 100%), linear-gradient(54.57deg, #be4ef2 8.59%, rgba(185, 91, 230, 0) 80.49%), radial-gradient(118.75% 118.75% at 96.65% 74.22%, #2794fb 0%, rgba(48, 158, 230, 0) 73.91%), radial-gradient(114.51% 155.86% at 9.82% 10.94%, rgba(255, 85, 85, 0.7) 0%, rgba(255, 85, 85, 0.147) 61.98%, rgba(255, 85, 85, 0) 100%, #F2F5FA);
+  background: radial-gradient(49.19% 88.28% at 72.99% 113.54%, 
+            rgba(98, 241, 251, 0.73) 0%, rgba(93, 226, 236, 0.317) 59.78%, 
+            rgba(93, 227, 236, 0) 100%), linear-gradient(54.57deg, #be4ef2 8.59%, 
+            rgba(185, 91, 230, 0) 80.49%), radial-gradient(118.75% 118.75% at 96.65% 74.22%, #2794fb 0%, 
+            rgba(48, 158, 230, 0) 73.91%), radial-gradient(114.51% 155.86% at 9.82% 10.94%, 
+            rgba(255, 85, 85, 0.7) 0%, rgba(255, 85, 85, 0.147) 61.98%, 
+            rgba(255, 85, 85, 0) 100%, #F2F5FA);
   background-blend-mode: hard-light, darken, normal, normal, normal, normal;
   filter: blur(0px);
 }
 
 #padding {
-  padding-top: 100px;
+  padding-top: 12vh;
 }
 
 #Login {
@@ -36,7 +42,7 @@
 }
 
 #password {
-  margin-top: 15px;
+  margin-top: 20px;
 }
 
 .textbox {
@@ -51,10 +57,9 @@ strong {
 }
 
 .overlay {
-  max-width: 1140px;
-  max-height: 640px;
-  margin-left: 200px;
-  margin-right: 200px;
+  height: 47vh;
+  margin-left: 10vw;
+  margin-right: 10vw;
   padding: 8rem 6rem;
   display: flex;
   justify-content: center;
@@ -71,7 +76,7 @@ strong {
 }
 
 .overlay__btn {
-  line-height: 40px;
+  line-height: 46px;
   font-size: 1rem;
   font-weight: 600;
   transition: transform 150ms ease;
@@ -79,11 +84,11 @@ strong {
   border-color: black;
   text-align: center;
   border-radius: 10px;
-  height: 40px;
+  height: 46px;
   font-size: 20px;
   background-color: black;
-  color: rgba(255, 255, 255, 0.75);
-  margin-top: 15px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 20px;
 }
 
 .overlay__btn:hover {
