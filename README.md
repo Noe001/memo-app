@@ -1,9 +1,24 @@
 # README
 
-### clineした後
+This README would normally document whatever steps are necessary to get the
+application up and running.
 
-$ docker compose build
+Things you may want to cover:
 
-$ docker compose up -d
+* Ruby version
 
-$ docker compose exec app rails db:create
+* System dependencies
+
+* Configuration
+
+* Database creation
+
+* Database initialization
+
+* How to run the test suite
+
+* Services (job queues, cache servers, search engines, etc.)
+
+* Deployment instructions
+
+* ...

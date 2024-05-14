@@ -11,6 +11,19 @@
   </head>
 
   <body style="margin: 0;">
+    <div class="wrapper header-color">
+      <div class="container flex-between">
+ 
+        <div class="header-right">
+          <% if @user.nil? %>
+            <%= link_to "ログイン", new_sessions_path, method: :get %>
+          <% else %>
+            ログインユーザー：<%= @user.name %>さん
+            <%= link_to "ログアウト", destroy_sessions_path, method: :delete %>
+          <% end %>
+        </div>
+      </div>
+    </div>
     <%= yield %>
   </body>
 </html>
