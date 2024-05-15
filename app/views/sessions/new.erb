@@ -1,31 +1,22 @@
 <div class="wrapper">
 	<div class="container">
-
-		<%# <div id="background"> %>
+	<div id="background">
+		<%= form_with url: create_sessions_path, local: true, method: :post do |f| %>
 			<div id="padding"></div>
 				<div class="overlay">
 					<div class="overlay__inner">
 						<div id="Login">ログイン</div>
 						<div class="textbox">
-							<input type="text" id="name" class="login_textbox aaaaaa" name="name" size="30" placeholder="名前">
+							<%= f.text_field :name, id: "name", class: "login_textbox", name: "name", size: "30", placeholder: "名前" %>
 						</div>
 						<div class="textbox">
-							<input type="text" id="password" class="login_textbox" name="name" size="30" placeholder="パスワード">
+							<%= f.password_field :password, id: "password", class: "login_textbox", name: "name", size: "30", placeholder: "パスワード" %>
 						</div>
-					</div>
-					<div class="overlay__btn">
-						ログイン
+						<%= f.submit "ログイン", class: "btn overlay__btn" %>
 					</div>
 				</div>
 			</div>
-			
-			<%= form_with url: create_sessions_path, local: true, method: :post do |f| %>
-					<%= f.label :email, "Email" %>
-					<%= f.email_field :email, class: "form-box" %>
-					<%= f.label :password, "Password" %>
-					<%= f.password_field :password, class: "form-box" %>
-					<%= f.submit "ログイン", class: "btn" %>
-			<% end %>
-		<%# </div> %>
+		<% end %>
+	</div>
 	</div>
 </div>
