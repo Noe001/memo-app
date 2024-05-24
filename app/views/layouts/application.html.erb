@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>easy-app</title>
+    <title>EasyApp</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -10,20 +10,13 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body style="margin: 0;">
-    <div class="wrapper header-color">
-      <div class="container flex-between">
- 
-        <div class="header-right">
-          <% if @user.nil? %>
-            <%= link_to "ログイン", new_sessions_path, method: :get %>
-          <% else %>
-            ログインユーザー：<%= @user.name %>さん
-            <%= link_to "ログアウト", destroy_sessions_path, method: :delete %>
-          <% end %>
-        </div>
+  <body>
+    <div class="wrapper header_color">
+      <div class="container">
+        <h1>MemoApp</h1>
       </div>
     </div>
+    
     <%= yield %>
   </body>
 </html>

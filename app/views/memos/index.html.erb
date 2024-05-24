@@ -1,0 +1,14 @@
+<%= form_with model: @memo_new, local: true, method: :post do |f| %>
+  <%= f.text_field :title, placeholder: "タイトル", class: "" %>
+  <%= f.text_area :description, placeholder: "本文", class: "" %>
+  <%= f.submit "作成", class: "" %>
+<% end %>
+
+<% @memos.reverse.each do |memo| %>
+  <%= form_with model: memo, url: memo_path(memo.id), local: true, method: :patch do |f| %>
+    <%= f.text_field :title, placeholder: "タイトル", class: "" %>
+    <%= f.text_area :description, placeholder: "本文", class: "" %>
+    <%= f.submit "更新", class: "" %>
+  <% end %>
+  <%= button_to "削除", memo_path(memo.id), method: :delete, class: "" %>
+<% end %>
