@@ -1,0 +1,11 @@
+<h2>ユーザーログイン</h2>
+
+<%= form_with url: create_sessions_path, local: true, method: :post do |f| %>
+  <%= f.label :email, "Email" %>
+  <%= f.email_field :email, class: "form_box" %>
+
+  <%= f.label :password, "Password" %>
+  <%= f.password_field :password, class: "form_box" %>
+
+  <%= f.submit "ログイン", class: "btm" %>
+<% end %>
