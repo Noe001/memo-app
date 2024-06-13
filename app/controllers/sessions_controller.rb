@@ -1,4 +1,5 @@
 class SessionsController < ApplicationController
+  before_action :logged_in, only: [:new, :create]
 
   def new
   end
@@ -15,10 +16,17 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    p session[:user_id]
     session[:user_id] = nil
     redirect_to new_sessions_path, notice: 'ログアウトしました。'
-    p "ddddddddddddddddddddddddddddddddddd"
-    p session[:user_id]
+  end
+
+  private
+
+  def logged_in
+    if session[:user_id]
+      @user = User.find(session[:user_id])
+      flash[:notice] = "ログインしています"
+      redirect_to memos_path
+    end
   end
 end
