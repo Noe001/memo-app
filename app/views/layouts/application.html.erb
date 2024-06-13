@@ -26,7 +26,8 @@
         <% if session[:user_id].nil? %>
           <%= link_to "ログイン", new_sessions_path, method: :get %>
         <% else %>
-          <%= link_to "ログアウト", destroy_sessions_path, method: :delete %>
+          <%= link_to "ログアウト", destroy_sessions_path, data: { turbo_method: :delete } %>
+
         <% end %>
       </div>
     </div>

@@ -15,7 +15,10 @@ class SessionsController < ApplicationController
   end
 
   def destroy
+    p session[:user_id]
     session[:user_id] = nil
     redirect_to new_sessions_path, notice: 'ログアウトしました。'
+    p "ddddddddddddddddddddddddddddddddddd"
+    p session[:user_id]
   end
 end

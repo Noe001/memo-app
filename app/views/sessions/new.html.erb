@@ -1,6 +1,6 @@
 <h2>ユーザーログイン</h2>
 
-<%= form_with(scope: :session, url: create_sessions_path, local: true) do |f| %>
+<%= form_with(url: create_sessions_path, local: true, method: :post) do |f| %>
   <%= f.label :email, "Email" %>
   <%= f.email_field :email, class: "form_box" %>
 
