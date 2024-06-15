@@ -1,15 +1,11 @@
-<!-- views/layouts/_notice.html.erb -->
-
-<%# フラッシュメッセージを表示 %>
 <% if flash[:notice] %>
-  <div class="alert alert-success">
+  <div class="notice">
     <%= flash[:notice] %>
   </div>
 <% end %>
 
-<%# エラーメッセージを表示 %>
 <% if flash[:alert] %>
-  <div class="alert alert-danger">
+  <div class="alert">
     <%= flash[:alert] %>
   </div>
 <% end %>
