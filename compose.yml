@@ -1,3 +1,9 @@
+networks:
+  my_network: #　任意のネットワーク名を記述
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.27.0.0/16
 services:
   app:
     build:
@@ -12,6 +18,8 @@ services:
     tty: true
     depends_on:
       - db
+    networks:
+      my_network:
   db:
     image: mysql:8.2.0
     platform: linux/amd64
@@ -23,5 +31,7 @@ services:
     ports:
       - '3306:3306'
     command: --default-authentication-plugin=mysql_native_password
+    networks:
+      my_network:
 volumes:
   mysql_volume:
