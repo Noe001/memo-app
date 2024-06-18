@@ -1,12 +1,12 @@
 class SessionsController < ApplicationController
   before_action :set_user, only: [:create, :destroy]
-  before_action :logged_in, only: [:create]
+  before_action :logged_in, only: [:new, :create]
 
   def new
   end
 
   def create
-    if @user.authenticate(params[:password])
+    if @user && @user.authenticate(params[:password])
       session[:user_id] = @user.id
       redirect_to memos_path, notice: 'ログインしました。'
     else
