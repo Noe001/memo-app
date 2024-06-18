@@ -23,9 +23,10 @@
 
     <div class="wrapper">
       <div class="container">
-        <% if session[:user_id].nil? %>
+        <% if @user.nil? %>
           <%= link_to "ログイン", new_sessions_path, method: :get %>
         <% else %>
+          ユーザー：<%= @user.name %>
           <%= link_to "ログアウト", destroy_sessions_path, data: { turbo_method: :delete } %>
         <% end %>
       </div>
