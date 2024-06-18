@@ -25,8 +25,7 @@ class SessionsController < ApplicationController
   def logged_in
     if session[:user_id]
       @user = User.find(session[:user_id])
-      flash[:notice] = "ログインしています"
-      redirect_to memos_path
+      redirect_to memos_path, notice: 'ログインしています'
     end
   end
 end

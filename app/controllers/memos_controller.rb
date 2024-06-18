@@ -1,5 +1,5 @@
 class MemosController < ApplicationController
-  before_action :memos_params
+  before_action :current_user
 
   def index
     @memo_new = Memo.new
@@ -32,9 +32,9 @@ class MemosController < ApplicationController
 
   def current_user
     if session[:user_id]
-      @user = User.find[session[:user_id]]
+      @user = User.find(session[:user_id])
     else
-      redirect_to new_session_path
+      redirect_to new_sessions_path
     end
   end
 
