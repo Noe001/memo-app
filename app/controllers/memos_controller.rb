@@ -11,23 +11,25 @@ class MemosController < ApplicationController
   def create
     # ログインしたユーザーに関連付けられたメモを作成
     @memo_new = current_user.memos.build(memos_params)
-    # データベースに保存しつつバリデーションが合格したかどうか判別
-    if @memo_new.save
-      redirect_to root_path, notice: 'メモが作成されました'
+    @memo_new.save
+    # タイトルと概要が空の場合はメモを削除
+    if @memo_new.title.blank? && @memo_new.description.blank?
+      @memo_new.destroy
+      redirect_to root_path, alert: 'タイトルと概要を入力してください'
     else
-      flash.now[:alert] = 'メモの作成に失敗しました。タイトルと説明を入力してください'
-      # エラーがある場合は同じフォームを再表示
-      render :new
+      redirect_to root_path, notice: '作成しました'
     end
   end
 
   def update
     # メモの内容を更新
     @memo = current_user.memos.find(params[:id])
-    if @memo.update(memos_params)
-      redirect_to root_path, notice: 'メモが更新されました'
+    @memo.update(memos_params)
+    if @memo.title.blank? && @memo.description.blank?
+      @memo.destroy
+      redirect_to root_path, notice: '未入力だったため削除されました'
     else
-      render :edit
+      redirect_to root_path, notice: '更新しました'
     end
   end
 
