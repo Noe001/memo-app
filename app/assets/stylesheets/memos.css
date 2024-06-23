@@ -1,0 +1,55 @@
+.sidebar {
+  height: 100vh;
+  width: 270px;
+  position: static;
+  top: 0;
+  left: 0;
+  box-shadow: 3px 0 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  padding: 5px 27px 5px 37px;
+  border-bottom: 2px solid #cacaca;
+  cursor: pointer;
+  line-height: 30px;
+}
+
+.sidebar ul li:hover {
+  background-color: #e8edf1;
+}
+
+.sidebar ul li {
+  text-decoration: none;
+  color: #333;
+  display: block;
+}
+
+.content {
+  padding: 20px;
+}
+
+#display_flex {
+ display: flex;
+}
+
+#memos_description {
+  font-weight: lighter;
+  color: rgb(121, 121, 121);
+}
+
+#memos_title {
+  font-weight: 550;
+}
+
+#memos_description, #memos_title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
