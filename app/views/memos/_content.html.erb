@@ -1,0 +1,6 @@
+<%= form_with model: @memos, url: memo_path(@memos.id), local: true, method: :patch do |f| %>
+  <%= f.text_field :title, placeholder: "タイトル", class: "" %>
+  <%= f.text_area :description, placeholder: "本文", class: "" %>
+  <%= f.submit "更新", class: "" %>
+<% end %>
+<%= button_to "削除", memo_path(@memos.id), method: :delete, class: "" %>

@@ -3,7 +3,6 @@ class MemosController < ApplicationController
   before_action :current_user
 
   def index
-    @memo_new = Memo.new
     # ログインしたユーザーが作成したメモのみを取得
     @memos = current_user.memos
   end

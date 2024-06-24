@@ -1,40 +1,28 @@
 <div id="display_flex">
   <div class="sidebar">
     <ul>
-      <% @memos.reverse.each do |m| %>
-        <li>
+      <% @memos.reverse.each do |memo| %>
+        <%= link_to memo_path(memo) do %>
+          <li>
+            <%# 要素の幅を均一にする %>
+            <% if memo.title.blank? %>
+              <div style="padding-top: 30px;"></div>
+            <% else %>
+              <div class="memos_title"><%= memo.title %></div>
+            <% end %>
 
-          <% if m.title.blank? %>
-            <div style="padding-top: 30px;"></div>
-          <% else %>
-            <div id="memos_title"><%= m.title %></div>
-          <% end %>
-
-          <% if m.description.blank? %>
-            <div style="padding-top: 30px;"></div>
-          <% else %>
-            <div id="memos_description"><%= m.description %></div>
-          <% end %>
-          
-        </li>
+            <% if memo.description.blank? %>
+              <div style="padding-top: 20px;"></div>
+            <% else %>
+              <div class="memos_description"><%= memo.description %></div>
+            <% end %>
+          </li>
+        <% end %>
       <% end %>
     </ul>
   </div>
 
   <div class="content">
-    <%= form_with model: @memo_new, local: true, method: :post do |f| %>
-      <%= f.text_field :title, placeholder: "タイトル", class: "" %>
-      <%= f.text_area :description, placeholder: "本文", class: "" %>
-      <%= f.submit "作成", class: "" %>
-    <% end %>
-
-    <% @memos.reverse.each do |memo| %>
-      <%= form_with model: memo, url: memo_path(memo.id), local: true, method: :patch do |f| %>
-        <%= f.text_field :title, placeholder: "タイトル", class: "" %>
-        <%= f.text_area :description, placeholder: "本文", class: "" %>
-        <%= f.submit "更新", class: "" %>
-      <% end %>
-      <%= button_to "削除", memo_path(memo.id), method: :delete, class: "" %>
-    <% end %>
+    <% render "memos/content" %>
   </div>
 </div>

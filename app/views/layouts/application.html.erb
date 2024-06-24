@@ -13,7 +13,7 @@
   <body>
     <div class="wrapper header">
       <div id="container">
-        <div>MemoApp</div>
+        <div id="app_name">MemoApp</div>
         <div id="login_button">
           <% if @user.nil? %>
             <%= link_to "ログイン", new_sessions_path, method: :get %>
