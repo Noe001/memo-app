@@ -5,7 +5,9 @@ class MemosController < ApplicationController
   def index
     # ログインしたユーザーが作成したメモのみを取得
     @memos = current_user.memos
-    @memos_overview = Memo.find(params[:id])
+    if params[:id]
+      @memos_overview = Memo.find(params[:id])
+    end
   end
 
   def create
@@ -27,9 +29,9 @@ class MemosController < ApplicationController
     @memo.update(memos_params)
     if @memo.title.blank? && @memo.description.blank?
       @memo.destroy
-      redirect_to memos_path, notice: '未入力だったため削除されました'
+      redirect_to memos_overview_path, notice: '未入力だったため削除されました'
     else
-      redirect_to memos_path, notice: '更新しました'
+      redirect_to memos_overview_path, notice: '更新しました'
     end
   end
 
