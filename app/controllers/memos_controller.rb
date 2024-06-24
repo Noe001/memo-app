@@ -5,6 +5,7 @@ class MemosController < ApplicationController
   def index
     # ログインしたユーザーが作成したメモのみを取得
     @memos = current_user.memos
+    @memos_overview = Memo.find(params[:id])
   end
 
   def create

@@ -21,6 +21,10 @@
   font-family: 'Arial', sans-serif;
 }
 
+a {
+  text-decoration: none;
+}
+
 .wrapper {
   width: 100%;
 }

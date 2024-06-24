@@ -4,7 +4,6 @@
       <% @memos.reverse.each do |memo| %>
         <%= link_to memo_path(memo) do %>
           <li>
-            <%# 要素の幅を均一にする %>
             <% if memo.title.blank? %>
               <div style="padding-top: 30px;"></div>
             <% else %>
@@ -23,6 +22,11 @@
   </div>
 
   <div class="content">
-    <% render "memos/content" %>
+    <%= form_with model: @memos_overview, url: memo_path(@memos_overview.id), local: true, method: :patch do |f| %>
+      <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
+      <%= f.text_area :description, placeholder: "本文", class: "memos_text_area" %>
+      <%= f.submit "更新", class: "" %>
+    <% end %>
+    <%= button_to "削除", memo_path(@memos_overview.id), method: :delete, class: "" %>
   </div>
 </div>

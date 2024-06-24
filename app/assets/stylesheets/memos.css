@@ -53,6 +53,13 @@
 
 .memos_description, .memos_title {
   overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.memos_text_field {
+
+}
+
+.memos_text_area {
+  resize: none;
 }
