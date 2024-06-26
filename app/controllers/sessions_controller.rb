@@ -8,16 +8,16 @@ class SessionsController < ApplicationController
   def create
     if @user && @user.authenticate(params[:password])
       session[:user_id] = @user.id
-      redirect_to memos_path, notice: 'ログインしました。'
+      redirect_to memos_path, notice: 'ログインしました'
     else
-      flash.now[:alert] = 'メールアドレスまたはパスワードが無効です。'
+      flash.now[:alert] = 'メールアドレスまたはパスワードが無効です'
       render :new, status: :unauthorized
     end
   end
 
   def destroy
     session[:user_id] = nil
-    redirect_to new_sessions_path, notice: 'ログアウトしました。'
+    redirect_to new_sessions_path, notice: 'ログアウトしました'
   end
 
   private

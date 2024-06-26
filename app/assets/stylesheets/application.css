@@ -57,13 +57,14 @@ a {
   position: fixed;
   top: 0;
   left: 50%;
+  position: sticky;
   transform: translateX(-50%);
   background-color: #d7e8f8;
-  color: #1c3772;
+  color: #000000;
   padding: 10px 20px;
   width: 100%;
   text-align: center;
-  border: 1px solid #747474;
+  box-shadow: 0 5px 5px rgb(0, 0, 0, 0.1);
   border-radius: 5px;
   z-index: 99;
   animation: slideIn 0.5s,slideOut 0.5s 4s forwards;
