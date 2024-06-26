@@ -1,11 +1,13 @@
 .sidebar {
-  height: 100vh;
+  min-height: 93.4vh;
   width: 14vw;
   position: static;
   top: 0;
   left: 0;
   box-shadow: 3px 0 5px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
+  z-index: 999;
+  background-color: #EEEFF1;
 }
 
 .sidebar ul {
@@ -16,12 +18,12 @@
 
 .sidebar ul li {
   padding: 5px 27px 5px 37px;
-  border-bottom: 2px solid #e9e9e9;
+  border-bottom: 2px solid #e2e2e2;
   cursor: pointer;
 }
 
 .sidebar ul li:hover {
-  background-color: #e6f0f7;
+  background-color: #ffffff;
 }
 
 .sidebar ul li {
@@ -31,6 +33,8 @@
 }
 
 .content {
+  width: 100%;
+  padding: 0 32px;
 }
 
 #display_flex {
@@ -52,15 +56,27 @@
 
 .memos_description, .memos_title {
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .memos_text_field {
-  width: 86vw;
+  width: 100%;
   height: 8vh;
+  border: none;
+  border-bottom: 1px solid #73777c;
+  padding-left: 15px;
+  z-index: 900;
 }
 
 .memos_text_area {
   resize: none;
-  width: 86vw;
+  width: 100%;
+  height: 50vh;
+  border: none;
+  padding: 10px 0 0 15px;
+}
+
+.memos_text_field, .memos_text_area:focus {
+  outline: none;
 }
