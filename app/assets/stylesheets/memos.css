@@ -1,14 +1,21 @@
 .sidebar {
-  min-height: 93.4vh;
-  width: 14vw;
-  position: static, sticky;
+  overflow-y: auto;
+  height: 93.4vh;
+  width: 300px;
+  position: static;
   top: 0;
   left: 0;
   box-shadow: 3px 0 5px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
-  z-index: 999;
+  z-index: 20;
   background-color: #EEEFF1;
+  scrollbar-width: thin;
 }
+
+/* .sidebar::-webkit-scrollbar{
+  width: 10px;
+  border-radius: 20%;
+} */
 
 .sidebar ul {
   list-style: none;
@@ -73,12 +80,31 @@
 .memos_text_area {
   resize: none;
   width: 100%;
-  height: 50vh;
+  height: 70vh;
   border: none;
+  border-bottom: 1px solid #73777c;
   padding: 10px 0 0 15px;
   font-size: 14px;
 }
 
 .memos_text_field, .memos_text_area:focus {
   outline: none;
+}
+
+.update_button, .delete_button, .create_button {
+  background-color: #EEEFF1;
+  font-size: 16px;
+  width: 100px;
+}
+
+.update_button {
+
+}
+
+.delete_button {
+
+}
+
+.create_button {
+
 }
