@@ -11,25 +11,20 @@
   </head>
 
   <body>
-    <div class="wrapper header_color">
-      <div class="container">
-        <h1>MemoApp</h1>
+    <div class="wrapper header">
+      <div id="container">
+        <div id="app_name">MemoApp</div>
+        <div id="login_button">
+          <% unless @user.nil? %>
+            <%= @user.name %>
+            <%= link_to "ログアウト", destroy_sessions_path, data: { turbo_method: :delete } %>
+          <% end %>
+        </div>
       </div>
     </div>
 
     <div id="notice">
       <%= render "layouts/notice" %>
-    </div>
-
-    <div class="wrapper">
-      <div class="container">
-        <% if @user.nil? %>
-          <%= link_to "ログイン", new_sessions_path, method: :get %>
-        <% else %>
-          ユーザー：<%= @user.name %>
-          <%= link_to "ログアウト", destroy_sessions_path, data: { turbo_method: :delete } %>
-        <% end %>
-      </div>
     </div>
     
     <%= yield %>

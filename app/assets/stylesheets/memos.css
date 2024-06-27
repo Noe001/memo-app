@@ -1,0 +1,129 @@
+.sidebar {
+  overflow-y: auto;
+  height: 93.4vh;
+  width: 300px;
+  position: static;
+  top: 0;
+  left: 0;
+  box-shadow: 5px 0 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  z-index: 20;
+  background-color: #EEEFF1;
+  scrollbar-width: thin;
+}
+
+/* .sidebar::-webkit-scrollbar{
+  width: 10px;
+  border-radius: 20%;
+} */
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  padding: 5px 27px 5px 37px;
+  border-bottom: 2px solid #e2e2e2;
+  cursor: pointer;
+}
+
+.sidebar ul li:hover {
+  background-color: #ffffff;
+}
+
+.sidebar ul li {
+  text-decoration: none;
+  color: #333;
+  display: block;
+}
+
+.content {
+  width: 100%;
+  padding: 0 32px;
+}
+
+#display_flex {
+ display: flex;
+}
+
+.memos_description {
+  font-weight: lighter;
+  color: rgb(121, 121, 121);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.memos_title {
+  font-weight: 550;
+  line-height: 30px;
+  font-size: 15px;
+}
+
+.memos_description, .memos_title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.memos_text_field {
+  width: 100%;
+  height: 8vh;
+  border: none;
+  border-bottom: 1px solid #73777c;
+  padding-left: 15px;
+  font-size: 18px;
+  font-weight: 550;
+}
+
+.memos_text_area {
+  resize: none;
+  width: 100%;
+  height: 70vh;
+  border: none;
+  border-bottom: 1px solid #73777c;
+  padding: 10px 0 0 15px;
+  font-size: 14px;
+}
+
+.memos_text_field, .memos_text_area:focus {
+  outline: none;
+}
+
+.update_button, .delete_button, .create_button {
+  position: absolute;
+  background-color: #ffffff;
+  font-size: 16px;
+  width: 140px;
+  height: 40px;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 1px 2px 0 rgba(60,64,67,.3),0 2px 6px 2px rgba(60,64,67,.15);
+}
+
+.update_button:hover, .create_button:hover {
+  background-color: #d7e8f8;
+  cursor: pointer;
+}
+
+.delete_button:hover {
+  background-color: #f8d7d7;
+  cursor: pointer;
+}
+
+.update_button {
+  right: 7vw;
+  bottom: 6.5vh;
+
+}
+
+.delete_button {
+  bottom: 6.5vh;
+  right: 15.5vw;
+}
+
+.create_button {
+  right: 10vw;
+  bottom: 6.5vh;
+}
