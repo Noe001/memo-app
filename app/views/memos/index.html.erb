@@ -22,15 +22,15 @@
   </div>
 
   <div class="content">
-    <% if @memos_overview %>
-      <%= form_with model: @memos_overview, local: true do |f| %>
+    <% if @selected_memo %>
+      <%= form_with model: @selected_memo do |f| %>
         <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
         <%= f.text_area :description, placeholder: "本文", class: "memos_text_area" %>
         <%= f.submit "更新", class: "" %>
       <% end %>
-      <%= button_to "削除", memo_path(@memos_overview.id), method: :delete, class: "" %>
+      <%= button_to "削除", memo_path(@selected_memo.id), method: :delete, class: "" %>
     <% else %>
-      <%= form_with model: @memo_new, local: true, method: :post do |f| %>
+      <%= form_with model: @memo_new, method: :post do |f| %>
         <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
         <%= f.text_area :description, placeholder: "本文", class: "memos_text_area" %>
         <%= f.submit "作成", class: "" %>

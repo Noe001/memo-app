@@ -53,14 +53,20 @@ a {
   font-size: 20px;
 }
 
+.alert {
+  background-color: #f8d7d7;
+}
+
+.notice {
+  background-color: #d7e8f8;
+}
+
 .alert, .notice {
+  color: #000000;
   position: fixed;
   top: 0;
   left: 50%;
-  position: sticky;
   transform: translateX(-50%);
-  background-color: #d7e8f8;
-  color: #000000;
   padding: 10px 20px;
   width: 100%;
   text-align: center;

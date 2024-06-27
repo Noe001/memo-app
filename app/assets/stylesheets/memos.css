@@ -1,7 +1,7 @@
 .sidebar {
   min-height: 93.4vh;
   width: 14vw;
-  position: static;
+  position: static, sticky;
   top: 0;
   left: 0;
   box-shadow: 3px 0 5px rgba(0, 0, 0, 0.1);

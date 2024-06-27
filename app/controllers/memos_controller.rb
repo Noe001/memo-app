@@ -4,16 +4,19 @@ class MemosController < ApplicationController
 
   def index
     # ログインしたユーザーが作成したメモのみを取得
+    @memo_new = Memo.new
     @memos = current_user.memos
     if params[:id]
-      @memos_overview = Memo.find(params[:id])
+      @selected_memo = Memo.find(params[:id])
     end
   end
 
   def create
     # ログインしたユーザーに関連付けられたメモを作成
     @memo_new = current_user.memos.build(memos_params)
-    @memo_new.save
+    unless @memo_new.save
+      redirect_to memos_path, alert: '保存に失敗しました'
+    end
     # タイトルと概要が空の場合はメモを削除
     if @memo_new.title.blank? && @memo_new.description.blank?
       @memo_new.destroy
@@ -29,9 +32,9 @@ class MemosController < ApplicationController
     @memo.update(memos_params)
     if @memo.title.blank? && @memo.description.blank?
       @memo.destroy
-      redirect_to memos_overview_path, notice: '未入力だったため削除されました'
+      redirect_to selected_memo_path, notice: '未入力だったため削除されました'
     else
-      redirect_to memos_overview_path, notice: '更新しました'
+      redirect_to selected_memo_path, notice: '更新しました'
     end
   end
 
