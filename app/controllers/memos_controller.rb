@@ -32,7 +32,7 @@ class MemosController < ApplicationController
     @memo.update(memos_params)
     if @memo.title.blank? && @memo.description.blank?
       @memo.destroy
-      redirect_to selected_memo_path, notice: '未入力だったため削除されました'
+      redirect_to memos_path, notice: '未入力だったため削除されました'
     else
       redirect_to selected_memo_path, notice: '更新しました'
     end
