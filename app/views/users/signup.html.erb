@@ -1,0 +1,17 @@
+<div>サインイン</div>
+
+<%= form_with(url: create_users_path, local: true, method: :post) do |f| %>
+  <%= f.label :name, "名前" %>
+  <%= f.text_field :name, class: "form_box" %>
+
+  <%= f.label :email, "Email" %>
+  <%= f.email_field :email, class: "form_box" %>
+
+  <%= f.label :password, "パスワード" %>
+  <%= f.password_field :password, class: "form_box" %>
+
+  <%= f.label :password_confirmation, "パスワード確認" %>
+  <%= f.password_field :password_confirmation, class: "form_box" %>
+
+  <%= f.submit "アカウント作成", class: "btn" %>
+<% end %>
