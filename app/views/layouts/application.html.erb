@@ -15,7 +15,7 @@
       <div id="container">
         <div id="app_name">MemoApp</div>
         <div id="login_button">
-          <% unless @user.nil? %>
+          <% if controller_name == 'memos' %>
             <%= @user.name %>
             <%= link_to "ログアウト", destroy_sessions_path, data: { turbo_method: :delete } %>
           <% end %>

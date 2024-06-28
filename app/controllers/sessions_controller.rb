@@ -11,7 +11,7 @@ class SessionsController < ApplicationController
       redirect_to memos_path, notice: 'ログインしました'
     else
       flash.now[:alert] = 'メールアドレスまたはパスワードが無効です'
-      render :new, status: :unauthorized
+      render :new
     end
   end
 

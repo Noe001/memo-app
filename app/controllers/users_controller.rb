@@ -1,20 +1,25 @@
 class UsersController < ApplicationController
 
   def signup
+    @user = User.new
   end
 
   def create
-    @user_new = 
+    @user = User.new(users_params)
+    if @user.save
+      redirect_to new_sessions_path, notice: 'アカウントが作成されました'
+    else
+      flash.now[:alert] = "パスワードが一致していません"
+      render :signup
+    end
+    p "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    p  @user.errors.full_messages.to_sentence
   end
 
   private
 
   def users_params
-    params.require(:users).permit(:email, :password)
-  end
-
-  def set_user
-    @user = User.find_by(email: params[:email])
+    params.require(:user).permit(:name, :email, :password, :password_confirmation)
   end
 
 end
