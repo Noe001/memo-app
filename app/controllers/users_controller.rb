@@ -9,11 +9,14 @@ class UsersController < ApplicationController
     if @user.save
       redirect_to new_sessions_path, notice: 'アカウントが作成されました'
     else
-      flash.now[:alert] = "パスワードが一致していません"
+      messages = @user.errors.messages
+      if messages[:password_confirmation].present?
+        flash.now[:alert] = 'パスワードが一致しません' 
+      elsif messages[:email].include?('has already been taken')
+        flash.now[:alert] = '入力したメールアドレスは既に存在します' 
+      end
       render :signup
     end
-    p "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-    p  @user.errors.full_messages.to_sentence
   end
 
   private
