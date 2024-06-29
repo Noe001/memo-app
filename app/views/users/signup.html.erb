@@ -1,0 +1,19 @@
+<%= javascript_import_module_tag "users_signup" %>
+
+<div>サインアップ</div>
+
+<%= form_with model: @user, data: { turbo: false }, local: true do |f| %>
+  <%= f.label :name, "名前" %>
+  <%= f.text_field :name, required: true, class: "form_box" %>
+
+  <%= f.label :email, "Email" %>
+  <%= f.email_field :email, required: true, class: "form_box" %>
+
+  <%= f.label :password, "パスワード" %>
+  <%= f.password_field :password, required: true, class: "form_box" %>
+
+  <%= f.label :password_confirmation, "パスワード確認" %>
+  <%= f.password_field :password_confirmation, required: true, class: "form_box" %>
+
+  <%= f.submit "アカウント作成", class: "btn" %>
+<% end %>

@@ -1,6 +1,6 @@
 <div>ログイン</div>
 
-<%= form_with(url: create_sessions_path, local: true, method: :post) do |f| %>
+<%= form_with(url: create_sessions_path, data: { turbo: false },  local: true, method: :post) do |f| %>
   <%= f.label :email, "Email" %>
   <%= f.email_field :email, class: "form_box" %>
 
@@ -9,3 +9,5 @@
 
   <%= f.submit "ログイン", class: "btm" %>
 <% end %>
+
+<%= link_to "アカウントを作成する", signup_path %>
