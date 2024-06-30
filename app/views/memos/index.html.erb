@@ -1,14 +1,14 @@
 <div id="display_flex">
-  <div class="sidebar">    
-    <%= form_with url: search_path, method: :get do |f| %>
+  <div class="sidebar">
+    <%= form_with url: search_memos_path, method: :get, local: true do |f| %>
       <%= f.text_field :word, placeholder: "検索", class: "search-box" %>
       <%= f.submit "検索", class: "btn" %>
     <% end %>
 
     <ul>
       <% @memos.reverse.each do |memo| %>
-        <%= link_to memo_path(memo) do %>
-          <li>
+        <li>
+          <%= link_to memo_path(memo) do %>
             <% if memo.title.blank? %>
               <div style="padding-top: 30px;"></div>
             <% else %>
@@ -20,22 +20,22 @@
             <% else %>
               <div class="memos_description"><%= memo.description %></div>
             <% end %>
-          </li>
-        <% end %>
+          <% end %>
+        </li>
       <% end %>
     </ul>
   </div>
 
   <div class="content">
-    <% unless @selected_memo == 0 %>
-      <%= form_with model: @selected_memo do |f| %>
+    <% if @selected_memo.present? %>
+      <%= form_with model: @selected_memo, local: true do |f| %>
         <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
         <%= f.text_area :description, placeholder: "概要", class: "memos_text_area" %>
         <%= f.submit "更新", class: "update_button" %>
       <% end %>
       <%= button_to "削除", memo_path(@selected_memo.id), method: :delete, class: "delete_button" %>
     <% else %>
-      <%= form_with model: @memo_new, method: :post do |f| %>
+      <%= form_with model: @memo_new, method: :post, local: true do |f| %>
         <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
         <%= f.text_area :description, placeholder: "概要", class: "memos_text_area" %>
         <%= f.submit "作成", class: "create_button" %>

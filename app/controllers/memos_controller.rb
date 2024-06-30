@@ -1,60 +1,65 @@
 class MemosController < ApplicationController
-  # ユーザーがログインしていることを確認
   before_action :current_user
 
   def index
-    # ログインしたユーザーが作成したメモのみを取得
     @memo_new = Memo.new
     @memos = current_user.memos
-    @selected_memo = 0
-    if params[:id]
-      @selected_memo = Memo.find_by(id: params[:id])
-    end
+    @selected_memo = params[:id] && params[:id] != '0' ? Memo.find_by(id: params[:id]) : nil
+  end
+
+  def show
+    @memo_new = Memo.new
+    @memos = current_user.memos
+    @selected_memo = current_user.memos.find(params[:id])
+    render :index
   end
 
   def create
-    # ログインしたユーザーに関連付けられたメモを作成
     @memo_new = current_user.memos.build(memos_params)
-    unless @memo_new.save
-      redirect_to memos_path, alert: '保存に失敗しました'
-    end
-    # タイトルと概要が空の場合はメモを削除
-    if @memo_new.title.blank? && @memo_new.description.blank?
-      @memo_new.destroy
-      redirect_to memos_path, alert: 'タイトルと概要を入力してください'
+    if @memo_new.save
+      if @memo_new.title.blank? && @memo_new.description.blank?
+        @memo_new.destroy
+        redirect_to memos_path, alert: 'タイトルと概要を入力してください'
+      else
+        redirect_to memos_path, notice: '作成しました'
+      end
     else
-      redirect_to memos_path, notice: '作成しました'
+      redirect_to memos_path, alert: '保存に失敗しました'
     end
   end
 
   def update
-    # メモの内容を更新
     @memo = current_user.memos.find(params[:id])
-    @memo.update(memos_params)
-    if @memo.title.blank? && @memo.description.blank?
-      @memo.destroy
-      redirect_to memos_path, notice: '未入力だったため削除されました'
+    if @memo.update(memos_params)
+      if @memo.title.blank? && @memo.description.blank?
+        @memo.destroy
+        redirect_to memos_path, notice: '未入力だったため削除されました'
+      else
+        redirect_to memos_path, notice: '更新しました'
+      end
     else
-      redirect_to selected_memo_path, notice: '更新しました'
+      redirect_to memos_path, alert: '更新に失敗しました'
     end
   end
 
   def destroy
-    # メモを削除
     @memo = current_user.memos.find(params[:id])
-    @memo.destroy
-    redirect_to memos_path, notice: 'メモが削除されました'
+    if @memo.destroy
+      redirect_to memos_path, notice: 'メモが削除されました'
+    else
+      redirect_to memos_path, alert: '削除に失敗しました'
+    end
   end
 
   def search
+    @memo_new = Memo.new
     search_word = params[:word]
-    relevant_memos = current_user.memos.where("title LIKE ? or description LIKE ?", "%#{search_word}%", "%#{search_word}%")
-    if relevant_memos.count > 0
-      @memos = relevant_memos
-    else
+    @memos = current_user.memos.where("title LIKE ? OR description LIKE ?", "%#{search_word}%", "%#{search_word}%")
+    @selected_memo = params[:id] && params[:id] != '0' ? Memo.find_by(id: params[:id]) : nil
+    if @memos.empty?
       flash.now[:alert] = "該当するメモは見つかりませんでした"
     end
-    render :search_results
+    render :index
   end
 
   private
@@ -70,5 +75,4 @@ class MemosController < ApplicationController
       redirect_to new_sessions_path
     end
   end
-
 end
