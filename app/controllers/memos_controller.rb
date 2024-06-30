@@ -6,8 +6,9 @@ class MemosController < ApplicationController
     # ログインしたユーザーが作成したメモのみを取得
     @memo_new = Memo.new
     @memos = current_user.memos
+    @selected_memo = 0
     if params[:id]
-      @selected_memo = Memo.find(params[:id])
+      @selected_memo = Memo.find_by(id: params[:id])
     end
   end
 
@@ -43,6 +44,17 @@ class MemosController < ApplicationController
     @memo = current_user.memos.find(params[:id])
     @memo.destroy
     redirect_to memos_path, notice: 'メモが削除されました'
+  end
+
+  def search
+    search_word = params[:word]
+    relevant_memos = current_user.memos.where("title LIKE ? or description LIKE ?", "%#{search_word}%", "%#{search_word}%")
+    if relevant_memos.count > 0
+      @memos = relevant_memos
+    else
+      flash.now[:alert] = "該当するメモは見つかりませんでした"
+    end
+    render :search_results
   end
 
   private

@@ -13,7 +13,7 @@
   <body>
     <div class="wrapper header">
       <div id="container">
-        <div id="app_name">MemoApp</div>
+      <%= link_to "MemoApp", memos_path, id: "app_name" %>
         <div id="login_button">
           <% if controller_name == 'memos' %>
             <%= @user.name %>

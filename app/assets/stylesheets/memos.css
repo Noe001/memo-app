@@ -120,7 +120,7 @@
 
 .delete_button {
   bottom: 6.5vh;
-  right: 15.5vw;
+  right: calc(7vw + 165px);
 }
 
 .create_button {

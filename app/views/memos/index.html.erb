@@ -1,5 +1,10 @@
 <div id="display_flex">
-  <div class="sidebar">
+  <div class="sidebar">    
+    <%= form_with url: search_path, method: :get do |f| %>
+      <%= f.text_field :word, placeholder: "検索", class: "search-box" %>
+      <%= f.submit "検索", class: "btn" %>
+    <% end %>
+
     <ul>
       <% @memos.reverse.each do |memo| %>
         <%= link_to memo_path(memo) do %>
@@ -22,7 +27,7 @@
   </div>
 
   <div class="content">
-    <% if @selected_memo %>
+    <% unless @selected_memo == 0 %>
       <%= form_with model: @selected_memo do |f| %>
         <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
         <%= f.text_area :description, placeholder: "概要", class: "memos_text_area" %>
