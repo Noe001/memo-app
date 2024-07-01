@@ -23,15 +23,15 @@ class MemosController < ApplicationController
   end
 
   def create
-     # ログインしたユーザーに関連付けられたメモを作成
-     @memo_new = current_user.memos.build(memos_params)
-     unless @memo_new.save
-       redirect_to memos_path, alert: '保存に失敗しました'
-     end
-     # タイトルと概要が空の場合はメモを削除
-     if @memo_new.title.blank? && @memo_new.description.blank?
-       @memo_new.destroy
-       redirect_to memos_path, alert: 'タイトルと概要を入力してください'
+    # ログインしたユーザーに関連付けられたメモを作成
+    @memo_new = current_user.memos.build(memos_params)
+    unless @memo_new.save
+      redirect_to memos_path, alert: '保存に失敗しました'
+    end
+    # タイトルと概要が空の場合はメモを削除
+    if @memo_new.title.blank? && @memo_new.description.blank?
+      @memo_new.destroy
+      redirect_to memos_path, alert: 'タイトルと概要を入力してください'
     else
       redirect_to memos_path, notice: '作成しました'
     end
