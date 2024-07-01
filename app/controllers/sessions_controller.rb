@@ -8,7 +8,7 @@ class SessionsController < ApplicationController
   def create
     if @user && @user.authenticate(params[:password])
       session[:user_id] = @user.id
-      redirect_to memos_path, notice: 'ログインしました'
+      redirect_to root_path, notice: 'ログインしました'
     else
       flash.now[:alert] = 'メールアドレスまたはパスワードが無効です'
       render :new
@@ -29,7 +29,7 @@ class SessionsController < ApplicationController
   def logged_in
     if session[:user_id]
       @user = User.find(session[:user_id])
-      redirect_to memos_path, notice: 'ログインしています'
+      redirect_to root_path, notice: 'ログインしています'
     end
   end
 end

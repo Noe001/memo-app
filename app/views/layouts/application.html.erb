@@ -13,11 +13,11 @@
   <body>
     <div class="wrapper header">
       <div id="container">
-        <div id="app_name">MemoApp</div>
+      <%= link_to "MemoApp", root_path, id: "app_name" %>
         <div id="login_button">
           <% if controller_name == 'memos' %>
             <%= @user.name %>
-            <%= link_to "ログアウト", destroy_sessions_path, data: { turbo_method: :delete } %>
+            <%= link_to "ログアウト", destroy_sessions_path, id: "logout_button", data: { turbo_method: :delete } %>
           <% end %>
         </div>
       </div>

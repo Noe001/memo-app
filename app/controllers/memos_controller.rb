@@ -1,14 +1,25 @@
 class MemosController < ApplicationController
-  # ユーザーがログインしていることを確認
   before_action :current_user
 
   def index
-    # ログインしたユーザーが作成したメモのみを取得
+    # createメソッドで使用
     @memo_new = Memo.new
+    # ログインしてるユーザーが作成したメモ（サイドバーで使用）
     @memos = current_user.memos
     if params[:id]
-      @selected_memo = Memo.find(params[:id])
+      # サイドバーで選択したメモ（フォーム表示に使用）
+      @selected = Memo.find(params[:id])
+      # 一覧から選択したコンテンツの背景を変えるために使用
+      @memo_id = params[:id]
     end
+  end
+
+  def show
+    @memo_new = Memo.new
+    @memos = current_user.memos
+    @selected = current_user.memos.find(params[:id])
+    @memo_id = @selected.id
+    render :index
   end
 
   def create
@@ -27,22 +38,37 @@ class MemosController < ApplicationController
   end
 
   def update
-    # メモの内容を更新
     @memo = current_user.memos.find(params[:id])
-    @memo.update(memos_params)
-    if @memo.title.blank? && @memo.description.blank?
-      @memo.destroy
-      redirect_to memos_path, notice: '未入力だったため削除されました'
+    if @memo.update(memos_params)
+      if @memo.title.blank? && @memo.description.blank?
+        @memo.destroy
+        redirect_to root_path, notice: '未入力だったため削除されました'
+      else
+        redirect_to request.original_url, notice: '更新しました'
+      end
     else
-      redirect_to selected_memo_path, notice: '更新しました'
+      redirect_to root_path, alert: '更新に失敗しました'
     end
   end
 
   def destroy
-    # メモを削除
     @memo = current_user.memos.find(params[:id])
-    @memo.destroy
-    redirect_to memos_path, notice: 'メモが削除されました'
+    if @memo.destroy
+      redirect_to root_path, notice: 'メモが削除されました'
+    else
+      redirect_to root_path, alert: '削除に失敗しました'
+    end
+  end
+
+  def search
+    @memo_new = Memo.new
+    search_word = params[:word]
+    @memos = current_user.memos.where("title LIKE ? OR description LIKE ?", "%#{search_word}%", "%#{search_word}%")
+    @selected = Memo.find_by(id: params[:id])
+    if @memos.empty?
+      flash.now[:alert] = "該当するメモは見つかりませんでした"
+    end
+    render :index
   end
 
   private
@@ -58,5 +84,4 @@ class MemosController < ApplicationController
       redirect_to new_sessions_path
     end
   end
-
 end
