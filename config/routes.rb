@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
-  root to: redirect('/memos')
+  root to: "memos#index"
+  post '/', to: 'memos#create'
   get 'signup', to: 'users#signup', as: 'signup'
   post 'signup', to: 'users#create'
+  resources :users, only: [:signup, :create]
   get 'login', to: 'sessions#new', as: 'new_sessions'
   post 'login', to: 'sessions#create', as: 'create_sessions'
   delete 'login', to: 'sessions#destroy', as: 'destroy_sessions'

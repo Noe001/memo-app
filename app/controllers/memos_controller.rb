@@ -2,11 +2,15 @@ class MemosController < ApplicationController
   before_action :current_user
 
   def index
+    # createメソッドで使用
     @memo_new = Memo.new
+    # ログインしてるユーザーが作成したメモ（サイドバーで使用）
     @memos = current_user.memos
     if params[:id]
+      # サイドバーで選択したメモ（フォーム表示に使用）
       @selected = Memo.find(params[:id])
-      @current_memo_id = params[:id]
+      # 一覧から選択したコンテンツの背景を変えるために使用
+      @memo_id = params[:id]
     end
   end
 
@@ -14,18 +18,22 @@ class MemosController < ApplicationController
     @memo_new = Memo.new
     @memos = current_user.memos
     @selected = current_user.memos.find(params[:id])
-    @current_memo_id = @selected.id
+    @memo_id = @selected.id
     render :index
   end
 
   def create
-    @memo_new = current_user.memos.build(memos_params)
-    if @memo_new.save
-      redirect_to request.original_url, notice: '作成しました'
+     # ログインしたユーザーに関連付けられたメモを作成
+     @memo_new = current_user.memos.build(memos_params)
+     unless @memo_new.save
+       redirect_to memos_path, alert: '保存に失敗しました'
+     end
+     # タイトルと概要が空の場合はメモを削除
+     if @memo_new.title.blank? && @memo_new.description.blank?
+       @memo_new.destroy
+       redirect_to memos_path, alert: 'タイトルと概要を入力してください'
     else
-      @memo_new.destroy if @memo_new.persisted?
-      message = @memo_new.title.blank? && @memo_new.description.blank? ? 'タイトルと概要を入力してください' : '保存に失敗しました'
-      redirect_to root_path, alert: message
+      redirect_to memos_path, notice: '作成しました'
     end
   end
 
@@ -36,7 +44,7 @@ class MemosController < ApplicationController
         @memo.destroy
         redirect_to root_path, notice: '未入力だったため削除されました'
       else
-        redirect_to root_path, notice: '更新しました'
+        redirect_to request.original_url, notice: '更新しました'
       end
     else
       redirect_to root_path, alert: '更新に失敗しました'
