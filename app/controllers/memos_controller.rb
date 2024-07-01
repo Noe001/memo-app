@@ -4,27 +4,28 @@ class MemosController < ApplicationController
   def index
     @memo_new = Memo.new
     @memos = current_user.memos
-    @selected_memo = params[:id] && params[:id] != '0' ? Memo.find_by(id: params[:id]) : nil
+    if params[:id]
+      @selected = Memo.find(params[:id])
+      @current_memo_id = params[:id]
+    end
   end
 
   def show
     @memo_new = Memo.new
     @memos = current_user.memos
-    @selected_memo = current_user.memos.find(params[:id])
+    @selected = current_user.memos.find(params[:id])
+    @current_memo_id = @selected.id
     render :index
   end
 
   def create
     @memo_new = current_user.memos.build(memos_params)
     if @memo_new.save
-      if @memo_new.title.blank? && @memo_new.description.blank?
-        @memo_new.destroy
-        redirect_to memos_path, alert: 'タイトルと概要を入力してください'
-      else
-        redirect_to memos_path, notice: '作成しました'
-      end
+      redirect_to request.original_url, notice: '作成しました'
     else
-      redirect_to memos_path, alert: '保存に失敗しました'
+      @memo_new.destroy if @memo_new.persisted?
+      message = @memo_new.title.blank? && @memo_new.description.blank? ? 'タイトルと概要を入力してください' : '保存に失敗しました'
+      redirect_to root_path, alert: message
     end
   end
 
@@ -33,21 +34,21 @@ class MemosController < ApplicationController
     if @memo.update(memos_params)
       if @memo.title.blank? && @memo.description.blank?
         @memo.destroy
-        redirect_to memos_path, notice: '未入力だったため削除されました'
+        redirect_to root_path, notice: '未入力だったため削除されました'
       else
-        redirect_to memos_path, notice: '更新しました'
+        redirect_to root_path, notice: '更新しました'
       end
     else
-      redirect_to memos_path, alert: '更新に失敗しました'
+      redirect_to root_path, alert: '更新に失敗しました'
     end
   end
 
   def destroy
     @memo = current_user.memos.find(params[:id])
     if @memo.destroy
-      redirect_to memos_path, notice: 'メモが削除されました'
+      redirect_to root_path, notice: 'メモが削除されました'
     else
-      redirect_to memos_path, alert: '削除に失敗しました'
+      redirect_to root_path, alert: '削除に失敗しました'
     end
   end
 
@@ -55,7 +56,7 @@ class MemosController < ApplicationController
     @memo_new = Memo.new
     search_word = params[:word]
     @memos = current_user.memos.where("title LIKE ? OR description LIKE ?", "%#{search_word}%", "%#{search_word}%")
-    @selected_memo = params[:id] && params[:id] != '0' ? Memo.find_by(id: params[:id]) : nil
+    @selected = Memo.find_by(id: params[:id])
     if @memos.empty?
       flash.now[:alert] = "該当するメモは見つかりませんでした"
     end

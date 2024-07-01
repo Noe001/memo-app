@@ -1,13 +1,16 @@
+<%= javascript_import_module_tag "memos_index" %>
+
 <div id="display_flex">
   <div class="sidebar">
-    <%= form_with url: search_memos_path, method: :get, local: true do |f| %>
-      <%= f.text_field :word, placeholder: "検索", class: "search-box" %>
-      <%= f.submit "検索", class: "btn" %>
+    <%= button_to "新規", memos_path, id: "create_new" %>
+
+    <%= form_with url: search_memos_path, class: "search_form", method: :get, local: true do |f| %>
+      <%= f.text_field :word, placeholder: "検索", class: "search_box" %>
     <% end %>
 
-    <ul>
+    <ul id="scrollbar">
       <% @memos.reverse.each do |memo| %>
-        <li>
+        <li class="<%= 'current_memo' if memo.id == @current_memo_id %>">
           <%= link_to memo_path(memo) do %>
             <% if memo.title.blank? %>
               <div style="padding-top: 30px;"></div>
@@ -27,13 +30,13 @@
   </div>
 
   <div class="content">
-    <% if @selected_memo.present? %>
-      <%= form_with model: @selected_memo, local: true do |f| %>
+    <% if @selected.present? %>
+      <%= form_with model: @selected, local: true do |f| %>
         <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
         <%= f.text_area :description, placeholder: "概要", class: "memos_text_area" %>
         <%= f.submit "更新", class: "update_button" %>
       <% end %>
-      <%= button_to "削除", memo_path(@selected_memo.id), method: :delete, class: "delete_button" %>
+      <%= button_to "削除", memo_path(@selected.id), method: :delete, class: "delete_button" %>
     <% else %>
       <%= form_with model: @memo_new, method: :post, local: true do |f| %>
         <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>

@@ -10,4 +10,5 @@ Rails.application.routes.draw do
       get 'search'
     end
   end
+  match '*path', to: 'errors#not_found', via: :all
 end

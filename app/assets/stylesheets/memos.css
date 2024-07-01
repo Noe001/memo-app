@@ -1,23 +1,21 @@
 .sidebar {
-  overflow-y: auto;
   height: 93.4vh;
-  width: 300px;
+  width: 350px;
   position: static;
   top: 0;
   left: 0;
   box-shadow: 5px 0 5px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
   z-index: 20;
   background-color: #EEEFF1;
+}
+
+#scrollbar {
+  overflow-y: auto;
   scrollbar-width: thin;
 }
 
-/* .sidebar::-webkit-scrollbar{
-  width: 10px;
-  border-radius: 20%;
-} */
-
 .sidebar ul {
+  overflow-y: auto;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -39,6 +37,44 @@
   display: block;
 }
 
+#create_new {
+  border: 1px solid #e2e2e2;
+  font-size: 16px;
+  width: 90px;
+  height: 35px;
+  border-radius: 10px;
+  text-align: center;
+  align-items: center;
+  line-height: 35px;
+  color: #000000;
+  box-shadow: 0 1px 2px 0 rgba(60,64,67,.3);
+  cursor: pointer;
+  position: relative;
+  left: 120px;
+  margin: 10px 0;
+}
+
+#create_new:hover {
+  background-color: #ffffff;
+}
+
+.search_box {
+  width: 90%;
+  position: relative;
+  height: 30px;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.02), 0px 8px 16px 0px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  left: 5%;
+  padding: 0 10px;
+  outline: none;
+}
+
+.current_memo {
+  background-color: #ffffff;
+}
+
 .content {
   width: 100%;
   padding: 0 32px;
@@ -56,6 +92,7 @@
 }
 
 .memos_title {
+  color: #000000;
   font-weight: 550;
   line-height: 30px;
   font-size: 15px;
