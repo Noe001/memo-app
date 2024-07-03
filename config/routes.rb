@@ -8,6 +8,9 @@ Rails.application.routes.draw do
   post 'login', to: 'sessions#create', as: 'create_sessions'
   delete 'login', to: 'sessions#destroy', as: 'destroy_sessions'
   resources :memos, only: [:index, :create, :update, :destroy, :show] do
+    member do
+      post 'add_memo'
+    end
     collection do
       get 'search'
     end

@@ -16,7 +16,7 @@
       <%= link_to "MemoApp", root_path, id: "app_name" %>
         <div id="login_button">
           <% if controller_name == 'memos' %>
-            <%= @user.name %>
+            <span id="user_name"><%= @user.name %></span>
             <%= link_to "ログアウト", destroy_sessions_path, id: "logout_button", data: { turbo_method: :delete } %>
           <% end %>
         </div>
