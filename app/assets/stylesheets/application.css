@@ -35,6 +35,10 @@ a {
   margin: 0 30px 0 80px;
 }
 
+#user_name {
+  margin-right: 10px;
+}
+
 #login_button {
   order: 1;
 }
