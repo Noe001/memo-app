@@ -32,15 +32,16 @@
   <div class="content">
     <% if @selected.present? %>
       <% if @can_add %>
-        <%= form_with model: @memo_to_add, url: add_memos_memo_path(@selected), method: :post, local: true do |f| %>
+        <%= form_with model: @memo_to_add, url: add_memo_memo_path(@selected), method: :post, local: true do |f| %>
           <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
-          <%= f.text_area :description, placeholder: "概要", class: "memos_text_area" %>
-          <%= f.submit "自分のメモに追加", class: "add_button" %>
+          <%= f.text_area :description, placeholder: "本文", class: "memos_text_area" %>
+          <div id="shared_user">共有元：<%= @shared_user %></div>
+          <%= f.submit "追加", class: "add_button" %>
         <% end %>
       <% else %>
         <%= form_with model: @selected, local: true do |f| %>
           <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
-          <%= f.text_area :description, placeholder: "概要", class: "memos_text_area" %>
+          <%= f.text_area :description, placeholder: "本文", class: "memos_text_area" %>
           <%= f.submit "更新", class: "update_button" %>
         <% end %>
         <%= button_to "削除", memo_path(@selected.id), method: :delete, class: "delete_button" %>
@@ -48,7 +49,7 @@
     <% else %>
       <%= form_with model: @memo_new, url: memos_path, method: :post, local: true do |f| %>
         <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
-        <%= f.text_area :description, placeholder: "概要", class: "memos_text_area" %>
+        <%= f.text_area :description, placeholder: "本文", class: "memos_text_area" %>
         <%= f.submit "作成", class: "create_button" %>
       <% end %>
     <% end %>
