@@ -12,6 +12,7 @@ class MemosController < ApplicationController
       @selected = Memo.find(params[:id])
       # メモをシェアした際にシェア元のユーザー名を表示
       @memo_id = params[:id]
+      # 一覧から選択したコンテンツの背景を変えるために使用
       @shared_user = @selected.user.name
       # trueかfalseを代入
       @can_add = @selected.user_id != current_user.id
