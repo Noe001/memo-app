@@ -38,7 +38,7 @@ a:not(#create_acount_button) {
   margin-right: 10px;
 }
 
-#login_button {
+#logout {
   order: 1;
 }
 

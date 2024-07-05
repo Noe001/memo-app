@@ -38,11 +38,11 @@
   height: 35px;
   font-size: 14px;
   margin-bottom: 30px;
-  outline: none;
+  outline: 1px rgba(8,19,26,0.5);
   border-radius: 5px;
 }
 
-.form_box:hover {
+.form_box:hover, :focus {
   border-color: rgba(8,19,26,0.5);;
 }
 
@@ -62,9 +62,9 @@
 }
 
 #login_button.active {
-  color: rgba(8,19,26,0.65);
-  cursor: not-allowed;
-  background-color: rgba(0,0,0,0.14);
+  color: #ffffff;
+  cursor: pointer;
+  background-color: #2b4d72;
 }
 
 #create_acount_button {
