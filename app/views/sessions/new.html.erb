@@ -1,13 +1,18 @@
-<div>ログイン</div>
+<%= javascript_import_module_tag "sessions_new" %>
+<%= stylesheet_link_tag "new", "data-turbo-track": "reload" %>
 
-<%= form_with(url: create_sessions_path, data: { turbo: false },  local: true, method: :post) do |f| %>
-  <%= f.label :email, "Email" %>
-  <%= f.email_field :email, class: "form_box" %>
+<div id="login_form">
+  <div id="login_message">ログイン</div>
+  <div class="form_tag">
+    <%= form_with url: create_sessions_path, data: { turbo: false }, local: true, method: :post do |f| %>
+      <%= f.label :email, "メールアドレス", class: "form_label" %>
+      <%= f.email_field :email, id: "email", class: "form_box" %>
 
-  <%= f.label :password, "Password" %>
-  <%= f.password_field :password, class: "form_box" %>
+      <%= f.label :password, "パスワード", class: "form_label" %>
+      <%= f.password_field :password,id: "password", class: "form_box" %>
 
-  <%= f.submit "ログイン", class: "btm" %>
-<% end %>
-
-<%= link_to "アカウントを作成する", signup_path %>
+      <%= f.submit "ログイン", id: "login_button" %>
+    <% end %>
+    <%= link_to "アカウントを作成する", signup_path, id: "create_acount_button" %>
+  </div>
+</div>
