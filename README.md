@@ -1,6 +1,6 @@
 # README
 
-### cloneした後
+### cloneしてから起動まで
 
 $ docker compose build
 
