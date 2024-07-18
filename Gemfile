@@ -67,8 +67,8 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
+  gem "selenium-webdriver", ">= 4.22.0"
   gem 'launchy'
-  gem "selenium-webdriver"
 end
 
 gem 'bcrypt'
