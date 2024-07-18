@@ -49,7 +49,8 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   
   gem "rspec-rails"
-  gem "simplecov"
+  gem "simplecov", require: false
+  gem 'factory_bot_rails'
 end
 
 group :development do
@@ -66,6 +67,7 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
+  gem 'launchy'
   gem "selenium-webdriver"
 end
 
