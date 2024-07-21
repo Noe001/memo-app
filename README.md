@@ -8,6 +8,7 @@ $ docker compose up -d
 
 $ docker compose exec app rails db:create
 
-$ docker compose exec app rails db:reset # マイグレーションエラーが解消されない場合
+# マイグレーションエラーが解消されない場合
+$ docker compose exec app rails db:reset
 
 $ docker compose exec app rails db:migrate
