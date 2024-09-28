@@ -13,7 +13,7 @@ Rails.application.configure do
   # Do not eager load code on boot.
   config.eager_load = false
 
-  config.hosts << "i6tmrpmxbw.ap-northeast-1.awsapprunner.com"
+  config.hosts.clear
 
   # Show full error reports.
   config.consider_all_requests_local = true
