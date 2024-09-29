@@ -1,4 +1,4 @@
-FROM ruby:3.2.3
+FROM ruby:bookworm
 
 RUN apt-get update -qq && apt-get install -y default-mysql-client
 
