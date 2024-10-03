@@ -21,8 +21,6 @@ services:
       - db
     networks:
       - my_network
-    image: easy-app:latest
-
   db:
     image: mysql:8.2.0
     platform: linux/amd64
