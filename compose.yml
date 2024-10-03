@@ -19,19 +19,23 @@ services:
     depends_on:
       - db
     networks:
-      my_network:
-  db:
-    image: mysql:8.2.0
-    platform: linux/amd64
+      - my_network
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: mydatabase
+      DATABASE_USERNAME: postgre_sql_2f6o_user
+      DATABASE_PASSWORD: sJfxvGLlA1v1LxKOn7TMn5G3bVg6aI1r
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydatabase
     volumes:
       - mysql_volume:/var/lib/mysql
     ports:
-      - '3306:3306'
-    command: --default-authentication-plugin=mysql_native_password
+      - '5432:5432'
     networks:
-      my_network:
+      - my_network
 volumes:
   mysql_volume:
