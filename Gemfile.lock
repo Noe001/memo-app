@@ -286,7 +286,7 @@ DEPENDENCIES
   puma (>= 5.0)
   rails (~> 7.1.3, >= 7.1.3.3)
   rspec-rails
-  selenium-webdriver (>= 4.22.0)
+  selenium-webdriver (>= 4.23.0)
   simplecov
   sprockets-rails
   stimulus-rails
