@@ -8,7 +8,12 @@ document.addEventListener("DOMContentLoaded", function() {
   const createButtonField = document.getElementById("create_button");
 
   function validateForm() {
-    if (nameField.value !=="" && emailField.value !== "" && passwordField.value !== "", passwordConfirmationField.value !== "") {
+    if (
+      nameField.value !== "" &&
+      emailField.value !== "" &&
+      passwordField.value !== "" &&
+      passwordConfirmationField.value !== ""
+    ) {
       createButtonField.classList.add("active");
     } else {
       createButtonField.classList.remove("active");
