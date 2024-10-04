@@ -8,7 +8,7 @@ Rails.application.configure do
   # since you don't have to restart the web server when you make code changes.
   config.enable_reloading = true
 
-  config.hosts << "easy-app-v8th.onrender.com"
+  config.hosts << "easy-app-yhg5.onrender.com"
 
   config.web_console.allowed_ips = '172.27.0.1'
 
