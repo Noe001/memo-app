@@ -5,6 +5,7 @@ default: &default
   username: <%= ENV['DATABASE_USERNAME'] %>
   password: <%= ENV['DATABASE_PASSWORD'] %>
   host: <%= ENV['DATABASE_HOST'] %>
+  port: 5432
 
 development:
   <<: *default
@@ -16,8 +17,8 @@ test:
 
 production:
   <<: *default
-  database: postgre_sql_2f6o
-  username: postgre_sql_2f6o_user
-  password: sJfxvGLlA1v1LxKOn7TMn5G3bVg6aI1r
-  host: dpg-crvdrdlds78s73elgurg-a.singapore-postgres.render.com
+  database: <%= ENV['DATABASE_NAME'] %>
+  username: <%= ENV['DATABASE_USERNAME'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  host: <%= ENV['DATABASE_HOST'] %>
   port: 5432
