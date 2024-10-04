@@ -9,7 +9,7 @@ default: &default
 
 development:
   <<: *default
-  database: rails_app_development
+  database: postgre_sql_2f6o
 
 test:
   <<: *default
