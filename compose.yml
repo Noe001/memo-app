@@ -1,9 +1,9 @@
+version: '3.9'
+
 networks:
-  my_network: #　任意のネットワーク名を記述
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.27.0.0/16
+  my_network:
+    driver: bridge
+
 services:
   app:
     build:
@@ -13,7 +13,7 @@ services:
     volumes:
       - .:/rails_app
     ports:
-      - 3000:3000
+      - "3000:3000"
     stdin_open: true
     tty: true
     depends_on:
@@ -21,18 +21,22 @@ services:
     networks:
       - my_network
     environment:
-      DATABASE_USERNAME: postgres
-      DATABASE_PASSWORD: postgres
+      DATABASE_USERNAME: postgre_sql_2f6o_user
+      DATABASE_PASSWORD: sJfxvGLlA1v1LxKOn7TMn5G3bVg6aI1r
+      DATABASE_HOST: dpg-crvdrdlds78s73elgurg-a.singapore-postgres.render.com
+      DATABASE_NAME: postgre_sql_2f6o
+
   db:
     image: postgres:latest
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgre_sql_2f6o_user
+      POSTGRES_PASSWORD: sJfxvGLlA1v1LxKOn7TMn5G3bVg6aI1r
     volumes:
       - postgres_volume:/var/lib/postgresql/data
     ports:
-      - '5432:5432'
+      - "5432:5432"
     networks:
       - my_network
+
 volumes:
   postgres_volume:
