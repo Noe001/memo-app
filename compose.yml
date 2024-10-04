@@ -21,16 +21,13 @@ services:
     networks:
       - my_network
     environment:
-      DATABASE_USERNAME: postgre_sql_2f6o_user
-      DATABASE_PASSWORD: sJfxvGLlA1v1LxKOn7TMn5G3bVg6aI1r
-      DATABASE_HOST: db
-      DATABASE_PORT: 5432
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
   db:
     image: postgres:latest
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: mydatabase
     volumes:
       - postgres_volume:/var/lib/postgresql/data
     ports:
@@ -38,4 +35,4 @@ services:
     networks:
       - my_network
 volumes:
-  mysql_volume:
+  postgres_volume:
