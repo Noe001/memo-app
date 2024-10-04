@@ -1,10 +1,18 @@
 #!/bin/bash
 set -e
+
+# Remove a potentially pre-existing server.pid for Rails.
 rm -f /myapp/tmp/pids/server.pid
-bundle install
+
+# Install dependencies
+bundle check || bundle install
+
+# Precompile assets
 bundle exec rake assets:precompile
 bundle exec rake assets:clean
-bundle exec rake db:create
+
+# Migrate the database
 bundle exec rake db:migrate
-bundle exec rake db:reset
+
+# Execute the container's main process (what's set as CMD in the Dockerfile).
 exec "$@"
