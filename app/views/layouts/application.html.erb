@@ -8,9 +8,11 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <%= javascript_pack_tag 'application' %>
   </head>
 
   <body>
+    <div id="root"></div>
     <div class="wrapper header">
       <div id="container">
       <%= link_to "MemoApp", root_path, id: "app_name" %>
