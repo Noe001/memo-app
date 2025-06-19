@@ -4,7 +4,7 @@
 <div id="login_form">
   <div id="login_message">ログイン</div>
   <div class="form_tag">
-    <%= form_with url: create_sessions_path, data: { turbo: false }, local: true, method: :post do |f| %>
+    <%= form_with url: create_sessions_path, local: true, method: :post, data: { turbo: false } do |f| %>
       <%= f.label :email, "メールアドレス", class: "form_label" %>
       <%= f.email_field :email, id: "email", class: "form_box" %>
 

@@ -8,25 +8,44 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   </head>
 
-  <body>
-    <div class="wrapper header">
-      <div id="container">
-      <%= link_to "MemoApp", root_path, id: "app_name" %>
-        <div id="logout">
-          <% if controller_name == 'memos' %>
-            <span id="user_name"><%= @user.name %></span>
-            <%= link_to "ログアウト", destroy_sessions_path, id: "logout_button", data: { turbo_method: :delete } %>
-          <% end %>
+  <body class="<%= controller_name %>-<%= action_name %>-page">
+    <div class="wrapper">
+      <header class="header">
+        <div id="container">
+          <%= link_to "MemoApp", root_path, id: "app_name" %>
+          <div id="header-controls">
+            <!-- ダークモード切り替えボタン -->
+            <div class="theme-switch-wrapper">
+              <label class="theme-switch" for="theme-checkbox" aria-label="ダークモード切り替え">
+                <input type="checkbox" id="theme-checkbox" />
+                <div class="slider round"></div>
+              </label>
+              <span class="theme-label">
+                <i data-lucide="moon" class="lucide-icon moon-icon"></i>
+                <i data-lucide="sun" class="lucide-icon sun-icon" style="display: none;"></i>
+              </span>
+            </div>
+            
+            <div id="logout">
+              <% if controller_name == 'memos' %>
+                <span id="user_name"><%= @user.name %></span>
+                <%= link_to "ログアウト", destroy_sessions_path, id: "logout_button", data: { turbo_method: :delete } %>
+              <% end %>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </header>
 
-    <div id="notice">
-      <%= render "layouts/notice" %>
+      <div id="notice">
+        <%= render "layouts/notice" %>
+      </div>
+      
+      <main class="main-wrapper">
+        <%= yield %>
+      </main>
     </div>
-    
-    <%= yield %>
   </body>
 </html>

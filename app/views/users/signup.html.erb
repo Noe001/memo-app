@@ -4,18 +4,18 @@
 <div id="signup_form">
   <div id="signup_message">サインアップ</div>
   <div class="form_tag">
-    <%= form_with model: @user, data: { turbo: false }, local: true do |f| %>
+    <%= form_with model: @user, url: signup_path, data: { turbo: false }, local: true do |f| %>
       <%= f.label :name, "名前", class: "form_label" %>
-      <%= f.text_field :name, required: true, id: "name",class: "form_box" %>
+      <%= f.text_field :name, required: true, id: "name", class: "form_box" %>
 
       <%= f.label :email, "メールアドレス", class: "form_label" %>
-      <%= f.email_field :email, required: true, id: "email",class: "form_box" %>
+      <%= f.email_field :email, required: true, id: "email", class: "form_box" %>
 
       <%= f.label :password, "パスワード", class: "form_label" %>
-      <%= f.password_field :password, required: true, id: "password",class: "form_box" %>
+      <%= f.password_field :password, required: true, id: "password", class: "form_box" %>
 
       <%= f.label :password_confirmation, "パスワード確認", class: "form_label" %>
-      <%= f.password_field :password_confirmation, id: "password_confirmation",required: true, class: "form_box" %>
+      <%= f.password_field :password_confirmation, id: "password_confirmation", required: true, class: "form_box" %>
 
       <%= f.submit "アカウント作成", id: "create_button" %>
     <% end %>

@@ -1,58 +1,329 @@
 <%= javascript_import_module_tag "memos_index" %>
 <%= stylesheet_link_tag "memos", "data-turbo-track": "reload" %>
 
-<div id="display_flex">
-  <div class="sidebar">
-    <%= link_to "新規", memos_path, id: "create_new" %>
-
-    <%= form_with url: search_memos_path, class: "search_form", method: :get, local: true do |f| %>
-      <%= f.text_field :word, placeholder: "検索", class: "search_box" %>
-    <% end %>
-
-    <ul id="scrollbar">
-      <% @memos.reverse.each do |memo| %>
-        <li class="<%= 'current_memo' if memo.id == @memo_id %>">
-          <%= link_to memo_path(memo) do %>
-            <% if memo.title.blank? %>
-              <div style="padding-top: 30px;"></div>
-            <% else %>
-              <div class="memos_title"><%= memo.title %></div>
-            <% end %>
-
-            <% if memo.description.blank? %>
-              <div style="padding-top: 20px;"></div>
-            <% else %>
-              <div class="memos_description"><%= memo.description %></div>
-            <% end %>
-          <% end %>
-        </li>
+<div class="memo-app" data-controller="memo">
+  <!-- サイドバー -->
+  <div class="sidebar" role="navigation" aria-label="Memo navigation">
+    <div class="sidebar-header">
+      <%= link_to memos_path, 
+                  class: "create-new-btn", 
+                  id: "create_new",
+                  role: "button",
+                  "aria-label": "新しいメモを作成" do %>
+        <%= plus_icon %>
+        <span>新規作成</span>
       <% end %>
-    </ul>
+      
+      <!-- 検索フォーム -->
+      <%= form_with url: search_memos_path, 
+                    class: "search-form", 
+                    method: :get, 
+                    local: true,
+                    data: { action: "submit->memo#search" } do |f| %>
+        <div class="search-container">
+          <%= f.text_field :word, 
+                          placeholder: "メモを検索...", 
+                          class: "search-input",
+                          autocomplete: "off",
+                          "aria-label": "メモを検索" %>
+          <button type="submit" class="search-btn" aria-label="検索実行">
+            <%= search_icon %>
+          </button>
+        </div>
+      <% end %>
+      
+      <!-- タグフィルター -->
+      <% if @tags.present? %>
+        <div class="tag-filter" role="group" aria-label="タグによるフィルター">
+          <h3 class="filter-title">タグ</h3>
+          <div class="tag-list">
+            <% @tags.each do |tag_name, count| %>
+              <button class="tag-item" 
+                      data-action="click->memo#filterByTag"
+                      data-tag="<%= tag_name %>"
+                      title="<%= tag_name %>タグでフィルター">
+                <span class="tag-name"><%= tag_name %></span>
+                <span class="tag-count"><%= count %></span>
+              </button>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- メモ一覧 -->
+    <div class="memo-list" role="list" aria-label="メモ一覧">
+      <% if @memos.any? %>
+        <% @memos.each do |memo| %>
+          <div class="memo-item <%= 'active' if memo.id == @memo_id %>" 
+               role="listitem"
+               data-memo-id="<%= memo.id %>"
+               data-action="click->memo#selectMemo">
+            <%= link_to memo_path(memo), 
+                        class: "memo-link",
+                        "aria-label": "#{memo.title.present? ? memo.title : '無題'} のメモを選択" do %>
+              <div class="memo-header">
+                <h4 class="memo-title">
+                  <%= memo.title.present? ? truncate(memo.title, length: 30) : "無題" %>
+                </h4>
+                <time class="memo-date" datetime="<%= memo.updated_at.iso8601 %>">
+                  <%= memo.updated_at.strftime("%m/%d") %>
+                </time>
+              </div>
+              
+              <% if memo.description.present? %>
+                <p class="memo-preview">
+                  <%= truncate(strip_tags(memo.description), length: 80) %>
+                </p>
+              <% end %>
+              
+              <!-- タグ表示 -->
+              <% if memo.tags.any? %>
+                <div class="memo-tags" aria-label="タグ">
+                  <% memo.tags.limit(3).each do |tag| %>
+                    <span class="memo-tag" style="background-color: <%= tag.color %>15; color: <%= tag.color %>">
+                      <%= tag.name %>
+                    </span>
+                  <% end %>
+                  <% if memo.tags.count > 3 %>
+                    <span class="memo-tag-more">+<%= memo.tags.count - 3 %></span>
+                  <% end %>
+                </div>
+              <% end %>
+              
+              <!-- 可視性インジケーター -->
+              <div class="memo-visibility" aria-label="公開設定">
+                <%= visibility_icon(memo.visibility) %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+        
+        <!-- ページネーション -->
+        <div class="pagination-container">
+          <%= paginate @memos if respond_to?(:paginate) %>
+        </div>
+      <% else %>
+        <div class="empty-state" role="status">
+          <div class="empty-icon">
+            <%= document_icon %>
+          </div>
+          <h3>メモがありません</h3>
+          <p>新しいメモを作成してみましょう</p>
+          <%= link_to "最初のメモを作成", memos_path, class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
   </div>
 
-  <div class="content">
+  <!-- メインコンテンツ -->
+  <main class="main-content" role="main">
     <% if @selected.present? %>
-      <% if @can_add %>
-        <%= form_with model: @memo_to_add, url: add_memo_memo_path(@selected), method: :post, local: true do |f| %>
-          <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
-          <%= f.text_area :description, placeholder: "本文", class: "memos_text_area" %>
-          <div id="shared_user">共有元：<%= @shared_user %></div>
-          <%= f.submit "追加", class: "add_button" %>
+      <!-- 選択されたメモの編集/表示 -->
+      <div class="memo-editor">
+        <% if @can_add %>
+          <!-- 他ユーザーのメモを追加 -->
+          <%= form_with model: @memo_to_add, 
+                        url: add_memo_memo_path(@selected), 
+                        method: :post, 
+                        local: true,
+                        class: "memo-form",
+                        data: { controller: "memo-form" } do |f| %>
+            <div class="form-header">
+              <h2>メモを追加</h2>
+              <div class="shared-info">
+                <%= user_icon %>
+                <span>共有元: <strong><%= @shared_user %></strong></span>
+              </div>
+            </div>
+            
+            <div class="form-body">
+              <div class="input-group">
+                <%= f.text_field :title, 
+                                placeholder: "タイトル", 
+                                class: "title-input",
+                                "aria-label": "メモのタイトル" %>
+              </div>
+              
+              <div class="input-group">
+                <%= f.text_area :description, 
+                               placeholder: "内容を入力...", 
+                               class: "content-textarea",
+                               rows: 20,
+                               "aria-label": "メモの内容" %>
+              </div>
+              
+              <!-- タグ入力 -->
+              <div class="input-group">
+                <input type="text" 
+                       name="tags" 
+                       placeholder="タグをカンマ区切りで入力..." 
+                       class="tags-input"
+                       aria-label="タグ">
+              </div>
+              
+              <!-- 公開設定 -->
+              <div class="input-group">
+                <%= f.select :visibility, 
+                            options_for_select([
+                              ['プライベート', 'private_memo'],
+                              ['公開', 'public_memo'],
+                              ['共有', 'shared']
+                            ], @memo_to_add.visibility),
+                            {},
+                            { class: "visibility-select", "aria-label": "公開設定" } %>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <%= f.submit "追加", class: "btn btn-primary" %>
+              <%= link_to "キャンセル", root_path, class: "btn btn-secondary" %>
+            </div>
+          <% end %>
+        <% else %>
+          <!-- 自分のメモの編集 -->
+          <%= form_with model: @selected, 
+                        local: true,
+                        class: "memo-form",
+                        data: { controller: "memo-form" } do |f| %>
+            <div class="form-header">
+              <h2>メモを編集</h2>
+              <div class="memo-meta">
+                <time datetime="<%= @selected.updated_at.iso8601 %>">
+                  最終更新: <%= @selected.updated_at.strftime("%Y年%m月%d日 %H:%M") %>
+                </time>
+              </div>
+            </div>
+            
+            <div class="form-body">
+              <div class="input-group">
+                <%= f.text_field :title, 
+                                placeholder: "タイトル", 
+                                class: "title-input",
+                                "aria-label": "メモのタイトル" %>
+              </div>
+              
+              <div class="input-group">
+                <%= f.text_area :description, 
+                               placeholder: "内容を入力...", 
+                               class: "content-textarea",
+                               rows: 20,
+                               "aria-label": "メモの内容" %>
+              </div>
+              
+              <!-- タグ入力 -->
+              <div class="input-group">
+                <input type="text" 
+                       name="tags" 
+                       value="<%= @selected.tags.pluck(:name).join(', ') %>"
+                       placeholder="タグをカンマ区切りで入力..." 
+                       class="tags-input"
+                       aria-label="タグ">
+              </div>
+              
+              <!-- 公開設定 -->
+              <div class="input-group">
+                <%= f.select :visibility, 
+                            options_for_select([
+                              ['プライベート', 'private_memo'],
+                              ['公開', 'public_memo'],
+                              ['共有', 'shared']
+                            ], @selected.visibility),
+                            {},
+                            { class: "visibility-select", "aria-label": "公開設定" } %>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <%= f.submit "更新", class: "btn btn-primary" %>
+              <%= button_to "削除", memo_path(@selected.id), 
+                            method: :delete, 
+                            class: "btn btn-danger",
+                            confirm: "本当に削除しますか？この操作は取り消せません。" %>
+              <%= link_to "エクスポート", export_memos_path(format: :json), 
+                          class: "btn btn-secondary" %>
+            </div>
+          <% end %>
         <% end %>
-      <% else %>
-        <%= form_with model: @selected, local: true do |f| %>
-          <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
-          <%= f.text_area :description, placeholder: "本文", class: "memos_text_area" %>
-          <%= f.submit "更新", class: "update_button" %>
-        <% end %>
-        <%= button_to "削除", memo_path(@selected.id), method: :delete, class: "delete_button" %>
-      <% end %>
+      </div>
     <% else %>
-      <%= form_with model: @memo_new, url: memos_path, method: :post, local: true do |f| %>
-        <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
-        <%= f.text_area :description, placeholder: "本文", class: "memos_text_area" %>
-        <%= f.submit "作成", class: "create_button" %>
-      <% end %>
+      <!-- 新規メモ作成 -->
+      <div class="memo-editor">
+        <%= form_with model: @memo_new, 
+                      url: memos_path, 
+                      method: :post, 
+                      local: true,
+                      class: "memo-form",
+                      data: { controller: "memo-form" } do |f| %>
+          <div class="form-header">
+            <h2>新しいメモ</h2>
+          </div>
+          
+          <div class="form-body">
+            <div class="input-group">
+              <%= f.text_field :title, 
+                              placeholder: "タイトル", 
+                              class: "title-input",
+                              "aria-label": "メモのタイトル" %>
+            </div>
+            
+            <div class="input-group">
+              <%= f.text_area :description, 
+                             placeholder: "今日は何を覚えておきますか？", 
+                             class: "content-textarea",
+                             rows: 20,
+                             "aria-label": "メモの内容" %>
+            </div>
+            
+            <!-- タグ入力 -->
+            <div class="input-group">
+              <input type="text" 
+                     name="tags" 
+                     placeholder="タグをカンマ区切りで入力..." 
+                     class="tags-input"
+                     aria-label="タグ">
+            </div>
+            
+            <!-- 公開設定 -->
+            <div class="input-group">
+              <%= f.select :visibility, 
+                          options_for_select([
+                            ['プライベート', 'private_memo'],
+                            ['公開', 'public_memo'],
+                            ['共有', 'shared']
+                          ], 'private_memo'),
+                          {},
+                          { class: "visibility-select", "aria-label": "公開設定" } %>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <%= f.submit "作成", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
     <% end %>
+  </main>
+</div>
+
+<!-- キーボードショートカット説明 -->
+<div class="keyboard-shortcuts" role="region" aria-label="キーボードショートカット">
+  <button class="shortcuts-toggle" data-action="click->memo#toggleShortcuts">
+    <i class="icon-keyboard" aria-hidden="true"></i>
+    <span class="sr-only">キーボードショートカットを表示</span>
+  </button>
+  
+  <div class="shortcuts-panel" hidden>
+    <h3>キーボードショートカット</h3>
+    <dl>
+      <dt><kbd>Ctrl</kbd> + <kbd>N</kbd></dt>
+      <dd>新しいメモ</dd>
+      <dt><kbd>Ctrl</kbd> + <kbd>S</kbd></dt>
+      <dd>保存</dd>
+      <dt><kbd>Ctrl</kbd> + <kbd>F</kbd></dt>
+      <dd>検索</dd>
+      <dt><kbd>Esc</kbd></dt>
+      <dd>選択解除</dd>
+    </dl>
   </div>
 </div>
