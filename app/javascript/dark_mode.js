@@ -1,15 +1,15 @@
 // Dark Mode Toggle Implementation
 // Based on: https://dev.to/ananyaneogi/create-a-dark-light-mode-switch-with-css-variables-34l8
 
-class DarkModeToggle {
+// Shadcn風ダークモード切り替え機能
+class ShadcnDarkModeToggle {
   constructor() {
-    this.toggleSwitch = document.querySelector('#theme-checkbox');
-    this.themeLabel = document.querySelector('.theme-label');
+    this.themeToggle = document.querySelector('#theme-toggle');
     this.init();
   }
 
   init() {
-    if (!this.toggleSwitch) return;
+    if (!this.themeToggle) return;
 
     // Check for saved theme preference or default to system preference
     const savedTheme = localStorage.getItem('theme');
@@ -23,11 +23,12 @@ class DarkModeToggle {
       this.setTheme('light');
     }
 
-    // Add event listener for toggle switch
-    this.toggleSwitch.addEventListener('change', (e) => {
-      const theme = e.target.checked ? 'dark' : 'light';
-      this.setTheme(theme);
-      this.saveTheme(theme);
+    // Add event listener for toggle button
+    this.themeToggle.addEventListener('click', () => {
+      const currentTheme = this.getCurrentTheme();
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      this.setTheme(newTheme);
+      this.saveTheme(newTheme);
     });
 
     // Listen for system theme changes
@@ -41,34 +42,11 @@ class DarkModeToggle {
   setTheme(theme) {
     const isDark = theme === 'dark';
     
-    // Update document attribute
-    document.documentElement.setAttribute('data-theme', theme);
+    // Update body attribute
+    document.body.setAttribute('data-theme', theme);
     
-    // Update toggle switch state
-    if (this.toggleSwitch) {
-      this.toggleSwitch.checked = isDark;
-    }
-    
-    // Update theme label icons
-    if (this.themeLabel) {
-      const moonIcon = this.themeLabel.querySelector('.moon-icon');
-      const sunIcon = this.themeLabel.querySelector('.sun-icon');
-      
-      if (moonIcon && sunIcon) {
-        if (isDark) {
-          moonIcon.style.display = 'none';
-          sunIcon.style.display = 'inline-block';
-        } else {
-          moonIcon.style.display = 'inline-block';
-          sunIcon.style.display = 'none';
-        }
-      } else {
-        // Fallback to emoji if Lucide icons are not available
-        this.themeLabel.textContent = isDark ? '☀️' : '🌙';
-      }
-      
-      this.themeLabel.setAttribute('aria-label', isDark ? 'ライトモードに切り替え' : 'ダークモードに切り替え');
-    }
+    // Update theme toggle icons
+    this.updateIcons(isDark);
 
     // Dispatch custom event for other components
     window.dispatchEvent(new CustomEvent('themeChanged', { 
@@ -76,12 +54,32 @@ class DarkModeToggle {
     }));
   }
 
+  updateIcons(isDark) {
+    const moonIcon = document.querySelector('.moon-icon');
+    const sunIcon = document.querySelector('.sun-icon');
+    
+    if (moonIcon && sunIcon) {
+      if (isDark) {
+        moonIcon.style.display = 'none';
+        sunIcon.style.display = 'inline';
+      } else {
+        moonIcon.style.display = 'inline';
+        sunIcon.style.display = 'none';
+      }
+    }
+    
+    // Update button aria-label
+    if (this.themeToggle) {
+      this.themeToggle.setAttribute('aria-label', isDark ? 'ライトモードに切り替える' : 'ダークモードに切り替える');
+    }
+  }
+
   saveTheme(theme) {
     localStorage.setItem('theme', theme);
   }
 
   getCurrentTheme() {
-    return document.documentElement.getAttribute('data-theme') || 'light';
+    return document.body.getAttribute('data-theme') || 'light';
   }
 
   toggleTheme() {
@@ -94,20 +92,25 @@ class DarkModeToggle {
 
 // Initialize dark mode toggle when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  window.darkModeToggle = new DarkModeToggle();
+  window.shadcnDarkModeToggle = new ShadcnDarkModeToggle();
+  
+  // Initialize Lucide icons
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
 });
 
 // Keyboard shortcut support (Ctrl/Cmd + Shift + D)
 document.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
     e.preventDefault();
-    if (window.darkModeToggle) {
-      window.darkModeToggle.toggleTheme();
+    if (window.shadcnDarkModeToggle) {
+      window.shadcnDarkModeToggle.toggleTheme();
     }
   }
 });
 
 // Export for module systems
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = DarkModeToggle;
+  module.exports = ShadcnDarkModeToggle;
 } 

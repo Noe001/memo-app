@@ -1,49 +1,73 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>MemoApp</title>
+    <title><%= content_for?(:title) ? yield(:title) + " | MemoApp" : "MemoApp - 簡単メモ管理" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="<%= content_for?(:description) ? yield(:description) : "効率的なメモ管理ができるWebアプリケーション。タグ付け、検索、共有機能付き。" %>">
+    <meta name="keywords" content="メモ, ノート, タグ, 検索, 共有, 管理, アプリ">
+    <meta name="author" content="MemoApp">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= request.original_url %>">
+    <meta property="og:title" content="<%= content_for?(:title) ? yield(:title) + " | MemoApp" : "MemoApp - 簡単メモ管理" %>">
+    <meta property="og:description" content="<%= content_for?(:description) ? yield(:description) : "効率的なメモ管理ができるWebアプリケーション。タグ付け、検索、共有機能付き。" %>">
+    <meta property="og:image" content="<%= request.base_url %>/apple-touch-icon.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="<%= request.original_url %>">
+    <meta property="twitter:title" content="<%= content_for?(:title) ? yield(:title) + " | MemoApp" : "MemoApp - 簡単メモ管理" %>">
+    <meta property="twitter:description" content="<%= content_for?(:description) ? yield(:description) : "効率的なメモ管理ができるWebアプリケーション。タグ付け、検索、共有機能付き。" %>">
+    <meta property="twitter:image" content="<%= request.base_url %>/apple-touch-icon.png">
+    
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "shadcn_design", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "memo_app_shadcn", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   </head>
 
-  <body class="<%= controller_name %>-<%= action_name %>-page">
-    <div class="wrapper">
-      <header class="header">
-        <div id="container">
-          <%= link_to "MemoApp", root_path, id: "app_name" %>
-          <div id="header-controls">
-            <!-- ダークモード切り替えボタン -->
-            <div class="theme-switch-wrapper">
-              <label class="theme-switch" for="theme-checkbox" aria-label="ダークモード切り替え">
-                <input type="checkbox" id="theme-checkbox" />
-                <div class="slider round"></div>
-              </label>
-              <span class="theme-label">
-                <i data-lucide="moon" class="lucide-icon moon-icon"></i>
-                <i data-lucide="sun" class="lucide-icon sun-icon" style="display: none;"></i>
-              </span>
-            </div>
-            
-            <div id="logout">
-              <% if controller_name == 'memos' %>
-                <span id="user_name"><%= @user.name %></span>
-                <%= link_to "ログアウト", destroy_sessions_path, id: "logout_button", data: { turbo_method: :delete } %>
-              <% end %>
+  <body class="<%= controller_name %>-<%= action_name %>-page" data-theme="light">
+    <!-- アクセシビリティ機能 -->
+    <%= render 'layouts/accessibility_features' %>
+    
+    <div class="app-container">
+      <% unless controller_name == 'sessions' || controller_name == 'users' || controller_name == 'errors' %>
+        <header class="app-header">
+          <div class="app-header-content">
+            <%= link_to "MemoApp", root_path, class: "app-logo" %>
+            <div class="header-controls">
+              <!-- ダークモード切り替えボタン -->
+              <button class="theme-toggle" id="theme-toggle" aria-label="テーマを切り替える">
+                <i data-lucide="moon" class="moon-icon"></i>
+                <i data-lucide="sun" class="sun-icon" style="display: none;"></i>
+              </button>
+              
+              <div class="user-info">
+                <% if current_user %>
+                  <span class="user-name"><%= current_user.name %></span>
+                  <%= link_to "ログアウト", destroy_sessions_path, 
+                      class: "btn btn-ghost btn-sm", 
+                      data: { turbo_method: :delete } %>
+                <% end %>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
+      <% end %>
 
       <div id="notice">
         <%= render "layouts/notice" %>
       </div>
       
-      <main class="main-wrapper">
+      <main id="main-content" class="<%= controller_name == 'sessions' || controller_name == 'users' ? 'auth-main' : 'app-main' %>">
         <%= yield %>
       </main>
     </div>

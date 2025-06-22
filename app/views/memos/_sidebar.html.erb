@@ -1,0 +1,46 @@
+<div class="sidebar-header">
+  <%= link_to memos_path, 
+              class: "create-memo-btn", 
+              role: "button",
+              "aria-label": "新しいメモを作成" do %>
+    <i data-lucide="plus" class="w-4 h-4"></i>
+    <span>新規作成</span>
+  <% end %>
+  
+  <!-- 検索フォーム -->
+  <%= form_with url: search_memos_path, 
+                class: "search-form", 
+                method: :get, 
+                local: true,
+                data: { action: "submit->memo#search" } do |f| %>
+    <div class="search-container">
+      <i data-lucide="search" class="search-icon"></i>
+      <%= f.text_field :word, 
+                      placeholder: "メモを検索...", 
+                      class: "search-input",
+                      autocomplete: "off",
+                      "aria-label": "メモを検索" %>
+    </div>
+  <% end %>
+  
+  <!-- タグフィルター -->
+  <% if @tags.present? %>
+    <div class="tag-filter" role="group" aria-label="タグによるフィルター">
+      <h3 class="filter-title">タグ</h3>
+      <div class="tag-list">
+        <% @tags.each do |tag_name, count| %>
+          <button class="tag-item" 
+                  data-action="click->memo#filterByTag"
+                  data-tag="<%= tag_name %>"
+                  title="<%= tag_name %>タグでフィルター">
+            <span class="tag-name"><%= tag_name %></span>
+            <span class="tag-count"><%= count %></span>
+          </button>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<!-- メモ一覧 -->
+<%= render 'memo_list' %> 

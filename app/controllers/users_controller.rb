@@ -69,26 +69,7 @@ class UsersController < ApplicationController
   end
   
   def handle_validation_errors
-    messages = @user.errors.messages
-    
-    if messages[:password_confirmation].present?
-      flash.now[:alert] = 'パスワードが一致しません'
-    elsif messages[:email]&.include?('has already been taken')
-      flash.now[:alert] = '入力したメールアドレスは既に使用されています'
-    elsif messages[:password].present?
-      if messages[:password].include?('is too short (minimum is 8 characters)')
-        flash.now[:alert] = 'パスワードは8文字以上で入力してください'
-      elsif messages[:password].first.include?('must include')
-        flash.now[:alert] = 'パスワードは大文字・小文字・数字・特殊文字を含む必要があります'
-      else
-        flash.now[:alert] = 'パスワードの形式が正しくありません'
-      end
-    elsif messages[:email].present?
-      flash.now[:alert] = 'メールアドレスの形式が正しくありません'
-    elsif messages[:name].present?
-      flash.now[:alert] = '名前は2文字以上50文字以下で入力してください'
-    else
-      flash.now[:alert] = '入力内容にエラーがあります'
-    end
+    # 標準的な日本語エラーメッセージを使用
+    flash.now[:alert] = @user.errors.full_messages.first || '入力内容にエラーがあります'
   end
 end

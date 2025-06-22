@@ -1,18 +1,43 @@
+<% content_for :title, "ログイン" %>
+<% content_for :description, "MemoAppにログインして、メモの管理を始めましょう。" %>
+
+<% content_for :title, "ログイン" %>
+<% content_for :description, "MemoAppにログインして、メモの管理を始めましょう。" %>
+
 <%= javascript_import_module_tag "sessions_new" %>
-<%= stylesheet_link_tag "new", "data-turbo-track": "reload" %>
 
-<div id="login_form">
-  <div id="login_message">ログイン</div>
-  <div class="form_tag">
-    <%= form_with url: create_sessions_path, local: true, method: :post, data: { turbo: false } do |f| %>
-      <%= f.label :email, "メールアドレス", class: "form_label" %>
-      <%= f.email_field :email, id: "email", class: "form_box" %>
+<div class="auth-card animate-fade-in">
+  <div class="auth-header">
+    <h1 class="auth-title">ログイン</h1>
+    <p class="auth-subtitle">メモ管理を始めるためにログインしてください</p>
+  </div>
+  
+  <%= form_with url: create_sessions_path, 
+                local: true, 
+                method: :post, 
+                class: "auth-form",
+                data: { turbo: false } do |f| %>
+    
+    <div class="form-group">
+      <%= f.label :email, "メールアドレス", class: "form-label" %>
+      <%= f.email_field :email, 
+                        class: "form-input", 
+                        placeholder: "your@email.com",
+                        required: true %>
+    </div>
 
-      <%= f.label :password, "パスワード", class: "form_label" %>
-      <%= f.password_field :password,id: "password", class: "form_box" %>
+    <div class="form-group">
+      <%= f.label :password, "パスワード", class: "form-label" %>
+      <%= f.password_field :password, 
+                           class: "form-input", 
+                           placeholder: "パスワードを入力",
+                           required: true %>
+    </div>
 
-      <%= f.submit "ログイン", id: "login_button" %>
-    <% end %>
-    <%= link_to "アカウントを作成する", signup_path, id: "create_acount_button" %>
+    <%= f.submit "ログイン", class: "btn btn-primary auth-submit" %>
+  <% end %>
+  
+  <div class="auth-footer">
+    <%= link_to "アカウントを作成する", signup_path, class: "auth-link" %>
   </div>
 </div>

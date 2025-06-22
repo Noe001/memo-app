@@ -1,0 +1,217 @@
+<!-- アクセシビリティ機能 -->
+<div class="accessibility-features" aria-live="polite">
+  <!-- スキップリンク -->
+  <a href="#main-content" class="skip-link">メインコンテンツへスキップ</a>
+  
+  <!-- 高コントラストモード切り替え -->
+  <button id="contrast-toggle" 
+          class="accessibility-toggle" 
+          aria-label="高コントラストモードを切り替え"
+          title="高コントラストモードを切り替え">
+    <span class="visually-hidden">高コントラストモード</span>
+    <i data-lucide="contrast" class="contrast-icon"></i>
+  </button>
+  
+  <!-- 文字サイズ調整 -->
+  <div class="font-size-controls" role="group" aria-label="文字サイズ調整">
+    <button id="font-decrease" 
+            class="accessibility-toggle" 
+            aria-label="文字サイズを小さくする"
+            title="文字サイズを小さくする">
+      <span class="visually-hidden">文字サイズ小</span>
+      <i data-lucide="minus" class="size-icon"></i>
+    </button>
+    
+    <button id="font-reset" 
+            class="accessibility-toggle" 
+            aria-label="文字サイズをリセット"
+            title="文字サイズをリセット">
+      <span class="visually-hidden">文字サイズリセット</span>
+      <i data-lucide="type" class="size-icon"></i>
+    </button>
+    
+    <button id="font-increase" 
+            class="accessibility-toggle" 
+            aria-label="文字サイズを大きくする"
+            title="文字サイズを大きくする">
+      <span class="visually-hidden">文字サイズ大</span>
+      <i data-lucide="plus" class="size-icon"></i>
+    </button>
+  </div>
+</div>
+
+<style>
+.accessibility-features {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #000;
+  color: #fff;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+.accessibility-toggle {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.accessibility-toggle:hover,
+.accessibility-toggle:focus {
+  background: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.font-size-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 高コントラストモード */
+body.high-contrast {
+  filter: contrast(150%) brightness(110%);
+}
+
+body.high-contrast * {
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+/* 文字サイズ調整 */
+body.font-small {
+  font-size: 14px;
+}
+
+body.font-large {
+  font-size: 18px;
+}
+
+body.font-xlarge {
+  font-size: 20px;
+}
+
+@media (max-width: 768px) {
+  .accessibility-features {
+    position: static;
+    flex-direction: row;
+    justify-content: center;
+    margin: 10px 0;
+  }
+  
+  .font-size-controls {
+    flex-direction: row;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // 高コントラストモード
+  const contrastToggle = document.getElementById('contrast-toggle');
+  if (contrastToggle) {
+    contrastToggle.addEventListener('click', function() {
+      document.body.classList.toggle('high-contrast');
+      localStorage.setItem('highContrast', document.body.classList.contains('high-contrast'));
+    });
+    
+    // 設定の復元
+    if (localStorage.getItem('highContrast') === 'true') {
+      document.body.classList.add('high-contrast');
+    }
+  }
+  
+  // 文字サイズ調整
+  const fontDecrease = document.getElementById('font-decrease');
+  const fontReset = document.getElementById('font-reset');  
+  const fontIncrease = document.getElementById('font-increase');
+  
+  let currentFontSize = 0; // -1: small, 0: normal, 1: large, 2: xlarge
+  
+  function updateFontSize() {
+    document.body.classList.remove('font-small', 'font-large', 'font-xlarge');
+    
+    if (currentFontSize === -1) {
+      document.body.classList.add('font-small');
+    } else if (currentFontSize === 1) {
+      document.body.classList.add('font-large');
+    } else if (currentFontSize === 2) {
+      document.body.classList.add('font-xlarge');
+    }
+    
+    localStorage.setItem('fontSize', currentFontSize);
+  }
+  
+  if (fontDecrease) {
+    fontDecrease.addEventListener('click', function() {
+      if (currentFontSize > -1) {
+        currentFontSize--;
+        updateFontSize();
+      }
+    });
+  }
+  
+  if (fontReset) {
+    fontReset.addEventListener('click', function() {
+      currentFontSize = 0;
+      updateFontSize();
+    });
+  }
+  
+  if (fontIncrease) {
+    fontIncrease.addEventListener('click', function() {
+      if (currentFontSize < 2) {
+        currentFontSize++;
+        updateFontSize();
+      }
+    });
+  }
+  
+  // 設定の復元
+  const savedFontSize = localStorage.getItem('fontSize');
+  if (savedFontSize !== null) {
+    currentFontSize = parseInt(savedFontSize);
+    updateFontSize();
+  }
+});
+</script> 

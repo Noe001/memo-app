@@ -1,2 +1,274 @@
-<h1>Errors#not_found</h1>
-<p>Find me in app/views/errors/not_found.html.erb</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ページが見つかりません - Memo App</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    :root {
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-400: #94a3b8;
+      --slate-500: #64748b;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      --slate-950: #020617;
+      
+      --background: var(--slate-50);
+      --foreground: var(--slate-900);
+      --muted: var(--slate-100);
+      --muted-foreground: var(--slate-500);
+      --card: #ffffff;
+      --card-foreground: var(--slate-900);
+      --border: var(--slate-200);
+      --primary: var(--slate-900);
+      --primary-foreground: #ffffff;
+      --secondary: var(--slate-100);
+      --secondary-foreground: var(--slate-900);
+      --radius: 0.5rem;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--background);
+      color: var(--foreground);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .error-page {
+      padding: 2rem 1rem;
+      width: 100%;
+    }
+    
+    .error-container {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      padding: 3rem 2rem;
+      text-align: center;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    .error-icon {
+      margin-bottom: 1.5rem;
+      color: var(--muted-foreground);
+    }
+    
+    .error-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--foreground);
+      margin: 0 0 1rem 0;
+      letter-spacing: -0.025em;
+    }
+    
+    .error-message {
+      font-size: 1rem;
+      color: var(--muted-foreground);
+      line-height: 1.6;
+      margin: 0 0 2rem 0;
+    }
+    
+    .error-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      padding: 0.625rem 1rem;
+      min-height: 2.5rem;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--slate-800);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-secondary {
+      background-color: var(--secondary);
+      color: var(--secondary-foreground);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-secondary:hover {
+      background-color: var(--muted);
+    }
+    
+    button.btn {
+      cursor: pointer;
+    }
+    
+    .suggestions {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background-color: var(--muted);
+      border-radius: var(--radius);
+      text-align: left;
+    }
+    
+    .suggestions h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--foreground);
+      margin: 0 0 1rem 0;
+    }
+    
+    .suggestions ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .suggestions li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .suggestions li:last-child {
+      border-bottom: none;
+    }
+    
+    .suggestions a {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s ease;
+    }
+    
+    .suggestions a:hover {
+      color: var(--slate-700);
+      text-decoration: underline;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    @media (max-width: 768px) {
+      .error-container {
+        padding: 2rem 1.5rem;
+      }
+      
+      .error-title {
+        font-size: 1.5rem;
+      }
+      
+      .error-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .btn {
+        width: 100%;
+        max-width: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="error-page">
+    <div class="error-container animate-fade-in">
+      <div class="error-icon">
+        <span style="font-size: 6rem; color: var(--muted-foreground);">404</span>
+      </div>
+      
+      <h1 class="error-title">ページが見つかりません</h1>
+      <p class="error-message">
+        申し訳ございませんが、お探しのページは存在しないか、移動または削除された可能性があります。<br>
+        URLをご確認いただくか、以下のボタンから目的のページにアクセスしてください。
+      </p>
+      
+      <div class="error-actions">
+        <%= link_to root_path, class: "btn btn-primary" do %>
+          <i data-lucide="home" style="width: 1rem; height: 1rem; margin-right: 0.5rem;"></i>
+          ホームに戻る
+        <% end %>
+        <button onclick="history.back()" class="btn btn-secondary">
+          <i data-lucide="arrow-left" style="width: 1rem; height: 1rem; margin-right: 0.5rem;"></i>
+          前のページに戻る
+        </button>
+      </div>
+      
+      <div class="suggestions">
+        <h3>お探しの情報はこちらにありませんか？</h3>
+        <ul>
+          <li>
+            <%= link_to root_path do %>
+              <i data-lucide="file-text" style="width: 1rem; height: 1rem; margin-right: 0.5rem;"></i>
+              メモ一覧 - すべてのメモを確認
+            <% end %>
+          </li>
+          <li>
+            <%= link_to root_path do %>
+              <i data-lucide="plus-circle" style="width: 1rem; height: 1rem; margin-right: 0.5rem;"></i>
+              新規メモ作成 - 新しいメモを作成
+            <% end %>
+          </li>
+          <li>
+            <%= link_to new_sessions_path do %>
+              <i data-lucide="log-in" style="width: 1rem; height: 1rem; margin-right: 0.5rem;"></i>
+              ログイン - アカウントにログイン
+            <% end %>
+          </li>
+          <li>
+            <%= link_to signup_path do %>
+              <i data-lucide="user-plus" style="width: 1rem; height: 1rem; margin-right: 0.5rem;"></i>
+              アカウント作成 - 新規アカウント作成
+            <% end %>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
