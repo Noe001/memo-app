@@ -1,58 +1,20 @@
+<% content_for :title, "メモ一覧" %>
+<% content_for :description, "メモの一覧を表示、編集、検索ができます。タグによるフィルタリングも可能です。" %>
+
 <%= javascript_import_module_tag "memos_index" %>
 <%= stylesheet_link_tag "memos", "data-turbo-track": "reload" %>
 
-<div id="display_flex">
-  <div class="sidebar">
-    <%= link_to "新規", memos_path, id: "create_new" %>
+<div class="app-layout" data-controller="memo">
+  <!-- サイドバー -->
+  <aside class="memo-sidebar">
+    <%= render 'sidebar' %>
+  </aside>
 
-    <%= form_with url: search_memos_path, class: "search_form", method: :get, local: true do |f| %>
-      <%= f.text_field :word, placeholder: "検索", class: "search_box" %>
-    <% end %>
-
-    <ul id="scrollbar">
-      <% @memos.reverse.each do |memo| %>
-        <li class="<%= 'current_memo' if memo.id == @memo_id %>">
-          <%= link_to memo_path(memo) do %>
-            <% if memo.title.blank? %>
-              <div style="padding-top: 30px;"></div>
-            <% else %>
-              <div class="memos_title"><%= memo.title %></div>
-            <% end %>
-
-            <% if memo.description.blank? %>
-              <div style="padding-top: 20px;"></div>
-            <% else %>
-              <div class="memos_description"><%= memo.description %></div>
-            <% end %>
-          <% end %>
-        </li>
-      <% end %>
-    </ul>
-  </div>
-
-  <div class="content">
-    <% if @selected.present? %>
-      <% if @can_add %>
-        <%= form_with model: @memo_to_add, url: add_memo_memo_path(@selected), method: :post, local: true do |f| %>
-          <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
-          <%= f.text_area :description, placeholder: "本文", class: "memos_text_area" %>
-          <div id="shared_user">共有元：<%= @shared_user %></div>
-          <%= f.submit "追加", class: "add_button" %>
-        <% end %>
-      <% else %>
-        <%= form_with model: @selected, local: true do |f| %>
-          <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
-          <%= f.text_area :description, placeholder: "本文", class: "memos_text_area" %>
-          <%= f.submit "更新", class: "update_button" %>
-        <% end %>
-        <%= button_to "削除", memo_path(@selected.id), method: :delete, class: "delete_button" %>
-      <% end %>
-    <% else %>
-      <%= form_with model: @memo_new, url: memos_path, method: :post, local: true do |f| %>
-        <%= f.text_field :title, placeholder: "タイトル", class: "memos_text_field" %>
-        <%= f.text_area :description, placeholder: "本文", class: "memos_text_area" %>
-        <%= f.submit "作成", class: "create_button" %>
-      <% end %>
-    <% end %>
-  </div>
+  <!-- メインコンテンツ -->
+  <main class="memo-main" role="main">
+    <%= render 'memo_form' %>
+  </main>
 </div>
+
+<!-- キーボードショートカット説明 -->
+<%= render 'keyboard_shortcuts' %>

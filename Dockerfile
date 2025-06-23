@@ -2,7 +2,7 @@ FROM ruby:3.2.3
 
 RUN apt-get update -qq && apt-get install -y default-mysql-client
 
-ENV APP_ROOT /rails_app
+ENV APP_ROOT=/rails_app
 RUN mkdir $APP_ROOT
 WORKDIR $APP_ROOT
 

@@ -1,0 +1,63 @@
+<div class="memo-list" role="list" aria-label="メモ一覧">
+  <% if @memos.any? %>
+    <% @memos.each do |memo| %>
+      <% memo_class = "memo-item" %>
+      <% memo_class += " active" if memo.id == @memo_id %>
+      <%= link_to memo_path(memo), 
+                  class: memo_class,
+                  role: "listitem",
+                  data: { memo_id: memo.id, action: "click->memo#selectMemo" },
+                  "aria-label": "#{memo.title.present? ? memo.title : '無題'} のメモを選択" do %>
+        
+        <div class="memo-header">
+          <h4 class="memo-title">
+            <%= memo.title.present? ? truncate(memo.title, length: 30) : "無題" %>
+          </h4>
+          <time class="memo-date" datetime="<%= memo.updated_at.iso8601 %>">
+            <%= memo.updated_at.strftime("%m/%d") %>
+          </time>
+        </div>
+        
+        <% if memo.description.present? %>
+          <p class="memo-preview">
+            <%= truncate(strip_tags(memo.description), length: 80) %>
+          </p>
+        <% end %>
+        
+        <!-- タグ表示 -->
+        <% if memo.tags.any? %>
+          <div class="memo-tags" aria-label="タグ">
+            <% memo.tags.limit(3).each do |tag| %>
+              <span class="memo-tag">
+                <%= tag.name %>
+              </span>
+            <% end %>
+            <% if memo.tags.count > 3 %>
+              <span class="memo-tag-more">+<%= memo.tags.count - 3 %></span>
+            <% end %>
+          </div>
+        <% end %>
+        
+        <!-- 可視性インジケーター -->
+        <div class="memo-visibility" aria-label="公開設定">
+          <% if memo.visibility == 'private' %>
+            <i data-lucide="lock" class="w-3 h-3"></i>
+          <% elsif memo.visibility == 'shared' %>
+            <i data-lucide="users" class="w-3 h-3"></i>
+          <% else %>
+            <i data-lucide="globe" class="w-3 h-3"></i>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  <% else %>
+    <div class="empty-state" role="status">
+      <div class="empty-icon">
+        <i data-lucide="file-text" class="w-12 h-12"></i>
+      </div>
+      <h3>メモがありません</h3>
+      <p>新しいメモを作成してメモ管理を始めましょう</p>
+      <%= link_to "最初のメモを作成", memos_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

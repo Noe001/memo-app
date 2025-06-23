@@ -6,7 +6,7 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module RailsApp
+module MemoApp
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.1
@@ -20,8 +20,15 @@ module RailsApp
     #
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
-    #
-    # config.time_zone = "Central Time (US & Canada)"
-    # config.eager_load_paths << Rails.root.join("extras")
+    
+    # 最小限の設定のみ
+    config.time_zone = "Tokyo"
+    config.i18n.default_locale = :ja
+    
+    # セッション設定（最もシンプル）
+    config.session_store :cookie_store, key: '_memo_session'
+    
+    # SecureHeadersミドルウェアを明示的に削除
+    config.middleware.delete "SecureHeaders::Middleware" if defined?(SecureHeaders::Middleware)
   end
 end
