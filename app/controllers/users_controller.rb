@@ -12,10 +12,10 @@ class UsersController < ApplicationController
       # アカウント作成ログ
       Rails.logger.info "New user created: #{@user.email} from IP: #{request.remote_ip}"
       
-      # 自動ログイン（オプション - セキュリティ要件に応じて）
-      # session[:user_id] = @user.id
+      # 自動ログイン
+      session[:user_id] = @user.id
       
-      redirect_to new_sessions_path, notice: 'アカウントが作成されました。ログインしてください。'
+      redirect_to root_path, notice: 'アカウントが作成されました。MemoAppへようこそ！'
     else
       # バリデーションエラーの詳細処理
       handle_validation_errors
