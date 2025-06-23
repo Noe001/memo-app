@@ -1,0 +1,140 @@
+<!-- 設定ポップアップ -->
+<div class="settings-popup-overlay" 
+     data-settings-target="overlay"
+     data-action="click->settings#closeOnOverlay">
+  <div class="settings-popup" data-settings-target="popup">
+    <div class="settings-popup-header">
+      <h2 class="popup-title">設定</h2>
+      <button class="popup-close-btn" 
+              data-action="click->settings#close" 
+              aria-label="設定を閉じる">
+        <i data-lucide="x" class="close-icon"></i>
+      </button>
+    </div>
+    
+    <div class="settings-popup-content">
+      <%= form_with model: current_user || User.new, 
+                    url: settings_path, 
+                    method: :patch, 
+                    local: false, 
+                    data: { 
+                      settings_target: "form",
+                      turbo: false 
+                    } do |form| %>
+        
+        <!-- 色設定 -->
+        <div class="popup-section">
+          <h3 class="popup-section-title">
+            <i data-lucide="palette" class="section-icon"></i>
+            色設定
+          </h3>
+          
+          <div class="theme-options-compact">
+            <div class="theme-option-compact">
+              <%= form.radio_button :theme, "light", 
+                                    id: "popup_theme_light", 
+                                    checked: (current_user&.theme == "light") || (current_user&.theme.blank?),
+                                    data: { setting_option: "theme" } %>
+              <label for="popup_theme_light" class="theme-label-compact">
+                <div class="theme-preview-mini theme-preview-light"></div>
+                <span>ライト</span>
+              </label>
+            </div>
+            
+            <div class="theme-option-compact">
+              <%= form.radio_button :theme, "dark", 
+                                    id: "popup_theme_dark", 
+                                    checked: current_user&.theme == "dark",
+                                    data: { setting_option: "theme" } %>
+              <label for="popup_theme_dark" class="theme-label-compact">
+                <div class="theme-preview-mini theme-preview-dark"></div>
+                <span>ダーク</span>
+              </label>
+            </div>
+            
+            <div class="theme-option-compact">
+              <%= form.radio_button :theme, "high-contrast", 
+                                    id: "popup_theme_high_contrast", 
+                                    checked: current_user&.theme == "high-contrast",
+                                    data: { setting_option: "theme" } %>
+              <label for="popup_theme_high_contrast" class="theme-label-compact">
+                <div class="theme-preview-mini theme-preview-high-contrast"></div>
+                <span>高コントラスト</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 文字サイズ設定 -->
+        <div class="popup-section">
+          <h3 class="popup-section-title">
+            <i data-lucide="type" class="section-icon"></i>
+            文字サイズ
+          </h3>
+          
+          <div class="font-size-options-compact">
+            <div class="font-size-option-compact">
+              <%= form.radio_button :font_size, "small", 
+                                    id: "popup_font_size_small", 
+                                    checked: current_user&.font_size == "small",
+                                    data: { setting_option: "font_size" } %>
+              <label for="popup_font_size_small" class="font-size-label-compact">小</label>
+            </div>
+            
+            <div class="font-size-option-compact">
+              <%= form.radio_button :font_size, "medium", 
+                                    id: "popup_font_size_medium", 
+                                    checked: (current_user&.font_size == "medium") || (current_user&.font_size.blank?),
+                                    data: { setting_option: "font_size" } %>
+              <label for="popup_font_size_medium" class="font-size-label-compact">標準</label>
+            </div>
+            
+            <div class="font-size-option-compact">
+              <%= form.radio_button :font_size, "large", 
+                                    id: "popup_font_size_large", 
+                                    checked: current_user&.font_size == "large",
+                                    data: { setting_option: "font_size" } %>
+              <label for="popup_font_size_large" class="font-size-label-compact">大</label>
+            </div>
+            
+            <div class="font-size-option-compact">
+              <%= form.radio_button :font_size, "x-large", 
+                                    id: "popup_font_size_x_large", 
+                                    checked: current_user&.font_size == "x-large",
+                                    data: { setting_option: "font_size" } %>
+              <label for="popup_font_size_x_large" class="font-size-label-compact">特大</label>
+            </div>
+          </div>
+        </div>
+        
+        <!-- キーボードショートカット設定 -->
+        <div class="popup-section">
+          <h3 class="popup-section-title">
+            <i data-lucide="keyboard" class="section-icon"></i>
+            キーボードショートカット
+          </h3>
+          
+          <div class="toggle-setting-compact">
+            <%= form.check_box :keyboard_shortcuts_enabled, 
+                               id: "popup_keyboard_shortcuts_enabled",
+                               checked: current_user&.keyboard_shortcuts_enabled != false,
+                               data: { setting_option: "keyboard_shortcuts" },
+                               class: "toggle-input" %>
+            <label for="popup_keyboard_shortcuts_enabled" class="toggle-label-compact">
+              <span class="toggle-slider-compact"></span>
+              <span class="toggle-text">有効にする</span>
+            </label>
+          </div>
+        </div>
+        
+      <% end %>
+      
+      <div class="popup-save-status" 
+           data-settings-target="saveStatus" 
+           role="status" 
+           aria-live="polite">
+        <!-- 保存状態がここに表示される -->
+      </div>
+    </div>
+  </div>
+</div> 
