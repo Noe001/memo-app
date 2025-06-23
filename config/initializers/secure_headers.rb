@@ -17,26 +17,27 @@ SecureHeaders::Configuration.default do |config|
   config.referrer_policy = %w(origin-when-cross-origin strict-origin-when-cross-origin)
 
   # Content Security Policy
-  # Starts with a restrictive policy and can be expanded as needed.
+  # TEMPORARILY RELAXED FOR DEBUGGING UI ISSUES
   config.csp = SecureHeaders::CSP.new do |csp|
-    csp.default_src = %w('self')
+    # Extremely permissive for debugging:
+    csp.default_src = %w('self' https: http: 'unsafe-inline' 'unsafe-eval' data: blob:)
+    csp.script_src = %w('self' https: http: 'unsafe-inline' 'unsafe-eval' data: blob:)
+    csp.style_src = %w('self' https: http: 'unsafe-inline' data: blob:)
+    csp.img_src = %w('self' https: http: data: blob:)
+    csp.font_src = %w('self' https: http: data: blob:)
+    csp.connect_src = %w('self' https: http: ws: wss:) # For WebSockets if any
+
+    # Keep these more restrictive if possible, but relax if needed for debug
     csp.base_uri = %w('self')
-    csp.font_src = %w('self' https: data:) # Allow https and data URIs for fonts
-    csp.form_action = %w('self')
-    csp.frame_ancestors = %w('none') # Equivalent to X-Frame-Options: DENY
-    csp.img_src = %w('self' https: data:) # Allow https and data URIs for images
-    csp.object_src = %w('none')
-    # 'unsafe-inline' is often needed for Rails UJS and legacy JavaScript.
-    # 'unsafe-eval' might be needed by some JS libraries.
-    # Consider using a nonce-based approach for inline scripts/styles for better security.
-    # Add CDNs here if needed: e.g. 'https://cdn.example.com'
-    csp.script_src = %w('self' 'unsafe-inline' 'unsafe-eval')
-    # 'unsafe-inline' for inline styles. Add CDNs here if needed.
-    csp.style_src = %w('self' 'unsafe-inline')
-    # csp.report_uri = %w(/csp_violation_report_endpoint) # Enable if you have an endpoint to collect reports
+    csp.form_action = %w('self') # Or specific external form targets
+    csp.frame_ancestors = %w('none') # Usually good to keep this DENY/'none'
+    csp.object_src = %w('none') # Usually good to keep this 'none'
+
+    # csp.report_uri = %w(/csp_violation_report_endpoint)
   end
 
   # Boolean CSP flags are set on the csp object itself
+  # These are generally good to keep, even when relaxing sources.
   config.csp.block_all_mixed_content = true # CSP Level 2
   config.csp.upgrade_insecure_requests = true # CSP Level 2
 
