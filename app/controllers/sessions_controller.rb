@@ -10,11 +10,11 @@ class SessionsController < ApplicationController
 
   def create
     if @user&.authenticate(params[:password])
-      # セッションとクッキーの両方に保存（冗長化）
+      # セッションにuser_idを保存
       session[:user_id] = @user.id
-      cookies.permanent[:user_id] = @user.id
+      create_session_record # Call after @user is confirmed and session[:user_id] is set
       
-      redirect_to '/', notice: 'ログインしました'
+      redirect_to root_path, notice: 'ログインしました' # root_path を使用
     else
       flash.now[:alert] = 'メールアドレスまたはパスワードが正しくありません'
       render :new, status: :unprocessable_entity
@@ -22,19 +22,21 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    session[:user_id] = nil
-    cookies.delete(:user_id)
-    redirect_to '/login', notice: 'ログアウトしました'
+    # For web sessions, we don't have a specific DB session token.
+    # destroy_session_record will delete the most recent one for the current_user.
+    destroy_session_record if current_user # Call before session[:user_id] is deleted
+    session.delete(:user_id)
+    redirect_to login_path, notice: 'ログアウトしました' # login_path を使用
   end
   
   # 全セッションを削除（セキュリティ機能）
   def destroy_all
     if current_user
-      current_user.sessions.destroy_all
-      session[:user_id] = nil
-      redirect_to '/login', notice: '全てのデバイスからログアウトしました'
+      current_user.sessions.destroy_all # DBのセッションレコードを削除
+      session.delete(:user_id) # 現在のWebセッションもクリア
+      redirect_to login_path, notice: '全てのデバイスからログアウトしました' # login_path を使用
     else
-      redirect_to '/login'
+      redirect_to login_path # login_path を使用
     end
   end
 

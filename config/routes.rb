@@ -58,9 +58,10 @@ Rails.application.routes.draw do
       
       resources :tags, except: [:new, :edit]
       
-      resource :user, only: [:show, :update]
+      resource :user, only: [:show, :update] # This will need API auth using `authenticate_api_user!`
       
-      # 認証
+      # API Authentication routes
+      # These will automatically map to Api::V1::SessionsController due to the namespace
       post 'auth/login', to: 'sessions#create'
       delete 'auth/logout', to: 'sessions#destroy'
     end

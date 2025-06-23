@@ -23,15 +23,43 @@ class UsersController < ApplicationController
     end
   end
   
-  # プロファイル表示（今後の機能拡張用）
+  # プロファイル表示
+  # This action is intended to show the current_user's profile.
+  # The route resources :users implies /users/:id, but this controller
+  # consistently uses current_user for show, edit, update.
+  # This should ideally be a singular resource route like /profile.
   def show
     authenticate_user!
-    @user = current_user
+    @user = current_user # Explicitly for the logged-in user
+    if @user.nil? # Should not happen if authenticate_user! works
+      redirect_to login_path, alert: 'ログインしてください。'
+      return
+    end
     @memos_count = @user.memos.count
     @recent_memos = @user.memos.recent.limit(5)
+    # Renders show.html.erb
+  end
+
+  # Profile route /users/:id/profile.
+  # Given current setup, this will also show current_user's profile, similar to show.
+  # If :id was intended to be used, authorization would be needed.
+  def profile
+    authenticate_user!
+    # If params[:id] should be used to view other's profiles (not current design):
+    # @user = User.find(params[:id])
+    # authorize_user_profile_view!(@user) # Some authorization logic
+    # else, it's for current_user:
+    @user = current_user
+    if @user.nil?
+      redirect_to login_path, alert: 'ログインしてください。'
+      return
+    end
+    @memos_count = @user.memos.count
+    @recent_memos = @user.memos.recent.limit(5)
+    render :show # Render the same view as the show action
   end
   
-  # プロファイル編集（今後の機能拡張用）
+  # プロファイル編集
   def edit
     authenticate_user!
     @user = current_user
@@ -69,7 +97,11 @@ class UsersController < ApplicationController
   end
   
   def handle_validation_errors
-    # 標準的な日本語エラーメッセージを使用
-    flash.now[:alert] = @user.errors.full_messages.first || '入力内容にエラーがあります'
+    # 全てのバリデーションエラーメッセージを表示
+    if @user.errors.any?
+      flash.now[:alert] = @user.errors.full_messages.join(', ')
+    else
+      flash.now[:alert] = '入力内容にエラーがあります' # Fallback, should not be reached if errors exist
+    end
   end
 end

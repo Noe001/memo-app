@@ -91,6 +91,24 @@ RSpec.describe User, type: :model do
         expect(user.errors[:password_confirmation]).to include("doesn't match Password")
       end
     end
+
+    describe 'theme' do
+      it { should validate_inclusion_of(:theme).in_array(%w[light dark high-contrast]) }
+      it 'gives a custom message for invalid theme' do
+        user = build(:user, theme: 'invalid_theme')
+        expect(user).not_to be_valid
+        expect(user.errors[:theme]).to include('は有効なテーマを選択してください')
+      end
+    end
+
+    describe 'font_size' do
+      it { should validate_inclusion_of(:font_size).in_array(%w[small medium large x-large]) }
+      it 'gives a custom message for invalid font_size' do
+        user = build(:user, font_size: 'invalid_size')
+        expect(user).not_to be_valid
+        expect(user.errors[:font_size]).to include('は有効なフォントサイズを選択してください')
+      end
+    end
   end
 
   describe 'associations' do
