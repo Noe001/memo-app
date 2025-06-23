@@ -15,7 +15,9 @@ class Memo < ApplicationRecord
   scope :recent, -> { order(updated_at: :desc) }
   scope :by_user, ->(user) { where(user: user) }
   scope :search, ->(query) {
-    where("title ILIKE ? OR description ILIKE ?", "%#{query}%", "%#{query}%")
+    # Using LOWER() for case-insensitive search compatible with MySQL and PostgreSQL
+    fuzzy_query = "%#{query.to_s.downcase}%" # Ensure query is a string and downcased
+    where("LOWER(title) LIKE :query OR LOWER(description) LIKE :query", query: fuzzy_query)
   }
   
   # 公開/非公開機能

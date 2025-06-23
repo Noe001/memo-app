@@ -26,9 +26,6 @@ class User < ApplicationRecord
   # セキュリティ：メールアドレスを小文字で保存
   before_save :downcase_email
   
-  # セキュリティ：アカウントロック機能
-  attr_accessor :failed_login_attempts
-  
   # セキュリティ強化：セッション管理
   has_many :sessions, dependent: :destroy
   

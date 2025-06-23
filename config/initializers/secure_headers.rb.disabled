@@ -1,0 +1,50 @@
+# 開発環境では SecureHeaders を完全に無効化
+if Rails.env.development?
+  # SecureHeaders の設定を完全に無効化
+  SecureHeaders::Configuration.default {}
+else
+  # Production環境用の設定
+  SecureHeaders::Configuration.default do |config|
+    config.cookies = {
+      secure: true, # mark all cookies as Secure
+      httponly: true, # mark all cookies as HttpOnly
+      samesite: {
+        lax: true # mark all cookies as SameSite=Lax
+      }
+    }
+
+    # Default HSTS configuration
+    config.hsts = "max-age=#{20.years.to_i}; includeSubdomains; preload"
+    config.x_frame_options = "DENY"
+    config.x_content_type_options = "nosniff"
+    config.x_xss_protection = "1; mode=block"
+    config.x_download_options = "noopen"
+    config.x_permitted_cross_domain_policies = "none"
+    config.referrer_policy = %w(origin-when-cross-origin strict-origin-when-cross-origin)
+
+    # Content Security Policy - 修正版
+    config.csp = {
+      default_src: %w('self'),
+      base_uri: %w('self'),
+      font_src: %w('self' https: data:), # Allow https and data URIs for fonts
+      form_action: %w('self'),
+      frame_ancestors: %w('none'), # Equivalent to X-Frame-Options: DENY
+      img_src: %w('self' https: data:), # Allow https and data URIs for images
+      object_src: %w('none'),
+      # 'unsafe-inline' is often needed for Rails UJS and legacy JavaScript.
+      # 'unsafe-eval' might be needed by some JS libraries.
+      # Consider using a nonce-based approach for inline scripts/styles for better security.
+      # Add CDNs here if needed: e.g. 'https://cdn.example.com'
+      script_src: %w('self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com),
+      # 'unsafe-inline' for inline styles. Add CDNs here if needed.
+      style_src: %w('self' 'unsafe-inline' https://fonts.googleapis.com),
+      connect_src: %w('self'),
+      block_all_mixed_content: true, # CSP Level 2
+      upgrade_insecure_requests: true # CSP Level 2
+      # report_uri: %w(/csp_violation_report_endpoint) # Enable if you have an endpoint to collect reports
+    }
+
+    # Opt-out of SecureHeaders cookies for specific cookies if needed
+    # config.opt_out_cookies = ["_myapp_session"]
+  end
+end

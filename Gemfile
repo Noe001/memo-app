@@ -44,7 +44,7 @@ gem "counter_culture"  # カウンターキャッシュ
 
 # セキュリティ
 gem "rack-attack"  # レート制限
-# gem "secure_headers"  # セキュリティヘッダー - 一時的に無効化
+# gem "secure_headers"  # セキュリティヘッダー（一時的に無効化）
 
 # UI/UX改善
 gem "image_processing", "~> 1.2"

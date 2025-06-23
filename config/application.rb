@@ -21,14 +21,11 @@ module MemoApp
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     
-    # 最小限の設定のみ
+    # 基本設定
     config.time_zone = "Tokyo"
     config.i18n.default_locale = :ja
     
-    # セッション設定（最もシンプル）
+    # セッション設定
     config.session_store :cookie_store, key: '_memo_session'
-    
-    # SecureHeadersミドルウェアを明示的に削除
-    config.middleware.delete "SecureHeaders::Middleware" if defined?(SecureHeaders::Middleware)
   end
 end
