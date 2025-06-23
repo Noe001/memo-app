@@ -239,7 +239,6 @@ class MemosController < ApplicationController
   # The memo_params now also permits :tags_string.
   # The process_tags method now takes tag_names_string.
   # This makes tag handling more consistent.
-end
 
   # Stub actions for routes defined but not yet implemented
   def toggle_visibility
@@ -285,18 +284,4 @@ end
     flash.now[:notice] = "Shared memos functionality not yet implemented."
     render :index # Re-use index view, might need dedicated view
   end
-end
-    return if tag_names.blank?
-    
-    # 既存のタグを削除
-    memo.memo_tags.destroy_all
-    
-    # 新しいタグを追加
-    tag_names.split(',').each do |tag_name|
-      tag = Tag.find_or_create_by_name(tag_name.strip)
-      memo.memo_tags.create(tag: tag)
-    end
-  end
-
-
 end

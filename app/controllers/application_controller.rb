@@ -16,9 +16,9 @@ class ApplicationController < ActionController::Base
   end
   helper_method :current_user
   
-  def authenticate_user!
-    unless current_user
-      redirect_to login_path, alert: 'ログインしてください' # Changed to use login_path
+      def authenticate_user!
+      unless current_user
+        redirect_to new_session_path, alert: 'ログインしてください'
+      end
     end
-  end
 end

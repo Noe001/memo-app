@@ -33,9 +33,9 @@ class Rack::Attack
     end
   end
 
-  # Custom response for throttled requests
+  # Custom response for throttled requests - 新しい推奨方法
   # Override the default response if you want to customize it
-  self.throttled_response = lambda do |env|
+  self.throttled_responder = lambda do |req|
     status_code = 429
     body = {
       error: "Too many requests. Please try again later."
