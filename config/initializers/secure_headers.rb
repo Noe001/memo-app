@@ -18,27 +18,28 @@ SecureHeaders::Configuration.default do |config|
 
   # Content Security Policy
   # Starts with a restrictive policy and can be expanded as needed.
-  # Placeholders for common CDNs if used, otherwise remove.
-  # 'unsafe-inline' is often needed for Rails UJS and legacy JavaScript.
-  # 'unsafe-eval' might be needed by some JS libraries.
-  # Consider using a nonce-based approach for inline scripts/styles for better security.
-  config.csp = {
-    default_src: %w('self'),
-    base_uri: %w('self'),
-    block_all_mixed_content: true, # CSP Level 2
-    font_src: %w('self' https: data:), # Allow https and data URIs for fonts
-    form_action: %w('self'),
-    frame_ancestors: %w('none'), # Equivalent to X-Frame-Options: DENY
-    img_src: %w('self' https: data:), # Allow https and data URIs for images
-    object_src: %w('none'),
-    script_src: %w('self' 'unsafe-inline' 'unsafe-eval'), # 'unsafe-inline' for Rails UJS, 'unsafe-eval' if some libs need it.
-                                                          # Consider 'strict-dynamic' or nonces if possible.
-                                                          # Add CDNs here if needed: e.g. 'https://cdn.example.com'
-    style_src: %w('self' 'unsafe-inline'), # 'unsafe-inline' for inline styles.
-                                           # Add CDNs here if needed.
-    upgrade_insecure_requests: true, # CSP Level 2
-    # report_uri: %w(/csp_violation_report_endpoint) # Enable if you have an endpoint to collect reports
-  }
+  config.csp = SecureHeaders::CSP.new do |csp|
+    csp.default_src = %w('self')
+    csp.base_uri = %w('self')
+    csp.font_src = %w('self' https: data:) # Allow https and data URIs for fonts
+    csp.form_action = %w('self')
+    csp.frame_ancestors = %w('none') # Equivalent to X-Frame-Options: DENY
+    csp.img_src = %w('self' https: data:) # Allow https and data URIs for images
+    csp.object_src = %w('none')
+    # 'unsafe-inline' is often needed for Rails UJS and legacy JavaScript.
+    # 'unsafe-eval' might be needed by some JS libraries.
+    # Consider using a nonce-based approach for inline scripts/styles for better security.
+    # Add CDNs here if needed: e.g. 'https://cdn.example.com'
+    csp.script_src = %w('self' 'unsafe-inline' 'unsafe-eval')
+    # 'unsafe-inline' for inline styles. Add CDNs here if needed.
+    csp.style_src = %w('self' 'unsafe-inline')
+    # csp.report_uri = %w(/csp_violation_report_endpoint) # Enable if you have an endpoint to collect reports
+  end
+
+  # Boolean CSP flags are set on the csp object itself
+  config.csp.block_all_mixed_content = true # CSP Level 2
+  config.csp.upgrade_insecure_requests = true # CSP Level 2
+
 
   # Opt-out of SecureHeaders cookies for specific cookies if needed
   # config.opt_out_cookies = ["_myapp_session"]
