@@ -104,14 +104,7 @@ class MemosController < ApplicationController
     render :index
   end
 
-  def export
-    @memos = current_user.memos.includes(:tags)
-    
-    respond_to do |format|
-      format.json { render json: @memos.to_json(include: :tags) }
-      format.csv { send_data generate_csv(@memos), filename: "memos-#{Date.current}.csv" }
-    end
-  end
+
 
   private
 
@@ -144,19 +137,5 @@ class MemosController < ApplicationController
     end
   end
 
-  def generate_csv(memos)
-    CSV.generate do |csv|
-      csv << ['ID', 'Title', 'Description', 'Tags', 'Created At', 'Updated At']
-      memos.each do |memo|
-        csv << [
-          memo.id,
-          memo.title,
-          memo.description,
-          memo.tags.pluck(:name).join(', '),
-          memo.created_at,
-          memo.updated_at
-        ]
-      end
-    end
-  end
+
 end

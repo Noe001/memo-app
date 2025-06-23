@@ -6,45 +6,41 @@
                   method: :post, 
                   local: true,
                   data: { controller: "memo-form" } do |f| %>
-      <div class="form-header">
-        <h2 class="form-title">メモを追加</h2>
-        <div class="shared-info">
-          <i data-lucide="user" class="w-4 h-4"></i>
-          <span>共有元: <strong><%= @shared_user %></strong></span>
-        </div>
-      </div>
+
       
       <div class="form-body">
         <div class="input-group">
-          <label class="label">タイトル</label>
+          <label class="label" for="memo_to_add_title">タイトル</label>
           <%= f.text_field :title, 
                           placeholder: "メモのタイトルを入力", 
                           class: "input title-input",
-                          "aria-label": "メモのタイトル" %>
-        </div>
-        
-        <div class="input-group">
-          <label class="label">内容</label>
-          <%= f.text_area :description, 
-                         placeholder: "メモの内容を入力してください...", 
-                         class: "input content-textarea",
-                         rows: 20,
-                         "aria-label": "メモの内容" %>
+                          id: "memo_to_add_title" %>
         </div>
         
         <!-- タグ入力 -->
         <div class="input-group">
-          <label class="label">タグ</label>
+          <label class="label" for="memo_to_add_tags">タグ</label>
           <input type="text" 
                  name="tags" 
+                 id="memo_to_add_tags"
                  placeholder="タグをカンマ区切りで入力（例: 仕事, アイデア）" 
-                 class="input tags-input"
-                 aria-label="タグ">
+                 class="input tags-input">
         </div>
         
-        <!-- 公開設定 -->
         <div class="input-group">
-          <label class="label">公開設定</label>
+          <label class="label" for="memo_to_add_description">内容</label>
+          <%= f.text_area :description, 
+                         placeholder: "メモの内容を入力してください...", 
+                         class: "input content-textarea",
+                         rows: 20,
+                         id: "memo_to_add_description" %>
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <!-- 公開設定 -->
+        <div class="visibility-group">
+          <label class="label" for="memo_to_add_visibility">公開設定</label>
           <%= f.select :visibility, 
                       options_for_select([
                         ['プライベート', 'private_memo'],
@@ -52,13 +48,13 @@
                         ['共有', 'shared']
                       ], @memo_to_add.visibility),
                       {},
-                      { class: "input", "aria-label": "公開設定" } %>
+                      { class: "input", id: "memo_to_add_visibility" } %>
         </div>
-      </div>
-      
-      <div class="form-actions">
-        <%= f.submit "追加", class: "btn btn-primary" %>
-        <%= link_to "キャンセル", root_path, class: "btn btn-secondary" %>
+        
+        <div class="action-buttons">
+          <%= f.submit "追加", class: "btn btn-primary" %>
+          <%= link_to "キャンセル", root_path, class: "btn btn-secondary" %>
+        </div>
       </div>
     <% end %>
   </div>
@@ -68,47 +64,42 @@
     <%= form_with model: @selected, 
                   local: true,
                   data: { controller: "memo-form" } do |f| %>
-      <div class="form-header">
-        <h2 class="form-title">メモを編集</h2>
-        <div class="form-meta">
-          <time datetime="<%= @selected.updated_at.iso8601 %>">
-            最終更新: <%= @selected.updated_at.strftime("%Y年%m月%d日 %H:%M") %>
-          </time>
-        </div>
-      </div>
+
       
       <div class="form-body">
         <div class="input-group">
-          <label class="label">タイトル</label>
+          <label class="label" for="memo_edit_title">タイトル</label>
           <%= f.text_field :title, 
                           placeholder: "メモのタイトルを入力", 
                           class: "input title-input",
-                          "aria-label": "メモのタイトル" %>
-        </div>
-        
-        <div class="input-group">
-          <label class="label">内容</label>
-          <%= f.text_area :description, 
-                         placeholder: "メモの内容を入力してください...", 
-                         class: "input content-textarea",
-                         rows: 20,
-                         "aria-label": "メモの内容" %>
+                          id: "memo_edit_title" %>
         </div>
         
         <!-- タグ入力 -->
         <div class="input-group">
-          <label class="label">タグ</label>
+          <label class="label" for="memo_edit_tags">タグ</label>
           <input type="text" 
                  name="tags" 
+                 id="memo_edit_tags"
                  value="<%= @selected.tags.pluck(:name).join(', ') %>"
                  placeholder="タグをカンマ区切りで入力（例: 仕事, アイデア）" 
-                 class="input tags-input"
-                 aria-label="タグ">
+                 class="input tags-input">
         </div>
         
-        <!-- 公開設定 -->
         <div class="input-group">
-          <label class="label">公開設定</label>
+          <label class="label" for="memo_edit_description">内容</label>
+          <%= f.text_area :description, 
+                         placeholder: "メモの内容を入力してください...", 
+                         class: "input content-textarea",
+                         rows: 20,
+                         id: "memo_edit_description" %>
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <!-- 公開設定 -->
+        <div class="visibility-group">
+          <label class="label" for="memo_edit_visibility">公開設定</label>
           <%= f.select :visibility, 
                       options_for_select([
                         ['プライベート', 'private_memo'],
@@ -116,20 +107,20 @@
                         ['共有', 'shared']
                       ], @selected.visibility),
                       {},
-                      { class: "input", "aria-label": "公開設定" } %>
+                      { class: "input", id: "memo_edit_visibility" } %>
         </div>
-      </div>
-      
-      <div class="form-actions">
-        <%= f.submit "更新", class: "btn btn-primary" %>
-        <%= button_to "削除", memo_path(@selected.id), 
-                      method: :delete, 
-                      class: "btn btn-destructive",
-                      confirm: "本当に削除しますか？この操作は取り消せません。",
-                      title: "このメモを完全に削除します" %>
-        <%= link_to "エクスポート", export_memos_path(format: :json), 
-                    class: "btn btn-secondary",
-                    title: "メモをJSONファイルとしてエクスポート" %>
+        
+        <div class="action-buttons">
+          <%= f.submit "更新", class: "btn btn-primary" %>
+          <%= button_to "削除", memo_path(@selected.id), 
+                        method: :delete, 
+                        class: "btn btn-destructive",
+                        data: { 
+                          confirm: "本当に削除しますか？この操作は取り消せません。",
+                          turbo_method: :delete
+                        },
+                        title: "このメモを完全に削除します" %>
+        </div>
       </div>
     <% end %>
   </div>
@@ -141,42 +132,41 @@
                   method: :post, 
                   local: true,
                   data: { controller: "memo-form" } do |f| %>
-      <div class="form-header">
-        <h2 class="form-title">新しいメモ</h2>
-        <p class="form-meta">アイデアや重要な情報を記録しましょう</p>
-      </div>
+
       
       <div class="form-body">
         <div class="input-group">
-          <label class="label">タイトル</label>
+          <label class="label" for="memo_new_title">タイトル</label>
           <%= f.text_field :title, 
                           placeholder: "メモのタイトルを入力", 
                           class: "input title-input",
-                          "aria-label": "メモのタイトル" %>
-        </div>
-        
-        <div class="input-group">
-          <label class="label">内容</label>
-          <%= f.text_area :description, 
-                         placeholder: "今日は何を覚えておきますか？アイデアや重要な情報を自由に記録してください...", 
-                         class: "input content-textarea",
-                         rows: 20,
-                         "aria-label": "メモの内容" %>
+                          id: "memo_new_title" %>
         </div>
         
         <!-- タグ入力 -->
         <div class="input-group">
-          <label class="label">タグ</label>
+          <label class="label" for="memo_new_tags">タグ</label>
           <input type="text" 
                  name="tags" 
+                 id="memo_new_tags"
                  placeholder="タグをカンマ区切りで入力（例: 仕事, アイデア, 重要）" 
-                 class="input tags-input"
-                 aria-label="タグ">
+                 class="input tags-input">
         </div>
         
-        <!-- 公開設定 -->
         <div class="input-group">
-          <label class="label">公開設定</label>
+          <label class="label" for="memo_new_description">内容</label>
+          <%= f.text_area :description, 
+                         placeholder: "今日は何を覚えておきますか？アイデアや重要な情報を自由に記録してください...", 
+                         class: "input content-textarea",
+                         rows: 20,
+                         id: "memo_new_description" %>
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <!-- 公開設定 -->
+        <div class="visibility-group">
+          <label class="label" for="memo_new_visibility">公開設定</label>
           <%= f.select :visibility, 
                       options_for_select([
                         ['プライベート', 'private_memo'],
@@ -184,13 +174,14 @@
                         ['共有', 'shared']
                       ], 'private_memo'),
                       {},
-                      { class: "input", "aria-label": "公開設定" } %>
+                      { class: "input", id: "memo_new_visibility" } %>
         </div>
-      </div>
-      
-      <div class="form-actions">
-        <%= f.submit "作成", class: "btn btn-primary btn-lg" %>
+        
+        <div class="action-buttons">
+          <%= f.submit "作成", class: "btn btn-primary btn-lg" %>
+        </div>
       </div>
     <% end %>
   </div>
 <% end %> 
+ 

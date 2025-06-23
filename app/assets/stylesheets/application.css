@@ -30,7 +30,7 @@
   /* Borders - Sky Theme */
   --border-color: #e2e8f0;
   --border-light: #f1f5f9;
-  --border-radius: 0.75rem;
+  --border-radius: 0.5rem;
   --border-radius-sm: 0.5rem;
   --border-radius-lg: 1rem;
   
@@ -362,7 +362,7 @@ a:hover {
   --error-color: #f87171;
   
   /* Backgrounds - Dark Sky Theme */
-  --bg-primary: #0f172a;
+  --bg-primary: #1e293b;
   --bg-secondary: #1e293b;
   --bg-tertiary: #334155;
   --bg-dark: #020617;
@@ -408,7 +408,7 @@ a:hover {
     --error-color: #f87171;
     
     /* Backgrounds - Dark Sky Theme */
-    --bg-primary: #0f172a;
+    --bg-primary: #1e293b;
     --bg-secondary: #1e293b;
     --bg-tertiary: #334155;
     --bg-dark: #020617;

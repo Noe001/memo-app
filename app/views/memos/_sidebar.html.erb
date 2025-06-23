@@ -1,11 +1,12 @@
 <div class="sidebar-header">
-  <%= link_to memos_path, 
-              class: "create-memo-btn", 
-              role: "button",
-              "aria-label": "新しいメモを作成" do %>
-    <i data-lucide="plus" class="w-4 h-4"></i>
-    <span>新規作成</span>
-  <% end %>
+  <div class="sidebar-header-top">
+    <%= link_to memos_path, 
+                class: "create-memo-icon-btn", 
+                role: "button",
+                "aria-label": "新しいメモを作成" do %>
+      <i data-lucide="file-pen-line"></i>
+    <% end %>
+  </div>
   
   <!-- 検索フォーム -->
   <%= form_with url: search_memos_path, 
@@ -30,7 +31,6 @@
       <div class="tag-list">
         <% @tags.each do |tag_name, count| %>
           <button class="tag-item" 
-                  data-action="click->memo#filterByTag"
                   data-tag="<%= tag_name %>"
                   title="<%= tag_name %>タグでフィルター">
             <span class="tag-name"><%= tag_name %></span>
@@ -44,3 +44,4 @@
 
 <!-- メモ一覧 -->
 <%= render 'memo_list' %> 
+ 

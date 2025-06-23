@@ -22,7 +22,6 @@
 }
 
 .sidebar-header {
-  padding: var(--spacing-lg);
   border-bottom: 1px solid var(--border-light);
   background: var(--bg-primary);
   position: sticky;
@@ -62,11 +61,6 @@
   font-size: var(--font-size-lg);
 }
 
-/* Search Form */
-.search-form {
-  margin-bottom: var(--spacing-lg);
-}
-
 .search-container {
   position: relative;
   display: flex;
@@ -75,20 +69,23 @@
 
 .search-input, .search_box {
   width: 100%;
-  padding: var(--spacing-md) var(--spacing-lg);
   padding-right: 3rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  border-left: none;
+  border-right: none;
   font-size: var(--font-size-sm);
   background: var(--bg-secondary);
   transition: all 0.2s ease;
   outline: none;
+  border-radius: 0;
 }
 
 .search-input:focus, .search_box:focus {
   border-color: var(--primary-color);
   background: var(--bg-primary);
   box-shadow: 0 0 0 3px rgb(14 165 233 / 0.1);
+  border-radius: 0;
 }
 
 .search-btn {
@@ -163,7 +160,7 @@
 }
 
 .tag-item:hover .tag-count {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--tag-count-hover-bg, rgba(255, 255, 255, 0.2));
   color: var(--text-white);
 }
 
@@ -200,13 +197,13 @@
 }
 
 .memo-item.active {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  background: var(--active-bg, linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%));
   border-color: var(--primary-color);
   box-shadow: var(--shadow-md);
 }
 
 [data-theme="dark"] .memo-item.active {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  background: var(--active-bg-dark, linear-gradient(135deg, #1e293b 0%, #334155 100%));
   border-color: var(--primary-color);
   box-shadow: 0 0 0 1px var(--primary-color);
 }
@@ -393,29 +390,9 @@
   flex-direction: column;
 }
 
-.form-header {
-  padding: var(--spacing-lg);
-  border-bottom: 1px solid var(--border-light);
-  background: var(--bg-primary);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
 
-.form-header h2 {
-  font-size: var(--font-size-xl);
-  color: var(--text-primary);
-  margin: 0;
-}
 
-.shared-info {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  margin-top: var(--spacing-sm);
-  color: var(--text-secondary);
-  font-size: var(--font-size-sm);
-}
+
 
 .memo-meta {
   margin-top: var(--spacing-sm);
@@ -445,11 +422,6 @@
   background: transparent;
   color: var(--text-primary);
   transition: border-color 0.2s ease;
-}
-
-.title-input:focus, .memos_text_field:focus {
-  outline: none;
-  border-bottom-color: var(--primary-color);
 }
 
 .content-textarea, .memos_text_area {
@@ -535,7 +507,7 @@
 }
 
 .delete_button:hover {
-  background: #dc2626;
+  background: var(--error-hover, #dc2626);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
@@ -588,9 +560,6 @@
 }
 
 @media (max-width: 480px) {
-  .sidebar-header {
-    padding: var(--spacing-md);
-  }
   
   .memo-item {
     margin-bottom: var(--spacing-xs);
@@ -643,9 +612,9 @@
 
 /* Current Memo Highlight */
 .current_memo {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  background: var(--current-memo-bg, linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%));
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 1px rgb(14 165 233 / 0.2);
+  box-shadow: var(--current-memo-shadow, 0 0 0 1px rgb(14 165 233 / 0.2));
 }
 
 /* Loading States */

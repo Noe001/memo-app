@@ -1,0 +1,365 @@
+<% content_for :title, "設定" %>
+<% content_for :description, "アプリケーションの設定を変更できます" %>
+
+<div class="settings-container">
+  <div class="settings-header">
+    <h1 class="settings-title">設定</h1>
+    <p class="settings-subtitle">アプリケーションの設定をカスタマイズできます</p>
+  </div>
+  
+  <div class="settings-content">
+    <%= form_with model: @user, url: settings_path, method: :patch, 
+                  local: false, 
+                  id: "settings-form",
+                  data: { turbo: false } do |form| %>
+      
+      <!-- 色設定 -->
+      <div class="settings-section">
+        <h2 class="section-title">
+          <i data-lucide="palette" class="section-icon"></i>
+          色設定
+        </h2>
+        <p class="section-description">アプリケーションの外観テーマを選択してください</p>
+        
+        <div class="theme-options" data-theme-selector>
+          <div class="theme-option">
+            <%= form.radio_button :theme, "light", 
+                                  id: "theme_light", 
+                                  checked: @user.theme == "light" || @user.theme.blank?,
+                                  data: { setting_option: "theme" } %>
+            <label for="theme_light" class="theme-label">
+              <div class="theme-preview theme-preview-light">
+                <div class="preview-header"></div>
+                <div class="preview-content">
+                  <div class="preview-sidebar"></div>
+                  <div class="preview-main"></div>
+                </div>
+              </div>
+              <div class="theme-info">
+                <h3>ライトモード</h3>
+                <p>明るい背景色で見やすい標準テーマ</p>
+              </div>
+            </label>
+          </div>
+          
+          <div class="theme-option">
+            <%= form.radio_button :theme, "dark", 
+                                  id: "theme_dark", 
+                                  checked: @user.theme == "dark",
+                                  data: { setting_option: "theme" } %>
+            <label for="theme_dark" class="theme-label">
+              <div class="theme-preview theme-preview-dark">
+                <div class="preview-header"></div>
+                <div class="preview-content">
+                  <div class="preview-sidebar"></div>
+                  <div class="preview-main"></div>
+                </div>
+              </div>
+              <div class="theme-info">
+                <h3>ダークモード</h3>
+                <p>暗い背景色で目に優しい夜間テーマ</p>
+              </div>
+            </label>
+          </div>
+          
+          <div class="theme-option">
+            <%= form.radio_button :theme, "high-contrast", 
+                                  id: "theme_high_contrast", 
+                                  checked: @user.theme == "high-contrast",
+                                  data: { setting_option: "theme" } %>
+            <label for="theme_high_contrast" class="theme-label">
+              <div class="theme-preview theme-preview-high-contrast">
+                <div class="preview-header"></div>
+                <div class="preview-content">
+                  <div class="preview-sidebar"></div>
+                  <div class="preview-main"></div>
+                </div>
+              </div>
+              <div class="theme-info">
+                <h3>高コントラストモード</h3>
+                <p>高いコントラストで視認性を向上</p>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 文字サイズ設定 -->
+      <div class="settings-section">
+        <h2 class="section-title">
+          <i data-lucide="type" class="section-icon"></i>
+          文字サイズ設定
+        </h2>
+        <p class="section-description">読みやすさに合わせて文字サイズを調整してください</p>
+        
+        <div class="font-size-options">
+          <div class="font-size-option">
+            <%= form.radio_button :font_size, "small", 
+                                  id: "font_size_small", 
+                                  checked: @user.font_size == "small",
+                                  data: { setting_option: "font_size" } %>
+            <label for="font_size_small" class="font-size-label">
+              <div class="font-size-preview" data-size="small">
+                <h4>小さい</h4>
+                <p>コンパクトな表示で多くの情報を一度に確認できます</p>
+              </div>
+            </label>
+          </div>
+          
+          <div class="font-size-option">
+            <%= form.radio_button :font_size, "medium", 
+                                  id: "font_size_medium", 
+                                  checked: @user.font_size == "medium" || @user.font_size.blank?,
+                                  data: { setting_option: "font_size" } %>
+            <label for="font_size_medium" class="font-size-label">
+              <div class="font-size-preview" data-size="medium">
+                <h4>標準</h4>
+                <p>読みやすさとコンパクトさのバランスが取れた標準サイズです</p>
+              </div>
+            </label>
+          </div>
+          
+          <div class="font-size-option">
+            <%= form.radio_button :font_size, "large", 
+                                  id: "font_size_large", 
+                                  checked: @user.font_size == "large",
+                                  data: { setting_option: "font_size" } %>
+            <label for="font_size_large" class="font-size-label">
+              <div class="font-size-preview" data-size="large">
+                <h4>大きい</h4>
+                <p>大きな文字で読みやすく、目の負担を軽減します</p>
+              </div>
+            </label>
+          </div>
+          
+          <div class="font-size-option">
+            <%= form.radio_button :font_size, "x-large", 
+                                  id: "font_size_x_large", 
+                                  checked: @user.font_size == "x-large",
+                                  data: { setting_option: "font_size" } %>
+            <label for="font_size_x_large" class="font-size-label">
+              <div class="font-size-preview" data-size="x-large">
+                <h4>特大</h4>
+                <p>最も大きな文字サイズで、最高の視認性を提供します</p>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <!-- キーボードショートカット設定 -->
+      <div class="settings-section">
+        <h2 class="section-title">
+          <i data-lucide="keyboard" class="section-icon"></i>
+          キーボードショートカット
+        </h2>
+        <p class="section-description">キーボードショートカットを有効にして効率的な操作を可能にします</p>
+        
+        <div class="keyboard-shortcuts-setting">
+          <div class="toggle-setting">
+            <%= form.check_box :keyboard_shortcuts_enabled, 
+                               id: "keyboard_shortcuts_enabled",
+                               checked: @user.keyboard_shortcuts_enabled != false,
+                               data: { setting_option: "keyboard_shortcuts" },
+                               class: "toggle-input" %>
+            <label for="keyboard_shortcuts_enabled" class="toggle-label">
+              <span class="toggle-slider"></span>
+              <span class="toggle-text">キーボードショートカットを有効にする</span>
+            </label>
+          </div>
+          
+          <div class="shortcuts-list" id="shortcuts-list">
+            <h4>利用可能なショートカット</h4>
+            <dl class="shortcuts-dl">
+              <dt><kbd>Ctrl</kbd> + <kbd>N</kbd></dt>
+              <dd>新しいメモを作成</dd>
+              
+              <dt><kbd>Ctrl</kbd> + <kbd>S</kbd></dt>
+              <dd>メモを保存</dd>
+              
+              <dt><kbd>Ctrl</kbd> + <kbd>F</kbd></dt>
+              <dd>メモを検索</dd>
+              
+              <dt><kbd>Ctrl</kbd> + <kbd>/</kbd></dt>
+              <dd>ショートカット一覧を表示</dd>
+              
+              <dt><kbd>Escape</kbd></dt>
+              <dd>編集モードを終了</dd>
+              
+              <dt><kbd>↑</kbd> / <kbd>↓</kbd></dt>
+              <dd>メモ一覧で選択を移動</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+      
+    <% end %>
+    
+    <div class="save-status" id="save-status" role="status" aria-live="polite">
+      <!-- 保存状態がここに表示される -->
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const settingsForm = document.getElementById('settings-form');
+  const settingOptions = document.querySelectorAll('input[data-setting-option]');
+  const saveStatus = document.getElementById('save-status');
+  const shortcutsList = document.getElementById('shortcuts-list');
+  
+  // 現在のテーマを画面に適用
+  function applyTheme(theme) {
+    document.body.setAttribute('data-theme', theme);
+    
+    if (theme === 'high-contrast') {
+      document.body.classList.add('high-contrast-theme');
+    } else {
+      document.body.classList.remove('high-contrast-theme');
+    }
+  }
+  
+  // フォントサイズを適用
+  function applyFontSize(size) {
+    document.body.classList.remove('font-small', 'font-medium', 'font-large', 'font-x-large');
+    
+    if (size && size !== 'medium') {
+      document.body.classList.add('font-' + size.replace('-', '-'));
+    }
+  }
+  
+  // キーボードショートカットの有効/無効を適用
+  function applyKeyboardShortcuts(enabled) {
+    document.body.setAttribute('data-shortcuts-enabled', enabled);
+    
+    if (shortcutsList) {
+      shortcutsList.style.opacity = enabled ? '1' : '0.6';
+      shortcutsList.style.pointerEvents = enabled ? 'auto' : 'none';
+    }
+  }
+  
+  // 保存状態を表示
+  function showSaveStatus(message, type = 'success') {
+    saveStatus.innerHTML = `
+      <div class="save-message save-message-${type}">
+        <i data-lucide="${type === 'success' ? 'check' : 'x'}" class="save-icon"></i>
+        <span>${message}</span>
+      </div>
+    `;
+    
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+    
+    setTimeout(() => {
+      saveStatus.innerHTML = '';
+    }, 3000);
+  }
+  
+  // 初期設定を適用
+  const currentTheme = document.querySelector('input[name="user[theme]"]:checked')?.value || 'light';
+  const currentFontSize = document.querySelector('input[name="user[font_size]"]:checked')?.value || 'medium';
+  const shortcutsEnabled = document.querySelector('input[name="user[keyboard_shortcuts_enabled]"]')?.checked !== false;
+  
+  applyTheme(currentTheme);
+  applyFontSize(currentFontSize);
+  applyKeyboardShortcuts(shortcutsEnabled);
+  
+  // 設定変更をリアルタイムで保存
+  settingOptions.forEach(option => {
+    option.addEventListener('change', function() {
+      const settingType = this.dataset.settingOption;
+      let value;
+      
+      if (this.type === 'checkbox') {
+        value = this.checked;
+      } else if (this.checked) {
+        value = this.value;
+      } else {
+        return; // ラジオボタンが未選択の場合は何もしない
+      }
+      
+      // 即座に設定を適用
+      switch (settingType) {
+        case 'theme':
+          if (this.checked) applyTheme(value);
+          break;
+        case 'font_size':
+          if (this.checked) applyFontSize(value);
+          break;
+        case 'keyboard_shortcuts':
+          applyKeyboardShortcuts(value);
+          break;
+      }
+      
+      // サーバーに保存
+      const formData = new FormData(settingsForm);
+      
+      fetch(settingsForm.action, {
+        method: 'PATCH',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          showSaveStatus(data.message, 'success');
+        } else {
+          showSaveStatus(data.message || '保存に失敗しました', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showSaveStatus('保存に失敗しました', 'error');
+      });
+    });
+  });
+  
+  // キーボードショートカット機能
+  function handleKeyboardShortcuts(e) {
+    const shortcutsEnabled = document.body.getAttribute('data-shortcuts-enabled') === 'true';
+    if (!shortcutsEnabled) return;
+    
+    // Ctrl/Cmd + N: 新しいメモ
+    if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+      e.preventDefault();
+      const createBtn = document.querySelector('.create-memo-btn');
+      if (createBtn) createBtn.click();
+    }
+    
+    // Ctrl/Cmd + S: 保存
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      const saveBtn = document.querySelector('.save-btn, .form-actions .btn-primary');
+      if (saveBtn) saveBtn.click();
+    }
+    
+    // Ctrl/Cmd + F: 検索
+    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+      e.preventDefault();
+      const searchInput = document.querySelector('.search-input');
+      if (searchInput) searchInput.focus();
+    }
+    
+    // Ctrl/Cmd + /: ショートカット一覧
+    if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+      e.preventDefault();
+      const shortcutsPanel = document.querySelector('.shortcuts-panel');
+      if (shortcutsPanel) {
+        shortcutsPanel.style.display = shortcutsPanel.style.display === 'none' ? 'block' : 'none';
+      }
+    }
+    
+    // Escape: 編集終了
+    if (e.key === 'Escape') {
+      document.activeElement.blur();
+    }
+  }
+  
+  // キーボードショートカットのイベントリスナーを追加
+  document.addEventListener('keydown', handleKeyboardShortcuts);
+});
+</script> 

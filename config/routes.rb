@@ -15,6 +15,9 @@ Rails.application.routes.draw do
     end
   end
   
+  # 設定
+  resource :settings, only: [:show, :update]
+  
   # ユーザー登録
   get 'signup', to: 'users#signup', as: 'signup'
   post 'signup', to: 'users#create'
@@ -34,7 +37,6 @@ Rails.application.routes.draw do
     
     collection do
       get :search
-      get :export
       get :public_memos  # 公開メモ一覧
       get :shared_memos  # 共有メモ一覧
     end

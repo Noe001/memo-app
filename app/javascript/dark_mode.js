@@ -11,12 +11,15 @@ class ShadcnDarkModeToggle {
   init() {
     if (!this.themeToggle) return;
 
-    // Check for saved theme preference or default to system preference
+    // Check for saved theme preference, server setting, or default to system preference
     const savedTheme = localStorage.getItem('theme');
+    const serverTheme = document.body.getAttribute('data-theme');
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
     if (savedTheme) {
       this.setTheme(savedTheme);
+    } else if (serverTheme && serverTheme !== 'light') {
+      this.setTheme(serverTheme);
     } else if (systemPrefersDark) {
       this.setTheme('dark');
     } else {
@@ -44,6 +47,13 @@ class ShadcnDarkModeToggle {
     
     // Update body attribute
     document.body.setAttribute('data-theme', theme);
+    
+    // Handle high-contrast theme class
+    if (theme === 'high-contrast') {
+      document.body.classList.add('high-contrast-theme');
+    } else {
+      document.body.classList.remove('high-contrast-theme');
+    }
     
     // Update theme toggle icons
     this.updateIcons(isDark);
@@ -82,11 +92,29 @@ class ShadcnDarkModeToggle {
     return document.body.getAttribute('data-theme') || 'light';
   }
 
+// Update server with theme preference
+  updateServerTheme(theme) {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    if (!csrfToken) return;
+    
+    fetch('/settings', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      },
+      body: JSON.stringify({ user: { theme: theme } })
+    })
+    .then(response => response.json())
+    .catch(error => console.error('Error updating theme on server:', error));
+  }
+
   toggleTheme() {
     const currentTheme = this.getCurrentTheme();
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     this.setTheme(newTheme);
     this.saveTheme(newTheme);
+    this.updateServerTheme(newTheme);
   }
 }
 
@@ -110,7 +138,8 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+
 // Export for module systems
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = ShadcnDarkModeToggle;
-} 
+}

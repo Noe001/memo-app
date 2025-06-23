@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_05_000004) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_22_000002) do
   create_table "memo_tags", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "memo_id", null: false
     t.bigint "tag_id", null: false
@@ -61,6 +61,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_05_000004) do
     t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "theme", default: "light"
+    t.string "font_size", default: "medium"
+    t.boolean "keyboard_shortcuts_enabled", default: true
   end
 
   add_foreign_key "memo_tags", "memos"
