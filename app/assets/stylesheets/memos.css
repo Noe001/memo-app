@@ -164,21 +164,6 @@
   color: var(--text-white);
 }
 
-/* Memo List */
-.memo-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0 var(--spacing-sm);
-}
-
-.memo-item {
-  margin-bottom: var(--spacing-sm);
-  border-radius: var(--border-radius);
-  transition: all 0.2s ease;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-light);
-}
-
 /* Dark mode memo items */
 [data-theme="dark"] .memo-item {
   background: var(--bg-primary);
@@ -275,22 +260,7 @@
   margin-bottom: var(--spacing-sm);
 }
 
-.memo-tag {
-  display: inline-block;
-  padding: 2px 6px;
-  border-radius: var(--border-radius-sm);
-  font-size: var(--font-size-xs);
-  font-weight: 500;
-  background: var(--bg-tertiary);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
-}
-
-[data-theme="dark"] .memo-tag {
-  background: var(--bg-tertiary);
-  color: var(--text-secondary);
-  border-color: var(--border-color);
-}
+/* メモタグスタイルはmemo_app_shadcn.cssで統一管理 */
 
 .memo-tag-more {
   color: var(--text-light);
@@ -390,10 +360,6 @@
   flex-direction: column;
 }
 
-
-
-
-
 .memo-meta {
   margin-top: var(--spacing-sm);
   color: var(--text-light);
@@ -473,6 +439,26 @@
   justify-content: flex-end;
   position: sticky;
   bottom: 0;
+}
+
+/* ダークモード対応 */
+/* ライトモード */
+[data-theme="light"] .form-actions {
+  background: var(--background-accessibility, rgba(255, 255, 255, 0.9));
+  border-top-color: var(--border-accessibility, #ddd);
+}
+
+/* ダークモード */
+[data-theme="dark"] .form-actions {
+  background: var(--background-accessibility, rgba(30, 41, 59, 0.9));
+  border-top-color: var(--border-accessibility, #475569);
+}
+
+/* 高コントラストモード */
+[data-theme="high-contrast"] .form-actions {
+  background: var(--background-accessibility, #000000);
+  border-top-color: var(--border-accessibility, #ffffff);
+  border-top-width: 2px;
 }
 
 /* Action Buttons */
@@ -642,3 +628,52 @@
     transform: rotate(360deg);
   }
 }
+
+/* ライトモード検索ボックス */
+[data-theme="light"] .search-input,
+[data-theme="light"] .search_box {
+  background: var(--background-accessibility, rgba(255, 255, 255, 0.9));
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="light"] .search-input:focus,
+[data-theme="light"] .search_box:focus {
+  background: var(--background-accessibility-hover, #fff);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* ダークモード検索ボックス */
+[data-theme="dark"] .search-input,
+[data-theme="dark"] .search_box {
+  background: var(--background-accessibility, rgba(30, 41, 59, 0.9));
+  color: var(--text-white, #ffffff);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .search-input:focus,
+[data-theme="dark"] .search_box:focus {
+  background: var(--background-accessibility-hover, #334155);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+/* 高コントラストモード検索ボックス */
+[data-theme="high-contrast"] .search-input,
+[data-theme="high-contrast"] .search_box {
+  background: var(--background-accessibility, #000000);
+  color: var(--text-white, #ffffff);
+  border-color: var(--border-accessibility, #ffffff);
+  border-width: 2px;
+}
+
+[data-theme="high-contrast"] .search-input:focus,
+[data-theme="high-contrast"] .search_box:focus {
+  background: var(--background-accessibility-hover, #333333);
+  border-color: var(--border-accessibility, #ffffff);
+  border-width: 2px;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+/* タグスタイルはmemo_app_shadcn.cssで統一管理 */

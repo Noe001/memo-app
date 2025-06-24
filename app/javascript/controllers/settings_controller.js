@@ -83,11 +83,8 @@ export default class extends Controller {
   // テーマを適用
   applyTheme(theme) {
     document.body.setAttribute('data-theme', theme)
-    if (theme === 'high-contrast') {
-      document.body.classList.add('high-contrast-theme')
-    } else {
-      document.body.classList.remove('high-contrast-theme')
-    }
+    // Remove any legacy theme classes (no longer needed)
+    document.body.classList.remove('high-contrast-theme')
   }
 
   // フォントサイズを適用
@@ -153,9 +150,8 @@ export default class extends Controller {
   // 初期設定を適用
   initializeSettings() {
     const initialTheme = document.body.getAttribute('data-theme')
-    if (initialTheme === 'high-contrast') {
-      document.body.classList.add('high-contrast-theme')
-    }
+    // Remove any legacy theme classes (no longer needed)
+    document.body.classList.remove('high-contrast-theme')
   }
 
   // キーボードショートカットを設定

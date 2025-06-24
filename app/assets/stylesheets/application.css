@@ -57,6 +57,13 @@
   --font-size-xl: 1.25rem;
   --font-size-2xl: 1.5rem;
   --font-size-3xl: 1.875rem;
+  
+  /* Accessibility Variables for Light Mode */
+  --background-accessibility: rgba(255, 255, 255, 0.9);
+  --border-accessibility: #ddd;
+  --background-accessibility-hover: #fff;
+  --tag-count-hover-bg: rgba(255, 255, 255, 0.2);
+  --error-hover: #dc2626;
 }
 
 /* Reset and Base Styles */
@@ -382,6 +389,13 @@ a:hover {
   --shadow-md: 0 4px 6px -1px rgb(56 189 248 / 0.15), 0 2px 4px -2px rgb(56 189 248 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(56 189 248 / 0.15), 0 4px 6px -4px rgb(56 189 248 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(56 189 248 / 0.15), 0 8px 10px -6px rgb(56 189 248 / 0.1);
+  
+  /* Accessibility Variables for Dark Mode */
+  --background-accessibility: rgba(30, 41, 59, 0.9);
+  --border-accessibility: #475569;
+  --background-accessibility-hover: #334155;
+  --tag-count-hover-bg: rgba(255, 255, 255, 0.1);
+  --error-hover: #ef4444;
 }
 
 [data-theme="dark"] .notice {
@@ -572,4 +586,83 @@ input:checked + .slider:before {
 
 [data-theme="dark"] .theme-label {
   filter: brightness(1.2);
+}
+
+/* High Contrast Mode - Accessibility Theme */
+[data-theme="high-contrast"] {
+  /* Colors - High Contrast Theme */
+  --primary-color: #ffffff;
+  --primary-hover: #cccccc;
+  --secondary-color: #ffffff;
+  --success-color: #00ff00;
+  --warning-color: #ffff00;
+  --error-color: #ff0000;
+  
+  /* Backgrounds - High Contrast Theme */
+  --bg-primary: #000000;
+  --bg-secondary: #000000;
+  --bg-tertiary: #333333;
+  --bg-dark: #000000;
+  
+  /* Text Colors - High Contrast Theme */
+  --text-primary: #ffffff;
+  --text-secondary: #ffffff;
+  --text-light: #ffffff;
+  --text-white: #ffffff;
+  
+  /* Borders - High Contrast Theme */
+  --border-color: #ffffff;
+  --border-light: #ffffff;
+  
+  /* Shadows - High Contrast Theme */
+  --shadow-sm: 0 1px 2px 0 rgb(255 255 255 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(255 255 255 / 0.3), 0 2px 4px -2px rgb(255 255 255 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(255 255 255 / 0.3), 0 4px 6px -4px rgb(255 255 255 / 0.3);
+  --shadow-xl: 0 20px 25px -5px rgb(255 255 255 / 0.3), 0 8px 10px -6px rgb(255 255 255 / 0.3);
+  
+  /* Accessibility Variables for High Contrast Mode */
+  --background-accessibility: #000000;
+  --border-accessibility: #ffffff;
+  --background-accessibility-hover: #333333;
+  --tag-count-hover-bg: rgba(255, 255, 255, 0.3);
+  --error-hover: #ff0000;
+  
+  /* Shadcn-ui style variables for high contrast */
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #000000;
+  --card-foreground: #ffffff;
+  --popover: #000000;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: #ffffff;
+  --secondary-foreground: #000000;
+  --muted: #333333;
+  --muted-foreground: #ffffff;
+  --accent: #333333;
+  --accent-foreground: #ffffff;
+  --destructive: #ff0000;
+  --destructive-foreground: #ffffff;
+  --border: #ffffff;
+  --input: #ffffff;
+  --ring: #ffffff;
+  --radius: 0.5rem;
+}
+
+[data-theme="high-contrast"] .notice {
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+
+[data-theme="high-contrast"] .alert {
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid #ff0000;
+}
+
+[data-theme="high-contrast"] .theme-label {
+  color: #ffffff;
+  font-weight: 700;
 }

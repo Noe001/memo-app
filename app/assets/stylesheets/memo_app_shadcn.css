@@ -190,6 +190,22 @@
   color: var(--destructive-foreground);
 }
 
+/* 高コントラストモード対応のドロップダウンアイテム */
+[data-theme="high-contrast"] .dropdown-item:hover {
+  background-color: var(--background-accessibility-hover, #333333);
+  color: var(--foreground);
+}
+
+[data-theme="high-contrast"] .dropdown-item:focus {
+  background-color: var(--background-accessibility-hover, #333333);
+  color: var(--foreground);
+}
+
+[data-theme="high-contrast"] .dropdown-item-danger:hover {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
 .dropdown-icon {
   width: 1rem;
   height: 1rem;
@@ -225,6 +241,22 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+/* ダークモード対応のサイドバーボーダー */
+[data-theme="dark"] .memo-sidebar {
+  border-right-color: #475569;
+}
+
+/* ライトモード対応のサイドバーボーダー */
+[data-theme="light"] .memo-sidebar {
+  border-right-color: #e5e7eb;
+}
+
+/* 高コントラストモード対応のサイドバーボーダー */
+[data-theme="high-contrast"] .memo-sidebar {
+  border-right-color: #ffffff;
+  border-right-width: 2px;
 }
 
 .sidebar-header {
@@ -332,6 +364,33 @@
   border-radius: 0;
 }
 
+/* ダークモード検索ボックス対応 */
+[data-theme="dark"] .search-input {
+  background-color: var(--background-accessibility, rgba(30, 41, 59, 0.9));
+  border-color: var(--border-accessibility, #475569);
+  color: var(--foreground);
+}
+
+[data-theme="dark"] .search-input:focus {
+  background-color: var(--background-accessibility-hover, #334155);
+  outline-color: var(--ring);
+}
+
+/* 高コントラスト検索ボックス対応 */
+[data-theme="high-contrast"] .search-input {
+  background-color: var(--background-accessibility, #000000);
+  border-color: var(--border-accessibility, #ffffff);
+  color: var(--foreground);
+  border-width: 2px;
+}
+
+[data-theme="high-contrast"] .search-input:focus {
+  background-color: var(--background-accessibility-hover, #333333);
+  outline-color: var(--ring);
+  outline-width: 3px;
+  border-width: 3px;
+}
+
 .search-icon {
   position: absolute;
   left: 0.75rem;
@@ -411,18 +470,55 @@
   color: var(--primary);
 }
 
+/* ライトモード対応のタグスタイル */
+[data-theme="light"] .tag-item {
+  background-color: var(--background-accessibility, rgba(255, 255, 255, 0.9));
+  border-color: var(--border-accessibility, #ddd);
+  color: var(--muted-foreground);
+}
+
+[data-theme="light"] .tag-item:hover {
+  background-color: var(--background-accessibility-hover, #fff);
+  color: var(--foreground);
+  border-color: var(--border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+[data-theme="light"] .tag-item.active {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+[data-theme="light"] .tag-count {
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+}
+
+[data-theme="light"] .tag-item:hover .tag-count {
+  background-color: var(--tag-count-hover-bg, rgba(0, 0, 0, 0.1));
+  color: var(--foreground);
+}
+
+[data-theme="light"] .tag-item.active .tag-count {
+  background-color: var(--primary-foreground);
+  color: var(--primary);
+}
+
 /* ダークモード対応のタグスタイル */
 [data-theme="dark"] .tag-item {
-  background-color: var(--card);
-  border-color: var(--border);
+  background-color: var(--background-accessibility, rgba(30, 41, 59, 0.9));
+  border-color: var(--border-accessibility, #475569);
   color: var(--muted-foreground);
 }
 
 [data-theme="dark"] .tag-item:hover {
-  background-color: var(--accent);
+  background-color: var(--background-accessibility-hover, #334155);
   color: var(--foreground);
   border-color: var(--border);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
 }
 
 [data-theme="dark"] .tag-item.active {
@@ -431,30 +527,60 @@
   border-color: var(--primary);
 }
 
+[data-theme="dark"] .tag-count {
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+}
+
+[data-theme="dark"] .tag-item:hover .tag-count {
+  background-color: var(--tag-count-hover-bg, rgba(255, 255, 255, 0.1));
+  color: var(--foreground);
+}
+
 [data-theme="dark"] .tag-item.active .tag-count {
   background-color: var(--primary-foreground);
   color: var(--primary);
 }
 
 [data-theme="high-contrast"] .tag-item {
-  background-color: var(--card);
-  border-color: var(--border);
+  background-color: var(--background-accessibility, #000000);
+  border-color: var(--border-accessibility, #ffffff);
   color: var(--muted-foreground);
   border-width: 2px;
 }
 
 [data-theme="high-contrast"] .tag-item:hover {
-  background-color: var(--accent);
+  background-color: var(--background-accessibility-hover, #333333);
   color: var(--foreground);
-  border-color: var(--primary);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  border-color: var(--border-accessibility, #ffffff);
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.3);
+  border-width: 2px;
+  transform: translateY(-1px);
 }
 
 [data-theme="high-contrast"] .tag-item.active {
   background-color: var(--primary);
   color: var(--primary-foreground);
   border-color: var(--primary);
-  border-width: 3px;
+  border-width: 2px;
+}
+
+[data-theme="high-contrast"] .tag-count {
+  background-color: var(--background-accessibility-hover, #333333);
+  color: var(--foreground);
+  border: 1px solid var(--border-accessibility, #ffffff);
+}
+
+[data-theme="high-contrast"] .tag-item:hover .tag-count {
+  background-color: var(--tag-count-hover-bg, rgba(255, 255, 255, 0.3));
+  color: var(--foreground);
+  border-color: var(--border-accessibility, #ffffff);
+}
+
+[data-theme="high-contrast"] .tag-item.active .tag-count {
+  background-color: var(--primary-foreground);
+  color: var(--primary);
+  border-color: var(--primary-foreground);
 }
 
 /* Memo List */
@@ -532,13 +658,13 @@
 
 [data-theme="high-contrast"] .memo-item:hover {
   border-color: var(--primary);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  background-color: var(--accent);
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.3);
+  background-color: var(--background-accessibility-hover, #333333);
 }
 
 [data-theme="high-contrast"] .memo-item.active {
   border-color: var(--primary);
-  background-color: var(--accent);
+  background-color: var(--background-accessibility-hover, #333333);
   border-width: 3px;
 }
 
@@ -592,6 +718,28 @@
   border-radius: 9999px;
   font-size: 0.625rem;
   font-weight: 500;
+}
+
+/* ライトモード対応のメモタグスタイル */
+[data-theme="light"] .memo-tag {
+  background-color: var(--background-accessibility, rgba(255, 255, 255, 0.9));
+  color: var(--muted-foreground);
+  border-color: var(--border-accessibility, #ddd);
+}
+
+/* ダークモード対応のメモタグスタイル */
+[data-theme="dark"] .memo-tag {
+  background-color: var(--background-accessibility, rgba(30, 41, 59, 0.9));
+  color: var(--muted-foreground);
+  border-color: var(--border-accessibility, #475569);
+}
+
+/* 高コントラストモード対応のメモタグスタイル */
+[data-theme="high-contrast"] .memo-tag {
+  background-color: var(--background-accessibility, #000000);
+  color: var(--foreground);
+  border: 2px solid var(--border-accessibility, #ffffff);
+  border-radius: 0;
 }
 
 .memo-tag-more {
@@ -649,9 +797,9 @@
 
 .memo-form .form-body .input-group .input.title-input:focus {
   outline: none;
-  border-bottom-color: var(--primary);
+  border-bottom-color: var(--ring);
   border-radius: 0;
-  box-shadow: none;
+  box-shadow: 0 2px 0 0 var(--ring);
   border-top: none;
   border-left: none;
   border-right: none;
@@ -691,7 +839,7 @@
 .tags-input:focus {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
-  border-color: transparent;
+  border-color: var(--ring);
 }
 
 .visibility-select {
@@ -744,33 +892,36 @@
 
 /* ダークモード対応 */
 [data-theme="dark"] .visibility-group .input {
-  background-color: var(--background);
-  border-color: var(--border);
+  background-color: var(--background-accessibility, rgba(30, 41, 59, 0.9));
+  border-color: var(--border-accessibility, #475569);
   color: var(--foreground);
 }
 
 [data-theme="dark"] .visibility-group .input:focus {
+  background-color: var(--background-accessibility-hover, #334155);
   outline-color: var(--ring);
 }
 
 [data-theme="light"] .visibility-group .input {
-  background-color: var(--background);
-  border-color: var(--border);
+  background-color: var(--background-accessibility, rgba(255, 255, 255, 0.9));
+  border-color: var(--border-accessibility, #ddd);
   color: var(--foreground);
 }
 
 [data-theme="light"] .visibility-group .input:focus {
+  background-color: var(--background-accessibility-hover, #fff);
   outline-color: var(--ring);
 }
 
 [data-theme="high-contrast"] .visibility-group .input {
-  background-color: var(--background);
-  border-color: var(--border);
+  background-color: var(--background-accessibility, #000000);
+  border-color: var(--border-accessibility, #ffffff);
   color: var(--foreground);
   border-width: 2px;
 }
 
 [data-theme="high-contrast"] .visibility-group .input:focus {
+  background-color: var(--background-accessibility-hover, #333333);
   outline-color: var(--ring);
   outline-width: 3px;
 }
@@ -781,21 +932,7 @@
   align-items: center;
 }
 
-
-
-/* ダークモード対応 */
-[data-theme="dark"] .form-actions {
-  border-top-color: var(--border);
-}
-
-[data-theme="light"] .form-actions {
-  border-top-color: var(--border);
-}
-
-[data-theme="high-contrast"] .form-actions {
-  border-top-color: var(--border);
-  border-top-width: 2px;
-}
+/* form-actions テーマ対応（memos.cssで統一管理するため削除） */
 
 /* Empty State */
 .empty-state {
@@ -842,8 +979,6 @@
   right: 1rem;
   z-index: 50;
 }
-
-
 
 .shortcuts-panel {
   position: absolute;
@@ -1460,8 +1595,6 @@ kbd {
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
-
-
 /* Font Size Classes */
 body.font-small {
   font-size: 14px;
@@ -1492,8 +1625,6 @@ body.font-x-large {
   padding: 0.1rem;
   border-radius: var(--radius);
 }
-
-
 
 .hamburger-btn:hover {
   transform: scale(1.1);
@@ -1578,8 +1709,6 @@ body.font-x-large {
   color: var(--foreground);
   margin: 0;
 }
-
-
 
 .sidebar-content {
   padding: 1.5rem;
@@ -2004,36 +2133,8 @@ body.font-x-large {
   }
 }
 
-/* High Contrast Theme Styles */
-body.high-contrast-theme {
-  --background: #000000;
-  --foreground: #ffffff;
-  --card: #000000;
-  --card-foreground: #ffffff;
-  --popover: #000000;
-  --popover-foreground: #ffffff;
-  --primary: #ffffff;
-  --primary-foreground: #000000;
-  --secondary: #ffffff;
-  --secondary-foreground: #000000;
-  --muted: #ffffff;
-  --muted-foreground: #ffffff;
-  --accent: #ffffff;
-  --accent-foreground: #000000;
-  --destructive: #ff0000;
-  --destructive-foreground: #ffffff;
-  --border: #ffffff;
-  --input: #ffffff;
-  --ring: #ffffff;
-}
-
-body.high-contrast-theme * {
-  border-color: #ffffff !important;
-}
-
-body.high-contrast-theme .theme-label:hover {
-  background-color: #333333;
-}
+/* High Contrast Theme Styles - Removed duplicated CSS variables */
+/* CSS variables are now defined in application.css under [data-theme="high-contrast"] */
 
 @keyframes slideIn {
   from {
