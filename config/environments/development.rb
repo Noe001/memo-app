@@ -8,7 +8,13 @@ Rails.application.configure do
   # since you don't have to restart the web server when you make code changes.
   config.enable_reloading = true
 
-  config.web_console.allowed_ips = '172.27.0.1'
+  # Docker環境用の設定
+  config.hosts << "app"
+  config.hosts << "localhost"
+  config.hosts << "0.0.0.0"
+  
+  # Web Console設定（Docker環境用）
+  config.web_console.allowed_ips = ['172.0.0.0/8', '192.168.0.0/16', '10.0.0.0/8']
 
   # Do not eager load code on boot.
   config.eager_load = false
@@ -25,13 +31,12 @@ Rails.application.configure do
     config.action_controller.perform_caching = true
     config.action_controller.enable_fragment_cache_logging = true
 
-    config.cache_store = :memory_store
+    config.cache_store = :redis_cache_store, { url: ENV.fetch("REDIS_URL", "redis://redis:6379/0") }
     config.public_file_server.headers = {
       "Cache-Control" => "public, max-age=#{2.days.to_i}"
     }
   else
     config.action_controller.perform_caching = false
-
     config.cache_store = :null_store
   end
 
@@ -40,7 +45,6 @@ Rails.application.configure do
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
-
   config.action_mailer.perform_caching = false
 
   # Print deprecation notices to the Rails logger.

@@ -1,0 +1,31 @@
+# 開発環境用のオーバーライド設定
+version: '3.8'
+
+services:
+  app:
+    volumes:
+      - .:/app
+      - bundle_cache:/usr/local/bundle
+      - node_modules:/app/node_modules
+    environment:
+      - RAILS_ENV=development
+      - BUNDLE_PATH=/usr/local/bundle
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+
+  db:
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    ports:
+      - "6379:6379"
+
+volumes:
+  bundle_cache:
+  node_modules:
+  mysql_data:

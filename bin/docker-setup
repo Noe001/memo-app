@@ -1,0 +1,42 @@
+#!/bin/bash
+
+echo "🐳 Docker環境のセットアップを開始します..."
+
+# 環境変数ファイルの確認
+if [ ! -f .env ]; then
+    echo "📝 .envファイルを作成しています..."
+    cp .env.example .env
+fi
+
+# Dockerイメージのビルド
+echo "🔨 Dockerイメージをビルドしています..."
+docker compose build
+
+# コンテナの起動
+echo "🚀 コンテナを起動しています..."
+docker compose up -d
+
+# データベースの準備を待機
+echo "⏳ データベースの準備を待機しています..."
+sleep 30
+
+# データベースのセットアップ
+echo "🗄️ データベースをセットアップしています..."
+docker compose exec app rails db:create
+docker compose exec app rails db:migrate
+docker compose exec app rails db:seed
+
+echo "✅ セットアップが完了しました！"
+echo ""
+echo "🌐 アプリケーションにアクセス: http://localhost:3000"
+echo "📊 データベース: localhost:3306"
+echo "🔴 Redis: localhost:6379"
+echo ""
+echo "📝 テストユーザー:"
+echo "   Email: takumi.test@tateito.co.jp"
+echo "   Password: testpassword"
+echo ""
+echo "🛠️ 便利なコマンド:"
+echo "   docker compose logs -f app    # ログ確認"
+echo "   docker compose exec app bash  # コンテナ内に入る"
+echo "   docker compose down           # 停止"
