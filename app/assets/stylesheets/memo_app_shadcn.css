@@ -231,7 +231,7 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--border);
 }
 
 .sidebar-header-top {
@@ -332,6 +332,41 @@
   border-radius: 0;
 }
 
+/* 検索入力のテーマ対応 */
+[data-theme="light"] .search-input {
+  background-color: var(--card);
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+[data-theme="light"] .search-input:focus {
+  background-color: var(--muted);
+  border-color: var(--ring);
+}
+
+[data-theme="dark"] .search-input {
+  background-color: var(--card);
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+[data-theme="dark"] .search-input:focus {
+  background-color: var(--muted);
+  border-color: var(--ring);
+}
+
+[data-theme="high-contrast"] .search-input {
+  background-color: var(--card);
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+[data-theme="high-contrast"] .search-input:focus {
+  background-color: #222222;
+  border-color: #ffffff;
+  border-width: 2px;
+}
+
 .search-icon {
   position: absolute;
   left: 0.75rem;
@@ -411,7 +446,20 @@
   color: var(--primary);
 }
 
-/* ダークモード対応のタグスタイル */
+/* タグアイテムのテーマ対応 */
+[data-theme="light"] .tag-item {
+  background-color: var(--card);
+  border-color: var(--border);
+  color: var(--muted-foreground);
+}
+
+[data-theme="light"] .tag-item:hover {
+  background-color: var(--accent);
+  color: var(--foreground);
+  border-color: var(--border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 [data-theme="dark"] .tag-item {
   background-color: var(--card);
   border-color: var(--border);
@@ -431,9 +479,52 @@
   border-color: var(--primary);
 }
 
+[data-theme="light"] .tag-item .tag-count {
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+}
+
+[data-theme="light"] .tag-item:hover .tag-count {
+  background-color: rgba(255, 255, 255, 0.7);
+  color: var(--foreground);
+}
+
+[data-theme="light"] .tag-item.active .tag-count {
+  background-color: var(--primary-foreground);
+  color: var(--primary);
+}
+
+[data-theme="dark"] .tag-item .tag-count {
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+}
+
+[data-theme="dark"] .tag-item:hover .tag-count {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--foreground);
+}
+
 [data-theme="dark"] .tag-item.active .tag-count {
   background-color: var(--primary-foreground);
   color: var(--primary);
+}
+
+[data-theme="high-contrast"] .tag-item .tag-count {
+  background-color: #333333;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+}
+
+[data-theme="high-contrast"] .tag-item:hover .tag-count {
+  background-color: #555555;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+}
+
+[data-theme="high-contrast"] .tag-item.active .tag-count {
+  background-color: #000000;
+  color: #ffffff;
+  border: 2px solid #ffffff;
 }
 
 [data-theme="high-contrast"] .tag-item {
@@ -461,16 +552,13 @@
 .memo-list {
   flex: 1;
   overflow-y: auto;
-  padding: 0 1.5rem 1.5rem;
 }
 
 .memo-item {
   display: block;
   padding: 1rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-bottom: 1px solid var(--border);
   background-color: var(--card);
-  margin-bottom: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
@@ -479,13 +567,12 @@
 
 .memo-item:hover {
   border-color: var(--slate-300);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transform: translateY(-1px);
 }
 
 .memo-item.active {
-  border-color: var(--primary);
-  background-color: var(--accent);
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+  border-width: 2px;
 }
 
 /* ダークモード対応 */
@@ -497,13 +584,11 @@
 
 [data-theme="dark"] .memo-item:hover {
   border-color: var(--slate-600);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   background-color: var(--accent);
 }
 
 [data-theme="dark"] .memo-item.active {
-  border-color: var(--primary);
-  background-color: var(--accent);
+  background-color: #1e3a8a;
 }
 
 [data-theme="light"] .memo-item {
@@ -514,32 +599,28 @@
 
 [data-theme="light"] .memo-item:hover {
   border-color: var(--slate-300);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   background-color: var(--accent);
 }
 
 [data-theme="light"] .memo-item.active {
-  border-color: var(--primary);
-  background-color: var(--accent);
+  background-color: #dbeafe;
 }
 
 [data-theme="high-contrast"] .memo-item {
   background-color: var(--card);
   border-color: var(--border);
   color: var(--foreground);
-  border-width: 2px;
+  border-width: 1px;
 }
 
 [data-theme="high-contrast"] .memo-item:hover {
-  border-color: var(--primary);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  background-color: var(--accent);
+  border-color: #ffffff;
+  background-color: #2a2a2a;
 }
 
 [data-theme="high-contrast"] .memo-item.active {
-  border-color: var(--primary);
-  background-color: var(--accent);
-  border-width: 3px;
+  border-color: #ffffff;
+  background-color: #1a1a1a;
 }
 
 .memo-header {
@@ -592,6 +673,39 @@
   border-radius: 9999px;
   font-size: 0.625rem;
   font-weight: 500;
+}
+
+/* メモタグのテーマ対応 */
+[data-theme="light"] .memo-tag {
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .memo-tag {
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+  border-color: var(--border);
+}
+
+[data-theme="high-contrast"] .memo-tag {
+  background-color: #333333;
+  color: #ffffff;
+  border-color: #ffffff;
+  border-width: 2px;
+}
+
+/* ライトモード時のメモカード内テキスト色 */
+[data-theme="light"] .memo-title {
+  color: #1f2937;
+}
+
+[data-theme="light"] .memo-preview {
+  color: #4b5563;
+}
+
+[data-theme="light"] .memo-date {
+  color: #6b7280;
 }
 
 .memo-tag-more {
@@ -657,6 +771,35 @@
   border-right: none;
   outline-offset: 0;
   background-color: transparent;
+}
+
+/* ライトモード時の入力フィールドの文字色とボーダー色 */
+[data-theme="light"] .memo-form .form-body .input-group .input.title-input {
+  color: #1f2937;
+  border-bottom-color: #6b7280;
+}
+
+[data-theme="light"] .memo-form .form-body .input-group .input.title-input:focus {
+  color: #1f2937;
+  border-bottom-color: #3b82f6;
+}
+
+[data-theme="light"] .content-textarea {
+  color: #1f2937;
+  border-color: #6b7280;
+}
+
+[data-theme="light"] .content-textarea:focus {
+  color: #1f2937;
+}
+
+[data-theme="light"] .tags-input {
+  color: #1f2937;
+  border-color: #6b7280;
+}
+
+[data-theme="light"] .tags-input:focus {
+  color: #1f2937;
 }
 
 .content-textarea {
@@ -783,17 +926,20 @@
 
 
 
-/* ダークモード対応 */
-[data-theme="dark"] .form-actions {
-  border-top-color: var(--border);
-}
-
+/* フォームアクションのテーマ対応 */
 [data-theme="light"] .form-actions {
   border-top-color: var(--border);
+  background: var(--background);
+}
+
+[data-theme="dark"] .form-actions {
+  border-top-color: var(--border);
+  background: var(--background);
 }
 
 [data-theme="high-contrast"] .form-actions {
   border-top-color: var(--border);
+  background: var(--background);
   border-top-width: 2px;
 }
 

@@ -327,7 +327,6 @@ GEM
       ffi (~> 1.12)
       logger
     rubyzip (2.3.2)
-    secure_headers (7.1.0)
     selenium-webdriver (4.22.0)
       base64 (~> 0.2)
       logger (~> 1.4)
@@ -431,7 +430,6 @@ DEPENDENCIES
   rubocop
   rubocop-rails
   rubocop-rspec
-  secure_headers
   selenium-webdriver (>= 4.22.0)
   shoulda-matchers
   simplecov

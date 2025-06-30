@@ -2,7 +2,7 @@
   <% if @memos.any? %>
     <% @memos.each do |memo| %>
       <% memo_class = "memo-item" %>
-      <% memo_class += " active" if memo.id == @memo_id %>
+      <% memo_class += " active" if @selected&.id == memo.id %>
       <%= link_to memo_path(memo), 
                   class: memo_class,
                   role: "listitem",

@@ -9,10 +9,10 @@
 #   end
 
 # サンプルユーザーを作成
-unless User.exists?(email: 'takumi.test@tateito.co.jp')
+unless User.exists?(email: 'test@example.com')
   user = User.create!(
     name: 'テストユーザー',
-    email: 'takumi.test@tateito.co.jp',
+    email: 'test@example.com',
     password: 'testpassword',
     password_confirmation: 'testpassword'
   )
@@ -20,14 +20,14 @@ unless User.exists?(email: 'takumi.test@tateito.co.jp')
 end
 
 # サンプルメモを作成
-if User.exists?(email: 'takumi.test@tateito.co.jp')
-  user = User.find_by(email: 'takumi.test@tateito.co.jp')
+if User.exists?(email: 'test@example.com')
+  user = User.find_by(email: 'test@example.com')
   
   unless user.memos.exists?
     memo = user.memos.create!(
       title: 'サンプルメモ',
-      content: 'これはサンプルのメモです。',
-      visibility: 'private'
+      description: 'これはサンプルのメモです。',
+      visibility: :private_memo
     )
     puts "サンプルメモを作成しました: #{memo.title}"
   end
