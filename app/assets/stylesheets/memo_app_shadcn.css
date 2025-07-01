@@ -570,8 +570,8 @@
 }
 
 .memo-item.active {
-  border-color: #3b82f6;
-  background-color: #eff6ff;
+  border-color: var(--primary);
+  background-color: var(--accent);
   border-width: 2px;
 }
 
@@ -588,7 +588,7 @@
 }
 
 [data-theme="dark"] .memo-item.active {
-  background-color: #1e3a8a;
+  background-color: var(--accent);
 }
 
 [data-theme="light"] .memo-item {
@@ -603,7 +603,7 @@
 }
 
 [data-theme="light"] .memo-item.active {
-  background-color: #dbeafe;
+  background-color: var(--accent);
 }
 
 [data-theme="high-contrast"] .memo-item {
@@ -619,8 +619,8 @@
 }
 
 [data-theme="high-contrast"] .memo-item.active {
-  border-color: #ffffff;
-  background-color: #1a1a1a;
+  border-color: var(--primary);
+  background-color: var(--accent);
 }
 
 .memo-header {
@@ -697,15 +697,15 @@
 
 /* ライトモード時のメモカード内テキスト色 */
 [data-theme="light"] .memo-title {
-  color: #1f2937;
+  color: var(--foreground);
 }
 
 [data-theme="light"] .memo-preview {
-  color: #4b5563;
+  color: var(--muted-foreground);
 }
 
 [data-theme="light"] .memo-date {
-  color: #6b7280;
+  color: var(--muted-foreground);
 }
 
 .memo-tag-more {
@@ -775,31 +775,31 @@
 
 /* ライトモード時の入力フィールドの文字色とボーダー色 */
 [data-theme="light"] .memo-form .form-body .input-group .input.title-input {
-  color: #1f2937;
-  border-bottom-color: #6b7280;
+  color: var(--foreground);
+  border-bottom-color: var(--border);
 }
 
 [data-theme="light"] .memo-form .form-body .input-group .input.title-input:focus {
-  color: #1f2937;
-  border-bottom-color: #3b82f6;
+  color: var(--foreground);
+  border-bottom-color: var(--primary);
 }
 
 [data-theme="light"] .content-textarea {
-  color: #1f2937;
-  border-color: #6b7280;
+  color: var(--foreground);
+  border-color: var(--border);
 }
 
 [data-theme="light"] .content-textarea:focus {
-  color: #1f2937;
+  color: var(--foreground);
 }
 
 [data-theme="light"] .tags-input {
-  color: #1f2937;
-  border-color: #6b7280;
+  color: var(--foreground);
+  border-color: var(--border);
 }
 
 [data-theme="light"] .tags-input:focus {
-  color: #1f2937;
+  color: var(--foreground);
 }
 
 .content-textarea {
@@ -2164,8 +2164,8 @@ body.high-contrast-theme {
   --secondary-foreground: #000000;
   --muted: #ffffff;
   --muted-foreground: #ffffff;
-  --accent: #ffffff;
-  --accent-foreground: #000000;
+  --accent: #333333;
+  --accent-foreground: #ffffff;
   --destructive: #ff0000;
   --destructive-foreground: #ffffff;
   --border: #ffffff;

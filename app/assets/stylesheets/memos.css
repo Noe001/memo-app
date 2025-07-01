@@ -219,21 +219,22 @@
 }
 
 .memo-item.active {
-  background-color: #eff6ff;
+  border-color: var(--primary);
+  background-color: var(--accent);
   border-width: 2px;
 }
 
 [data-theme="light"] .memo-item.active {
-  background-color: #dbeafe;
+  background-color: var(--accent);
 }
 
 [data-theme="dark"] .memo-item.active {
-  background-color: #263e7e;
+  background-color: var(--accent);
 }
 
 [data-theme="high-contrast"] .memo-item.active {
-  border-color: #ffffff;
-  background-color: #1a1a1a;
+  border-color: var(--primary);
+  background-color: var(--accent);
 }
 
 .memo-link {
