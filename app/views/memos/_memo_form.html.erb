@@ -43,9 +43,9 @@
           <label class="label" for="memo_to_add_visibility">公開設定</label>
           <%= f.select :visibility, 
                       options_for_select([
-                        ['プライベート', 'private_memo'],
-                        ['公開', 'public_memo'],
-                        ['共有', 'shared']
+                        ['プライベート', :private_memo],
+                        ['公開', :public_memo],
+                        ['共有', :shared]
                       ], @memo_to_add.visibility),
                       {},
                       { class: "input", id: "memo_to_add_visibility" } %>
@@ -102,9 +102,9 @@
           <label class="label" for="memo_edit_visibility">公開設定</label>
           <%= f.select :visibility, 
                       options_for_select([
-                        ['プライベート', 'private_memo'],
-                        ['公開', 'public_memo'],
-                        ['共有', 'shared']
+                        ['プライベート', :private_memo],
+                        ['公開', :public_memo],
+                        ['共有', :shared]
                       ], @selected.visibility),
                       {},
                       { class: "input", id: "memo_edit_visibility" } %>
@@ -169,10 +169,10 @@
           <label class="label" for="memo_new_visibility">公開設定</label>
           <%= f.select :visibility, 
                       options_for_select([
-                        ['プライベート', 'private_memo'],
-                        ['公開', 'public_memo'],
-                        ['共有', 'shared']
-                      ], 'private_memo'),
+                        ['プライベート', :private_memo],
+                        ['公開', :public_memo],
+                        ['共有', :shared]
+                      ], :private_memo),
                       {},
                       { class: "input", id: "memo_new_visibility" } %>
         </div>
