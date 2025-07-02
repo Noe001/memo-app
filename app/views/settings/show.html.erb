@@ -84,68 +84,7 @@
         </div>
       </div>
       
-      <!-- 文字サイズ設定 -->
-      <div class="settings-section">
-        <h2 class="section-title">
-          <i data-lucide="type" class="section-icon"></i>
-          文字サイズ設定
-        </h2>
-        <p class="section-description">読みやすさに合わせて文字サイズを調整してください</p>
-        
-        <div class="font-size-options">
-          <div class="font-size-option">
-            <%= form.radio_button :font_size, "small", 
-                                  id: "font_size_small", 
-                                  checked: @user.font_size == "small",
-                                  data: { setting_option: "font_size" } %>
-            <label for="font_size_small" class="font-size-label">
-              <div class="font-size-preview" data-size="small">
-                <h4>小さい</h4>
-                <p>コンパクトな表示で多くの情報を一度に確認できます</p>
-              </div>
-            </label>
-          </div>
-          
-          <div class="font-size-option">
-            <%= form.radio_button :font_size, "medium", 
-                                  id: "font_size_medium", 
-                                  checked: @user.font_size == "medium" || @user.font_size.blank?,
-                                  data: { setting_option: "font_size" } %>
-            <label for="font_size_medium" class="font-size-label">
-              <div class="font-size-preview" data-size="medium">
-                <h4>標準</h4>
-                <p>読みやすさとコンパクトさのバランスが取れた標準サイズです</p>
-              </div>
-            </label>
-          </div>
-          
-          <div class="font-size-option">
-            <%= form.radio_button :font_size, "large", 
-                                  id: "font_size_large", 
-                                  checked: @user.font_size == "large",
-                                  data: { setting_option: "font_size" } %>
-            <label for="font_size_large" class="font-size-label">
-              <div class="font-size-preview" data-size="large">
-                <h4>大きい</h4>
-                <p>大きな文字で読みやすく、目の負担を軽減します</p>
-              </div>
-            </label>
-          </div>
-          
-          <div class="font-size-option">
-            <%= form.radio_button :font_size, "x-large", 
-                                  id: "font_size_x_large", 
-                                  checked: @user.font_size == "x-large",
-                                  data: { setting_option: "font_size" } %>
-            <label for="font_size_x_large" class="font-size-label">
-              <div class="font-size-preview" data-size="x-large">
-                <h4>特大</h4>
-                <p>最も大きな文字サイズで、最高の視認性を提供します</p>
-              </div>
-            </label>
-          </div>
-        </div>
-      </div>
+      <!-- 文字サイズ設定 - REMOVED -->
       
       <!-- キーボードショートカット設定 -->
       <div class="settings-section">
@@ -175,7 +114,7 @@
               <dd>新しいメモを作成</dd>
               
               <dt><kbd>Ctrl</kbd> + <kbd>S</kbd></dt>
-              <dd>メモを保存</dd>
+              <dd>手動で保存（リアルタイム保存済み）</dd>
               
               <dt><kbd>Ctrl</kbd> + <kbd>F</kbd></dt>
               <dd>メモを検索</dd>
@@ -219,14 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  // フォントサイズを適用
-  function applyFontSize(size) {
-    document.body.classList.remove('font-small', 'font-medium', 'font-large', 'font-x-large');
-    
-    if (size && size !== 'medium') {
-      document.body.classList.add('font-' + size.replace('-', '-'));
-    }
-  }
+  // フォントサイズ機能 - REMOVED
   
   // キーボードショートカットの有効/無効を適用
   function applyKeyboardShortcuts(enabled) {
@@ -258,11 +190,9 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 初期設定を適用
   const currentTheme = document.querySelector('input[name="user[theme]"]:checked')?.value || 'light';
-  const currentFontSize = document.querySelector('input[name="user[font_size]"]:checked')?.value || 'medium';
   const shortcutsEnabled = document.querySelector('input[name="user[keyboard_shortcuts_enabled]"]')?.checked !== false;
   
   applyTheme(currentTheme);
-  applyFontSize(currentFontSize);
   applyKeyboardShortcuts(shortcutsEnabled);
   
   // 設定変更をリアルタイムで保存
@@ -283,9 +213,6 @@ document.addEventListener('DOMContentLoaded', function() {
       switch (settingType) {
         case 'theme':
           if (this.checked) applyTheme(value);
-          break;
-        case 'font_size':
-          if (this.checked) applyFontSize(value);
           break;
         case 'keyboard_shortcuts':
           applyKeyboardShortcuts(value);
@@ -318,48 +245,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
   
-  // キーボードショートカット機能
-  function handleKeyboardShortcuts(e) {
-    const shortcutsEnabled = document.body.getAttribute('data-shortcuts-enabled') === 'true';
-    if (!shortcutsEnabled) return;
-    
-    // Ctrl/Cmd + N: 新しいメモ
-    if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-      e.preventDefault();
-      const createBtn = document.querySelector('.create-memo-btn');
-      if (createBtn) createBtn.click();
-    }
-    
-    // Ctrl/Cmd + S: 保存
-    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-      e.preventDefault();
-      const saveBtn = document.querySelector('.save-btn, .form-actions .btn-primary');
-      if (saveBtn) saveBtn.click();
-    }
-    
-    // Ctrl/Cmd + F: 検索
-    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-      e.preventDefault();
-      const searchInput = document.querySelector('.search-input');
-      if (searchInput) searchInput.focus();
-    }
-    
-    // Ctrl/Cmd + /: ショートカット一覧
-    if ((e.ctrlKey || e.metaKey) && e.key === '/') {
-      e.preventDefault();
-      const shortcutsPanel = document.querySelector('.shortcuts-panel');
-      if (shortcutsPanel) {
-        shortcutsPanel.style.display = shortcutsPanel.style.display === 'none' ? 'block' : 'none';
-      }
-    }
-    
-    // Escape: 編集終了
-    if (e.key === 'Escape') {
-      document.activeElement.blur();
-    }
-  }
-  
-  // キーボードショートカットのイベントリスナーを追加
-  document.addEventListener('keydown', handleKeyboardShortcuts);
+  // キーボードショートカット機能は keyboard_shortcuts_controller.js で処理
 });
 </script> 

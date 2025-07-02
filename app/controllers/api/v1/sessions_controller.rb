@@ -50,8 +50,7 @@ class Api::V1::SessionsController < Api::V1::BaseController
       id: user.id,
       name: user.name,
       email: user.email,
-      theme: user.theme,
-      font_size: user.font_size
+      theme: user.theme
       # Add other relevant user data, but avoid sensitive info like password_digest
     }
   end

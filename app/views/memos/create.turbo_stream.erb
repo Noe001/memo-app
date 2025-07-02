@@ -1,0 +1,71 @@
+<% if @memo_new.persisted? %>
+  <!-- 成功時：メモ一覧を更新して新しいメモを表示 -->
+  <%= turbo_stream.replace "memo-list" do %>
+    <%= render 'memo_list' %>
+  <% end %>
+  
+  <!-- フォームを新規作成用にリセット -->
+  <%= turbo_stream.replace "memo-form-container" do %>
+    <% @memo_new = current_user.memos.build %>
+    <% @selected = nil %>
+    <% @can_add = false %>
+    <%= render 'memo_form' %>
+  <% end %>
+  
+  <!-- 成功メッセージを表示 -->
+  <%= turbo_stream.replace "flash-messages" do %>
+    <div id="flash-messages">
+      <div class="notice">
+        メモを作成しました
+      </div>
+    </div>
+  <% end %>
+  
+  <!-- タグフィルターを更新 -->
+  <%= turbo_stream.replace "tag-filter-container" do %>
+    <div id="tag-filter-container">
+      <% if @tags.present? %>
+        <div class="tag-filter" role="group" aria-label="タグによるフィルター">
+          <h3 class="filter-title">タグ</h3>
+          <div class="tag-list">
+            <% @tags.each do |tag_name, count| %>
+              <button class="tag-item" 
+                      data-tag="<%= tag_name %>"
+                      title="<%= tag_name %>タグでフィルター">
+                <span class="tag-name"><%= tag_name %></span>
+                <span class="tag-count"><%= count %></span>
+              </button>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  
+  <!-- ページネーションを更新 -->
+  <%= turbo_stream.replace "pagination-container" do %>
+    <div id="pagination-container" class="pagination-container">
+      <%= paginate @memos, 
+                  params: {
+                    sort_by: @current_sort_by,
+                    direction: @current_direction,
+                    word: params[:word]
+                  } %>
+    </div>
+  <% end %>
+
+<% else %>
+  <!-- エラー時：フォームをエラー付きで再表示 -->
+  <%= turbo_stream.replace "memo-form-container" do %>
+    <%= render 'memo_form' %>
+  <% end %>
+  
+  <!-- エラーメッセージを表示 -->
+  <%= turbo_stream.replace "flash-messages" do %>
+    <div id="flash-messages">
+      <div class="alert">
+        メモの保存に失敗しました: <%= @memo_new.errors.full_messages.join(', ') %>
+      </div>
+    </div>
+  <% end %>
+<% end %> 

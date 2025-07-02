@@ -16,9 +16,7 @@ class User < ApplicationRecord
   validates :theme, inclusion: { in: %w[light dark high-contrast], 
                                 message: "は有効なテーマを選択してください" }
   
-  # フォントサイズ設定のバリデーション
-  validates :font_size, inclusion: { in: %w[small medium large x-large], 
-                                    message: "は有効なフォントサイズを選択してください" }
+
   
   # ユーザーが作成したメモと関連付ける
   has_many :memos, dependent: :destroy

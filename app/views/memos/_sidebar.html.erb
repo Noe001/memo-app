@@ -1,6 +1,9 @@
 <div class="sidebar-header">
   <div class="sidebar-header-top">
-    <%= link_to memos_path, 
+    <%= link_to memos_path(
+                  sort_by: @current_sort_by, 
+                  direction: @current_direction, 
+                  word: params[:word]), 
                 class: "create-memo-icon-btn", 
                 role: "button",
                 "aria-label": "新しいメモを作成" do %>
@@ -24,9 +27,57 @@
     </div>
   <% end %>
   
+  <!-- 並べ替え -->
+  <div class="sort-filter" role="group" aria-label="並べ替え">
+    <h3 class="filter-title">並べ替え</h3>
+    <div class="sort-controls">
+      <%= form_with url: request.path, 
+                    method: :get, 
+                    local: true,
+                    class: "sort-form",
+                    data: { 
+                      controller: "sort-toggle",
+                      action: "change->memo#sort",
+                      sort_toggle_current_sort_by_value: @current_sort_by,
+                      sort_toggle_current_direction_value: @current_direction
+                    } do |f| %>
+        <div class="sort-select-container">
+          <%= f.select :sort_by, 
+                      options_for_select(@sort_options.map { |k, v| [v, k] }, @current_sort_by),
+                      {},
+                      { 
+                        class: "sort-select",
+                        "aria-label": "並べ替え方法を選択",
+                        data: { 
+                          action: "change->memo#autoSubmit",
+                          sort_toggle_target: "sortSelect"
+                        }
+                      } %>
+          <button type="button" 
+                  class="sort-direction-btn" 
+                  data-action="click->sort-toggle#toggleDirection"
+                  data-sort-toggle-target="directionBtn"
+                  title="<%= @current_direction == 'asc' ? '降順に変更' : '昇順に変更' %>">
+            <i data-lucide="arrow-up-down" class="sort-direction-icon"></i>
+            <span class="sort-direction-text">
+              <%= @current_direction == 'asc' ? '昇順' : '降順' %>
+            </span>
+          </button>
+        </div>
+        <%= f.hidden_field :direction, 
+                          value: @current_direction,
+                          data: { sort_toggle_target: "directionField" } %>
+        <% if params[:word].present? %>
+          <%= f.hidden_field :word, value: params[:word] %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+  
   <!-- タグフィルター -->
-  <% if @tags.present? %>
-    <div class="tag-filter" role="group" aria-label="タグによるフィルター">
+  <div id="tag-filter-container">
+    <% if @tags.present? %>
+      <div class="tag-filter" role="group" aria-label="タグによるフィルター">
       <h3 class="filter-title">タグ</h3>
       <div class="tag-list">
         <% @tags.each do |tag_name, count| %>
@@ -39,9 +90,20 @@
         <% end %>
       </div>
     </div>
-  <% end %>
+    <% end %>
+  </div>
 </div>
 
 <!-- メモ一覧 -->
-<%= render 'memo_list' %> 
+<%= render 'memo_list' %>
+
+<!-- ページネーション -->
+<div id="pagination-container" class="pagination-container">
+  <%= paginate @memos, 
+              params: {
+                sort_by: @current_sort_by,
+                direction: @current_direction,
+                word: params[:word]
+              } %>
+</div>
  

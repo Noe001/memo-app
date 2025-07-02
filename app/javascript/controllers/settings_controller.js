@@ -15,7 +15,6 @@ export default class extends Controller {
 
   connect() {
     this.bindSettingOptions()
-    this.bindKeyboardShortcuts()
   }
 
   // 設定ポップアップを開く
@@ -68,9 +67,6 @@ export default class extends Controller {
       case 'theme':
         if (input.checked) this.applyTheme(value)
         break
-      case 'font_size':
-        if (input.checked) this.applyFontSize(value)
-        break
       case 'keyboard_shortcuts':
         this.applyKeyboardShortcuts(value)
         break
@@ -90,17 +86,9 @@ export default class extends Controller {
     }
   }
 
-  // フォントサイズを適用
-  applyFontSize(size) {
-    document.body.classList.remove('font-small', 'font-medium', 'font-large', 'font-x-large')
-    if (size && size !== 'medium') {
-      document.body.classList.add('font-' + size.replace('-', '-'))
-    }
-  }
-
   // キーボードショートカットを適用
   applyKeyboardShortcuts(enabled) {
-    document.body.setAttribute('data-shortcuts-enabled', enabled)
+    this.updateKeyboardShortcuts(enabled)
     this.shortcutsEnabledValue = enabled
   }
 
@@ -158,36 +146,17 @@ export default class extends Controller {
     }
   }
 
-  // キーボードショートカットを設定
-  bindKeyboardShortcuts() {
-    document.addEventListener('keydown', (e) => {
-      this.handleGlobalKeyboardShortcuts(e)
-    })
-  }
-
-  // グローバルキーボードショートカットを処理
-  handleGlobalKeyboardShortcuts(e) {
-    if (!this.shortcutsEnabledValue) return
-    
-    // Ctrl/Cmd + N: 新しいメモ
-    if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-      e.preventDefault()
-      const createBtn = document.querySelector('.create-memo-btn')
-      if (createBtn) createBtn.click()
-    }
-    
-    // Ctrl/Cmd + S: 保存
-    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-      e.preventDefault()
-      const saveBtn = document.querySelector('.save-btn, .form-actions .btn-primary')
-      if (saveBtn) saveBtn.click()
-    }
-    
-    // Ctrl/Cmd + F: 検索
-    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-      e.preventDefault()
-      const searchInput = document.querySelector('.search-input')
-      if (searchInput) searchInput.focus()
+  // キーボードショートカット設定変更時の連携
+  updateKeyboardShortcuts(enabled) {
+    // body属性を更新
+    document.body.setAttribute('data-shortcuts-enabled', enabled)
+    // keyboard-shortcutsコントローラーに通知
+    const keyboardShortcutsController = document.querySelector('[data-controller*="keyboard-shortcuts"]')
+    if (keyboardShortcutsController) {
+      const controller = this.application.getControllerForElementAndIdentifier(keyboardShortcutsController, 'keyboard-shortcuts')
+      if (controller && controller.updateShortcutsEnabled) {
+        controller.updateShortcutsEnabled()
+      }
     }
   }
 

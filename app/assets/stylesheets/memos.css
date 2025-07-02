@@ -67,26 +67,7 @@
   align-items: center;
 }
 
-.search-input, .search_box {
-  width: 100%;
-  padding-right: 3rem;
-  border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
-  border-left: none;
-  border-right: none;
-  font-size: var(--font-size-sm);
-  background: var(--bg-secondary);
-  transition: all 0.2s ease;
-  outline: none;
-  border-radius: 0;
-}
-
-.search-input:focus, .search_box:focus {
-  border-color: var(--primary-color);
-  background: var(--bg-primary);
-  box-shadow: 0 0 0 3px rgb(14 165 233 / 0.1);
-  border-radius: 0;
-}
+/* Search input styles moved to memo_app_shadcn.css for consolidation */
 
 .search-btn {
   position: absolute;
@@ -130,39 +111,7 @@
   gap: var(--spacing-xs);
 }
 
-.tag-item {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-sm);
-  font-size: var(--font-size-xs);
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.tag-item:hover {
-  background: var(--primary-color);
-  color: var(--text-white);
-  border-color: var(--primary-color);
-}
-
-.tag-count {
-  background: var(--bg-primary);
-  color: var(--text-secondary);
-  padding: 2px 6px;
-  border-radius: var(--border-radius-sm);
-  font-size: var(--font-size-xs);
-  font-weight: 500;
-}
-
-.tag-item:hover .tag-count {
-  background: var(--tag-count-hover-bg, rgba(255, 255, 255, 0.2));
-  color: var(--text-white);
-}
+/* Tag item styles moved to memo_app_shadcn.css for consolidation */
 
 /* Memo List */
 .memo-list {
@@ -170,72 +119,11 @@
   overflow-y: auto;
 }
 
-.memo-item {
-  transition: all 0.2s ease;
-  background: var(--bg-primary);
-}
+/* Memo item base styles moved to memo_app_shadcn.css for consolidation */
 
-/* Dark mode memo items */
-[data-theme="dark"] .memo-item {
-  background: var(--bg-primary);
-  border-color: var(--border-color);
-  color: var(--text-primary);
-}
+/* Dark mode styles for search and tags moved to memo_app_shadcn.css for consolidation */
 
-/* Dark mode search input */
-[data-theme="dark"] .search-input,
-[data-theme="dark"] .search_box {
-  background: var(--bg-primary);
-  border-color: var(--border-color);
-  color: var(--text-primary);
-}
-
-[data-theme="dark"] .search-input:focus,
-[data-theme="dark"] .search_box:focus {
-  background: var(--bg-secondary);
-  border-color: var(--primary-color);
-}
-
-/* Dark mode tag items */
-[data-theme="dark"] .tag-item {
-  background: var(--bg-primary);
-  border-color: var(--border-color);
-  color: var(--text-primary);
-}
-
-[data-theme="dark"] .tag-item:hover {
-  background: var(--primary-color);
-  color: var(--text-white);
-  border-color: var(--primary-color);
-}
-
-[data-theme="dark"] .tag-count {
-  background: var(--bg-tertiary);
-  color: var(--text-secondary);
-}
-
-[data-theme="dark"] .memo-item:hover {
-  background: var(--bg-tertiary);
-}
-
-.memo-item.active {
-  border-color: var(--primary);
-  background-color: var(--accent);
-  border-width: 1px;
-}
-
-[data-theme="light"] .memo-item.active {
-  background-color: var(--accent);
-}
-
-[data-theme="dark"] .memo-item.active {
-  background-color: var(--accent);
-}
-
-[data-theme="high-contrast"] .memo-item.active {
-  border-color: var(--primary);
-  background-color: var(--accent);
-}
+/* Memo item active states moved to memo_app_shadcn.css for consolidation */
 
 .memo-link {
   display: block;
@@ -296,36 +184,7 @@
   color: var(--text-secondary);
 }
 
-/* Memo Tags */
-.memo-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-sm);
-}
 
-.memo-tag {
-  display: inline-block;
-  padding: 2px 6px;
-  border-radius: var(--border-radius-sm);
-  font-size: var(--font-size-xs);
-  font-weight: 500;
-  background: var(--bg-tertiary);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
-}
-
-[data-theme="dark"] .memo-tag {
-  background: var(--bg-tertiary);
-  color: var(--text-secondary);
-  border-color: var(--border-color);
-}
-
-.memo-tag-more {
-  color: var(--text-light);
-  font-size: var(--font-size-xs);
-  font-weight: 500;
-}
 
 /* Visibility Indicator */
 .memo-visibility {
@@ -431,7 +290,7 @@
 
 .form-body {
   flex: 1;
-  padding: var(--spacing-lg);
+  padding: 0 var(--spacing-lg);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
@@ -504,14 +363,7 @@
   color: var(--text-primary);
 }
 
-[data-theme="dark"] .tags-input {
-  border-bottom-color: var(--border-color);
-  color: var(--text-primary);
-}
 
-[data-theme="dark"] .tags-input:focus {
-  border-bottom-color: var(--primary-color);
-}
 
 [data-theme="dark"] .visibility-select {
   background: var(--bg-primary);
@@ -534,23 +386,7 @@
   border-color: var(--primary-color);
 }
 
-/* Form Actions */
-.form-actions {
-  padding: var(--spacing-lg);
-  border-top: 1px solid var(--border-light);
-  background: var(--bg-secondary);
-  display: flex;
-  gap: var(--spacing-md);
-  justify-content: flex-end;
-  position: sticky;
-  bottom: 0;
-}
-
-/* Dark mode form actions */
-[data-theme="dark"] .form-actions {
-  background: var(--bg-primary);
-  border-top-color: var(--border-color);
-}
+/* Form actions styles moved to memo_app_shadcn.css for consolidation */
 
 /* Action Buttons */
 .update_button, .delete_button, .create_button, .add_button {
@@ -625,15 +461,7 @@
     min-height: 50vh;
   }
   
-  .form-actions {
-    position: relative;
-    bottom: auto;
-    flex-direction: column;
-  }
-  
-  .form-actions .btn {
-    width: 100%;
-  }
+  /* Form actions responsive styles handled in memo_app_shadcn.css */
 }
 
 @media (max-width: 480px) {
@@ -646,9 +474,7 @@
     padding: var(--spacing-md);
   }
   
-  .form-actions {
-    padding: var(--spacing-md);
-  }
+  /* Form actions padding handled in memo_app_shadcn.css */
 }
 
 /* Scrollbar Styling */

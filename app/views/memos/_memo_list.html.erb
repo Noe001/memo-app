@@ -1,9 +1,12 @@
-<div class="memo-list" role="list" aria-label="メモ一覧">
+<div id="memo-list" class="memo-list" role="list" aria-label="メモ一覧">
   <% if @memos.any? %>
     <% @memos.each do |memo| %>
       <% memo_class = "memo-item" %>
       <% memo_class += " active" if @selected&.id == memo.id %>
-      <%= link_to memo_path(memo), 
+      <%= link_to memo_path(memo, 
+                              sort_by: @current_sort_by, 
+                              direction: @current_direction, 
+                              word: params[:word]), 
                   class: memo_class,
                   role: "listitem",
                   data: { memo_id: memo.id, action: "click->memo#selectMemo" },
@@ -57,7 +60,11 @@
       </div>
       <h3>メモがありません</h3>
       <p>新しいメモを作成してメモ管理を始めましょう</p>
-      <%= link_to "最初のメモを作成", memos_path, class: "btn btn-primary" %>
+      <%= link_to "最初のメモを作成", memos_path(
+                    sort_by: @current_sort_by, 
+                    direction: @current_direction, 
+                    word: params[:word]), 
+                  class: "btn btn-primary" %>
     </div>
   <% end %>
 </div>

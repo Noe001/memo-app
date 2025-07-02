@@ -12,6 +12,108 @@
 
   <!-- メインコンテンツ -->
   <main class="memo-main" role="main">
+    <!-- メインヘッダー -->
+    <header class="memo-main-header">
+      <div class="header-left">
+        <!-- ハンバーガーボタン用スペース（サイドバーが配置される） -->
+      </div>
+      <div class="memo-actions">
+        <% if @selected.present? %>
+          <!-- 編集中のメモのアクション -->
+          <div class="memo-header-actions">
+            <!-- 公開設定ボタン -->
+            <div class="visibility-toggle" data-controller="visibility-toggle">
+              <%= form_with model: @selected, 
+                            url: memo_path(@selected),
+                            method: :patch,
+                            local: false,
+                            class: "visibility-form",
+                            data: { visibility_toggle_target: "form" } do |f| %>
+                <%= f.select :visibility, 
+                            options_for_select([
+                              ['プライベート', :private_memo],
+                              ['公開', :public_memo],
+                              ['共有', :shared]
+                            ], @selected.visibility),
+                            {},
+                            { 
+                              class: "visibility-select",
+                              data: { 
+                                action: "change->visibility-toggle#update",
+                                visibility_toggle_target: "select"
+                              }
+                            } %>
+              <% end %>
+              <button type="button" 
+                      class="visibility-btn" 
+                      data-action="click->visibility-toggle#toggle"
+                      title="公開設定を変更">
+                <i data-lucide="<%= @selected.private_memo? ? 'lock' : (@selected.public_memo? ? 'globe' : 'users') %>" class="visibility-icon"></i>
+              </button>
+            </div>
+            
+            <!-- 削除ボタン -->
+            <%= button_to memo_path(@selected.id), 
+                          method: :delete, 
+                          class: "delete-memo-btn",
+                          data: { 
+                            confirm: "本当に削除しますか？この操作は取り消せません。",
+                            turbo_method: :delete
+                          },
+                          title: "このメモを完全に削除します" do %>
+              <i data-lucide="trash-2" class="delete-icon"></i>
+            <% end %>
+          </div>
+        <% elsif @can_add %>
+          <!-- 他ユーザーのメモを追加中のアクション -->
+          <div class="memo-header-actions">
+            <!-- 公開設定ボタン -->
+            <div class="visibility-toggle" data-controller="visibility-toggle">
+              <div class="visibility-form" data-visibility-toggle-target="form">
+                <select class="visibility-select" 
+                        data-visibility-toggle-target="select"
+                        name="memo[visibility]" 
+                        form="memo-add-form">
+                  <option value="private_memo" selected>プライベート</option>
+                  <option value="public_memo">公開</option>
+                  <option value="shared">共有</option>
+                </select>
+              </div>
+              <button type="button" 
+                      class="visibility-btn" 
+                      data-action="click->visibility-toggle#toggle"
+                      title="公開設定を変更">
+                <i data-lucide="lock" class="visibility-icon"></i>
+              </button>
+            </div>
+          </div>
+        <% else %>
+          <!-- 新規作成中のアクション -->
+          <div class="memo-header-actions">
+            <!-- 公開設定ボタン -->
+            <div class="visibility-toggle" data-controller="visibility-toggle">
+              <div class="visibility-form" data-visibility-toggle-target="form">
+                <select class="visibility-select" 
+                        data-visibility-toggle-target="select"
+                        name="memo[visibility]" 
+                        form="memo-new-form">
+                  <option value="private_memo" selected>プライベート</option>
+                  <option value="public_memo">公開</option>
+                  <option value="shared">共有</option>
+                </select>
+              </div>
+              <button type="button" 
+                      class="visibility-btn" 
+                      data-action="click->visibility-toggle#toggle"
+                      title="公開設定を変更">
+                <i data-lucide="lock" class="visibility-icon"></i>
+              </button>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </header>
+    
     <%= render 'memo_form' %>
   </main>
 </div>

@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   # CSRF保護はデフォルトで有効になっています。
   # APIエンドポイントや特定のケースで無効化する場合は、対象のコントローラーで個別に設定してください。
   # 例: protect_from_forgery with: :null_session, if: -> { request.format.json? }
+  protect_from_forgery with: :null_session, if: -> { request.format.json? }
   
   def current_user
     # セッションからuser_idを取得
@@ -17,8 +18,11 @@ class ApplicationController < ActionController::Base
   helper_method :current_user
   
       def authenticate_user!
-      unless current_user
-        redirect_to new_session_path, alert: 'ログインしてください'
+    return if current_user
+    
+    respond_to do |format|
+      format.html { redirect_to new_session_path, alert: 'ログインしてください' }
+      format.json { render json: { status: 'error', message: 'ログインが必要です' }, status: :unauthorized }
       end
     end
 end

@@ -65,47 +65,7 @@
           </div>
         </div>
         
-        <!-- 文字サイズ設定 -->
-        <div class="popup-section">
-          <h3 class="popup-section-title">
-            <i data-lucide="type" class="section-icon"></i>
-            文字サイズ
-          </h3>
-          
-          <div class="font-size-options-compact">
-            <div class="font-size-option-compact">
-              <%= form.radio_button :font_size, "small", 
-                                    id: "popup_font_size_small", 
-                                    checked: current_user&.font_size == "small",
-                                    data: { setting_option: "font_size" } %>
-              <label for="popup_font_size_small" class="font-size-label-compact">小</label>
-            </div>
-            
-            <div class="font-size-option-compact">
-              <%= form.radio_button :font_size, "medium", 
-                                    id: "popup_font_size_medium", 
-                                    checked: (current_user&.font_size == "medium") || (current_user&.font_size.blank?),
-                                    data: { setting_option: "font_size" } %>
-              <label for="popup_font_size_medium" class="font-size-label-compact">標準</label>
-            </div>
-            
-            <div class="font-size-option-compact">
-              <%= form.radio_button :font_size, "large", 
-                                    id: "popup_font_size_large", 
-                                    checked: current_user&.font_size == "large",
-                                    data: { setting_option: "font_size" } %>
-              <label for="popup_font_size_large" class="font-size-label-compact">大</label>
-            </div>
-            
-            <div class="font-size-option-compact">
-              <%= form.radio_button :font_size, "x-large", 
-                                    id: "popup_font_size_x_large", 
-                                    checked: current_user&.font_size == "x-large",
-                                    data: { setting_option: "font_size" } %>
-              <label for="popup_font_size_x_large" class="font-size-label-compact">特大</label>
-            </div>
-          </div>
-        </div>
+        <!-- 文字サイズ設定 - REMOVED -->
         
         <!-- キーボードショートカット設定 -->
         <div class="popup-section">

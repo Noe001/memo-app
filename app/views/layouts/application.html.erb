@@ -34,14 +34,15 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   </head>
 
-  <body class="<%= controller_name %>-<%= action_name %>-page font-<%= current_user&.font_size || 'medium' %>" 
+  <body class="<%= controller_name %>-<%= action_name %>-page" 
         data-theme="<%= current_user&.theme || 'light' %>"
         data-shortcuts-enabled="<%= current_user&.keyboard_shortcuts_enabled != false %>"
-        data-controller="sidebar settings"
+        data-controller="sidebar settings keyboard-shortcuts visibility-toggle"
         data-sidebar-active-class="active"
         data-settings-active-class="active"
         data-settings-url-value="<%= settings_path %>"
-        data-settings-shortcuts-enabled-value="<%= current_user&.keyboard_shortcuts_enabled != false %>">
+        data-settings-shortcuts-enabled-value="<%= current_user&.keyboard_shortcuts_enabled != false %>"
+        data-keyboard-shortcuts-enabled-value="<%= current_user&.keyboard_shortcuts_enabled != false %>">
     
     <!-- ナビゲーションサイドバー -->
     <% unless controller_name == 'sessions' || controller_name == 'users' || controller_name == 'errors' %>
@@ -51,6 +52,103 @@
     <!-- 設定ポップアップ -->
     <% unless controller_name == 'sessions' || controller_name == 'users' || controller_name == 'errors' %>
       <%= render 'layouts/settings_popup' %>
+    <% end %>
+    
+    <!-- キーボードショートカット一覧パネル -->
+    <% unless controller_name == 'sessions' || controller_name == 'users' || controller_name == 'errors' %>
+      <div class="shortcuts-panel" data-keyboard-shortcuts-target="panel">
+        <div class="shortcuts-panel-header">
+          <h3 class="shortcuts-panel-title">
+            <i data-lucide="keyboard" style="width: 1.125rem; height: 1.125rem;"></i>
+            キーボードショートカット
+          </h3>
+          <button type="button" 
+                  class="shortcuts-panel-close" 
+                  onclick="document.querySelector('[data-controller*=keyboard-shortcuts]').querySelector('[data-keyboard-shortcuts-target=panel]').style.display='none'"
+                  aria-label="閉じる">
+            <i data-lucide="x" style="width: 1rem; height: 1rem;"></i>
+          </button>
+        </div>
+        
+        <div class="shortcuts-panel-body">
+          <div class="shortcuts-grid">
+            <!-- メモ操作 -->
+            <div class="shortcuts-section">
+              <h4 class="shortcuts-section-title">メモ操作</h4>
+              <div class="shortcuts-list">
+                <div class="shortcut-item">
+                  <span class="shortcut-description">新しいメモを作成</span>
+                  <div class="shortcut-keys">
+                    <kbd class="shortcut-key">Ctrl</kbd>
+                    <span class="shortcut-plus">+</span>
+                    <kbd class="shortcut-key">N</kbd>
+                  </div>
+                </div>
+                
+                <div class="shortcut-item">
+                  <span class="shortcut-description">手動で保存（リアルタイム保存済み）</span>
+                  <div class="shortcut-keys">
+                    <kbd class="shortcut-key">Ctrl</kbd>
+                    <span class="shortcut-plus">+</span>
+                    <kbd class="shortcut-key">S</kbd>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- ナビゲーション -->
+            <div class="shortcuts-section">
+              <h4 class="shortcuts-section-title">ナビゲーション</h4>
+              <div class="shortcuts-list">
+                <div class="shortcut-item">
+                  <span class="shortcut-description">検索フィールドにフォーカス</span>
+                  <div class="shortcut-keys">
+                    <kbd class="shortcut-key">Ctrl</kbd>
+                    <span class="shortcut-plus">+</span>
+                    <kbd class="shortcut-key">F</kbd>
+                  </div>
+                </div>
+                
+                <div class="shortcut-item">
+                  <span class="shortcut-description">メモ一覧で上に移動</span>
+                  <div class="shortcut-keys">
+                    <kbd class="shortcut-key">↑</kbd>
+                  </div>
+                </div>
+                
+                <div class="shortcut-item">
+                  <span class="shortcut-description">メモ一覧で下に移動</span>
+                  <div class="shortcut-keys">
+                    <kbd class="shortcut-key">↓</kbd>
+                  </div>
+                </div>
+                
+                <div class="shortcut-item">
+                  <span class="shortcut-description">編集終了・フォーカス解除</span>
+                  <div class="shortcut-keys">
+                    <kbd class="shortcut-key">Esc</kbd>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- ヘルプ -->
+            <div class="shortcuts-section">
+              <h4 class="shortcuts-section-title">ヘルプ</h4>
+              <div class="shortcuts-list">
+                <div class="shortcut-item">
+                  <span class="shortcut-description">このショートカット一覧を表示</span>
+                  <div class="shortcut-keys">
+                    <kbd class="shortcut-key">Ctrl</kbd>
+                    <span class="shortcut-plus">+</span>
+                    <kbd class="shortcut-key">/</kbd>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     <% end %>
 
     <div class="app-container-new">
