@@ -13,8 +13,8 @@ unless User.exists?(email: 'test@example.com')
   user = User.create!(
     name: 'テストユーザー',
     email: 'test@example.com',
-    password: 'testpassword',
-    password_confirmation: 'testpassword'
+    password: 'password',
+    password_confirmation: 'password'
   )
   puts "テストユーザーを作成しました: #{user.email}"
 end

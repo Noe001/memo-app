@@ -6,8 +6,9 @@
 /* Main Layout */
 .memo-app {
   display: flex;
-  height: calc(100vh - 73px); /* ヘッダーの高さを除く */
+  min-height: calc(100vh - 73px); /* ヘッダーの高さを除く */
   background: var(--bg-secondary);
+  overflow: auto;
 }
 
 /* Sidebar */
@@ -19,6 +20,8 @@
   flex-direction: column;
   box-shadow: var(--shadow-sm);
   position: relative;
+  min-height: 0;
+  flex-shrink: 0;
 }
 
 .sidebar-header {
@@ -117,6 +120,8 @@
 .memo-list {
   flex: 1;
   overflow-y: auto;
+  min-height: 0;
+  overflow-x: hidden;
 }
 
 /* Memo item base styles moved to memo_app_shadcn.css for consolidation */
@@ -212,6 +217,8 @@
 }
 
 .visibility-icon {
+  width: 1.3rem;
+  height: 1.3rem;
   opacity: 0.7;
   transition: opacity 0.2s ease;
 }
@@ -234,10 +241,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-2xl);
+  padding: var(--spacing-lg);
   text-align: center;
   color: var(--text-secondary);
-  height: 100%;
+  flex: 1;
+  min-height: 200px;
 }
 
 .empty-icon {
@@ -263,19 +271,22 @@
   background: var(--bg-primary);
   overflow-y: auto;
   position: relative;
+  min-height: 0;
 }
 
 /* Memo Editor */
 .memo-editor {
-  height: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 .memo-form {
-  height: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 
@@ -290,10 +301,12 @@
 
 .form-body {
   flex: 1;
-  padding: 0 var(--spacing-lg);
+  padding-left: var(--spacing-lg);
+  padding-top: 0.5rem;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: 0.5rem;
+  height: 100vh;
 }
 
 .input-group {
@@ -314,15 +327,17 @@
 
 .content-textarea, .memos_text_area {
   flex: 1;
-  min-height: 400px;
+  min-height: 0;
+  max-height: none;
+  height: 100%;
   border: none;
-  padding: var(--spacing-md) 0;
   font-size: var(--font-size-base);
   line-height: 1.7;
   background: transparent;
   color: var(--text-primary);
   resize: none;
   font-family: inherit;
+  overflow-y: auto;
 }
 
 .content-textarea:focus, .memos_text_area:focus {
@@ -330,7 +345,7 @@
 }
 
 .tags-input {
-  padding: var(--spacing-sm) 0;
+  padding: 0.3rem 0;
   border: none;
   border-bottom: 1px solid var(--border-color);
   background: transparent;
@@ -425,12 +440,7 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Pagination */
-.pagination-container {
-  padding: var(--spacing-lg);
-  display: flex;
-  justify-content: center;
-}
+
 
 /* Responsive Design */
 @media (max-width: 1024px) {
@@ -442,23 +452,28 @@
 @media (max-width: 768px) {
   .memo-app {
     flex-direction: column;
-    height: auto;
+    min-height: calc(100vh - 73px);
   }
   
   .sidebar {
     width: 100%;
-    height: auto;
+    flex: 1;
+    min-height: 300px;
     max-height: 50vh;
     border-right: none;
     border-bottom: 1px solid var(--border-color);
   }
   
   .memo-list {
-    max-height: 300px;
+    flex: 1;
+    min-height: 200px;
+    overflow-y: auto;
   }
   
   .main-content {
-    min-height: 50vh;
+    flex: 1;
+    min-height: 300px;
+    overflow-y: auto;
   }
   
   /* Form actions responsive styles handled in memo_app_shadcn.css */

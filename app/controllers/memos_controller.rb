@@ -177,7 +177,7 @@ class MemosController < ApplicationController
   def search
     prepare_index_data
     search_word = params[:word]
-    @memos = current_user.memos.includes(:tags).search(search_word).apply_sort(@current_sort_by, @current_direction).page(params[:page])
+    @memos = current_user.memos.includes(:tags).search(search_word).apply_sort(@current_sort_by, @current_direction)
     # Removed @selected = Memo.includes(:user, :tags).find_by(id: params[:id])
     # Search results are primary. Viewing details should go through `show` action for a specific memo.
     
@@ -198,7 +198,7 @@ class MemosController < ApplicationController
     @sort_options = Memo.sort_options
     @current_sort_by = params[:sort_by] || 'updated_at'
     @current_direction = params[:direction] || 'desc'
-    @memos = current_user.memos.includes(:tags).apply_sort(@current_sort_by, @current_direction).page(params[:page])
+    @memos = current_user.memos.includes(:tags).apply_sort(@current_sort_by, @current_direction)
     @tags = current_user.memos.joins(:tags).group('tags.name').count
   end
 
@@ -320,10 +320,10 @@ class MemosController < ApplicationController
 
   def public_memos
     # TODO: Implement listing of public memos from all users
-    # May need pagination
+
     @user = current_user # For layout consistency
     @memo_new = current_user.memos.build # For layout consistency
-    @memos = Memo.where(visibility: :public_memo).includes(:user, :tags).recent.page(params[:page])
+    @memos = Memo.where(visibility: :public_memo).includes(:user, :tags).recent
     @tags = Memo.where(visibility: :public_memo).joins(:tags).group('tags.name').count
     flash.now[:notice] = "Listing all public memos." # Temporary message
     render :index # Re-use index view for listing, might need dedicated view later
@@ -335,7 +335,7 @@ class MemosController < ApplicationController
     @user = current_user # For layout consistency
     @memo_new = current_user.memos.build # For layout consistency
     # @memos = current_user.shared_with_me_memos.includes(:user, :tags).recent.page(params[:page]) # Example
-    @memos = current_user.memos.none.page(params[:page]) # Placeholder for no shared memos yet
+    @memos = current_user.memos.none # Placeholder for no shared memos yet
     @tags = current_user.memos.none.joins(:tags).group('tags.name').count # Placeholder
     flash.now[:notice] = "Shared memos functionality not yet implemented."
     render :index # Re-use index view, might need dedicated view
