@@ -4,8 +4,8 @@ FROM ruby:3.2.3-slim
 RUN apt-get update -qq && \
     apt-get install -y \
     build-essential \
-    default-mysql-client \
-    default-libmysqlclient-dev \
+    libpq-dev \
+    postgresql-client \
     git \
     curl \
     nodejs \

@@ -25,6 +25,21 @@ class Memo < ApplicationRecord
   scope :sort_by_created_at, ->(direction = :desc) { order(created_at: direction) }
   scope :sort_by_title, ->(direction = :asc) { order(title: direction) }
   
+  # 指定されたタグすべてを含むメモを取得するスコープ
+  scope :with_tags, ->(tag_names) {
+    tag_names_array = Array(tag_names).map(&:to_s).reject(&:blank?)
+    return all if tag_names_array.empty?
+
+    # サブクエリで対象メモ ID を取得し、外側で通常の ORDER BY を使う
+    subquery = Memo.joins(:tags)
+                   .where(tags: { name: tag_names_array })
+                   .group('memos.id')
+                   .having('COUNT(DISTINCT tags.id) = ?', tag_names_array.size)
+                   .select(:id)
+
+    where(id: subquery)
+  }
+  
   # 並べ替えオプションを取得するクラスメソッド
   def self.sort_options
     {

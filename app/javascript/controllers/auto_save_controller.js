@@ -24,6 +24,9 @@ export default class extends Controller {
 
   // フィールドが変更された時の処理
   saveField(event) {
+    // 入力イベント以外（blur など）は無視
+    if (event.type !== 'input') return
+
     // デバウンス処理（入力中は頻繁に保存しない）
     if (this.saveTimeout) {
       clearTimeout(this.saveTimeout)
@@ -85,68 +88,74 @@ export default class extends Controller {
         method: 'POST',
         body: formData,
         headers: {
-          'Accept': 'text/vnd.turbo-stream.html, application/json',
+          // JSON を優先しつつ Turbo Stream をフォールバック用に許可
+          'Accept': 'application/json, text/vnd.turbo-stream.html',
           'X-Requested-With': 'XMLHttpRequest',
           'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         }
       })
 
       if (response.ok) {
-        const contentType = response.headers.get('content-type')
-        
-        if (contentType && contentType.includes('turbo-stream')) {
-          // Turbo Streamレスポンスの場合、HTMLを取得して処理
+        const contentType = response.headers.get('content-type') || ''
+
+        if (contentType.includes('application/json')) {
+          // JSON レスポンスを優先的に処理
+          const data = await response.json()
+          if (data.memo_id) {
+            this.memoId = data.memo_id
+            this.isNewRecord = false
+
+            // URL を更新用に変更
+            this.urlValue = `/memos/${this.memoId}`
+            this.element.action = this.urlValue
+
+            // URL を更新（ブラウザの履歴に追加せずに）
+            if (window.history && window.history.replaceState) {
+              window.history.replaceState({}, '', `/memos/${this.memoId}`)
+            }
+
+            this.showSaveStatus('保存完了', 'success')
+
+            // 必要に応じて表示を更新（Turbo が利用可能なら遷移で一覧を更新）
+            if (window.Turbo) {
+              window.Turbo.visit(`/memos/${this.memoId}`)
+            }
+          }
+        } else if (contentType.includes('turbo-stream')) {
+          // Turbo Stream レスポンス (フォールバック) の場合は既存ロジックを利用
           const html = await response.text()
           const tempDiv = document.createElement('div')
           tempDiv.innerHTML = html
-          
-          // Turbo Streamアクションを実行
+
           const turboStreamElements = tempDiv.querySelectorAll('turbo-stream')
           turboStreamElements.forEach(element => {
-            // Turboはグローバルに利用可能
             if (window.Turbo) {
               window.Turbo.renderStreamMessage(element.outerHTML)
             }
           })
-          
-          // 作成されたメモのIDを取得（フォームからまたは最新のメモから）
-          const createdMemoElement = document.querySelector('#memo-list .memo-item:first-child')
+
+          // Turbo Stream では ID を取得できない可能性があるため
+          // 既存の方法で取得するが、見つからない場合はスキップ
+          const createdMemoElement = document.querySelector('#memo-list .memo-item[data-memo-id]')
           if (createdMemoElement) {
             const memoId = createdMemoElement.dataset.memoId
             if (memoId) {
               this.memoId = memoId
               this.isNewRecord = false
-              
-              // URLを更新用に変更
+
               this.urlValue = `/memos/${this.memoId}`
               this.element.action = this.urlValue
-              
-              // URLを更新（ブラウザの履歴に追加せずに）
+
               if (window.history && window.history.replaceState) {
                 window.history.replaceState({}, '', `/memos/${this.memoId}`)
               }
             }
           }
-          
+
           this.showSaveStatus('保存完了', 'success')
         } else {
-          // JSONレスポンスの場合（フォールバック）
-          const data = await response.json()
-          if (data.memo_id) {
-            this.memoId = data.memo_id
-            this.isNewRecord = false
-            
-            // URLを更新用に変更
-            this.urlValue = `/memos/${this.memoId}`
-            this.element.action = this.urlValue
-            
-            this.showSaveStatus('保存完了', 'success')
-            
-            // URLを更新（ブラウザの履歴に追加せずに）
-            if (window.history && window.history.replaceState) {
-              window.history.replaceState({}, '', `/memos/${this.memoId}`)
-            }
-          }
+          // 想定外の Content-Type
+          this.showSaveStatus('保存に失敗しました', 'error')
         }
       } else {
         this.showSaveStatus('保存に失敗しました', 'error')
@@ -207,28 +216,29 @@ export default class extends Controller {
 
   // 保存状況の表示
   showSaveStatus(message, type) {
-    // 既存のステータス表示を削除
     const existingStatus = document.querySelector('.auto-save-status')
-    if (existingStatus) {
-      existingStatus.remove()
+
+    // 成功通知は不要なので、saving バナーを消すだけ
+    if (type === 'success') {
+      if (existingStatus) existingStatus.remove()
+      return
     }
 
-    // 新しいステータス表示を作成
+    // エラーや saving の場合のみ表示を更新
+    if (existingStatus) existingStatus.remove()
+
     const statusElement = document.createElement('div')
     statusElement.className = `auto-save-status auto-save-status-${type}`
     statusElement.textContent = message
 
-    // ヘッダーに追加
     const headerElement = document.querySelector('.memo-main-header')
     if (headerElement) {
       headerElement.appendChild(statusElement)
 
-      // 一定時間後に削除（savingの場合は削除しない）
-      if (type !== 'saving') {
+      // saving の場合は成功時に手動で消されるため残す / error は3 秒で消す
+      if (type === 'error') {
         setTimeout(() => {
-          if (statusElement && statusElement.parentNode) {
-            statusElement.remove()
-          }
+          statusElement.remove()
         }, 3000)
       }
     }

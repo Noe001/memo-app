@@ -4,7 +4,9 @@
 <%= javascript_import_module_tag "memos_index" %>
 <%= stylesheet_link_tag "memos", "data-turbo-track": "reload" %>
 
-<div class="app-layout" data-controller="memo">
+<div class="app-layout" 
+     data-controller="memo" 
+     data-memo-search-url-value="<%= search_memos_path %>">
   <!-- サイドバー -->
   <aside class="memo-sidebar">
     <%= render 'sidebar' %>

@@ -1,36 +1,117 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["sortSelect", "searchForm", "memoItem"]
+  static targets = [
+    "sortSelect",
+    "searchInput",
+    "tagItem",
+    "memoItem"
+  ]
+
+  static values = {
+    searchUrl: String
+  }
 
   connect() {
-    this.boundAutoSubmit = this.autoSubmit.bind(this)
+    // デバウンス設定（300ms）
+    this.debouncedSearch = this.debounce(() => this.performSearch(), 300)
+
+    // 選択タグを保持するセット
+    this.selectedTags = new Set()
+
+    // 初期状態で active クラスが付いたタグをセットに追加
+    if (this.hasTagItemTargets) {
+      this.tagItemTargets.forEach(tagBtn => {
+        if (tagBtn.classList.contains('active')) {
+          this.selectedTags.add(tagBtn.dataset.tag)
+        }
+      })
+    }
+
+    if (this.hasSearchInputTarget) {
+      this.searchInputTarget.addEventListener('input', this.debouncedSearch)
+    }
   }
 
   disconnect() {
-    // Clean up any event listeners if needed
+    if (this.hasSearchInputTarget) {
+      this.searchInputTarget.removeEventListener('input', this.debouncedSearch)
+    }
   }
 
-  // 並べ替えの自動送信
+  // タグボタンのトグル
+  toggleTag(event) {
+    event.preventDefault()
+    event.stopPropagation()
+    const btn = event.currentTarget
+    btn.classList.toggle('active')
+    const tagValue = btn.dataset.tag
+
+    if (btn.classList.contains('active')) {
+      this.selectedTags.add(tagValue)
+    } else {
+      this.selectedTags.delete(tagValue)
+    }
+
+    this.performSearch()
+  }
+
+  // 並べ替えの自動送信（従来機能）
   autoSubmit(event) {
     const form = event.target.closest('form')
     if (form) {
-      // 少し遅延させてユーザーが選択を完了できるようにする
       setTimeout(() => {
         form.submit()
       }, 100)
     }
   }
 
-  // 検索フォームの送信
-  search(event) {
-    event.preventDefault()
-    const form = event.target
-    const formData = new FormData(form)
-    const searchWord = formData.get('word')
-    
-    if (searchWord && searchWord.trim()) {
-      form.submit()
+  // パラメータを組み立てて検索を実行
+  performSearch(clickedTag = null) {
+    if (!this.hasSearchUrlValue) return
+
+    const params = new URLSearchParams()
+
+    // キーワード
+    if (this.hasSearchInputTarget) {
+      const word = this.searchInputTarget.value.trim()
+      if (word) params.set('word', word)
+    }
+
+    // タグ (AND 条件)
+    this.selectedTags.forEach(tag => params.append('tags[]', tag))
+
+    // Fetch Turbo Stream
+    fetch(`${this.searchUrlValue}?${params.toString()}`, {
+      headers: {
+        'Accept': 'text/vnd.turbo-stream.html'
+      },
+      credentials: 'same-origin'
+    })
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok')
+        return response.text()
+      })
+      .then(html => {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = html
+        wrapper.querySelectorAll('turbo-stream').forEach(stream => {
+          if (window.Turbo) {
+            window.Turbo.renderStreamMessage(stream.outerHTML)
+          }
+        })
+      })
+      .catch(error => console.error('Live search error:', error))
+  }
+
+  // ユーティリティ: デバウンス
+  debounce(callback, delay) {
+    let timer
+    return (...args) => {
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        callback.apply(this, args)
+      }, delay)
     }
   }
 

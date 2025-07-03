@@ -176,19 +176,47 @@ class MemosController < ApplicationController
 
   def search
     prepare_index_data
+
     search_word = params[:word]
-    @memos = current_user.memos.includes(:tags).search(search_word).apply_sort(@current_sort_by, @current_direction)
-    # Removed @selected = Memo.includes(:user, :tags).find_by(id: params[:id])
-    # Search results are primary. Viewing details should go through `show` action for a specific memo.
-    
-    if @memos.empty? && search_word.present? # Only show if a search was actually performed
-      flash.now[:alert] = "「#{search_word}」に該当するメモは見つかりませんでした"
+    selected_tags = params[:tags] || []
+    # params[:tags] は文字列または配列の可能性がある
+    selected_tags = selected_tags.is_a?(Array) ? selected_tags : selected_tags.to_s.split(',')
+    selected_tags.map!(&:strip)
+
+    scope = current_user.memos.includes(:tags)
+    scope = scope.search(search_word) if search_word.present?
+    scope = scope.with_tags(selected_tags) if selected_tags.present?
+
+    @memos = scope.apply_sort(@current_sort_by, @current_direction).page(params[:page])
+
+    # 選択タグはビューでハイライトするために保持
+    @selected_tags = selected_tags
+
+    # 総メモ数が存在するかどうかを事前に保持（検索結果の UI 用）
+    @total_memos_exist = current_user.memos.exists?
+
+    # 空検索結果時の UI はビューで判定・表示する（フラッシュではなくメモリスト内で表示）
+
+    respond_to do |format|
+      format.html { render :index }
+      format.turbo_stream # search.turbo_stream.erb をレンダリング
     end
-    
-    render :index
   end
 
+  # ルートパスから呼ばれ、最新のメモを表示する
+  def latest
+    # ユーザーの最新更新メモを取得
+    latest_memo = current_user.memos.recent.first
 
+    if latest_memo
+      # 既存の show ビュー/ロジックを流用するためリダイレクト
+      redirect_to memo_path(latest_memo)
+    else
+      # メモがない場合は一覧ページ（新規作成フォーム付き）を表示
+      prepare_index_data
+      render :index
+    end
+  end
 
   private
 
@@ -198,7 +226,9 @@ class MemosController < ApplicationController
     @sort_options = Memo.sort_options
     @current_sort_by = params[:sort_by] || 'updated_at'
     @current_direction = params[:direction] || 'desc'
-    @memos = current_user.memos.includes(:tags).apply_sort(@current_sort_by, @current_direction)
+    @memos = current_user.memos.includes(:tags).apply_sort(@current_sort_by, @current_direction).page(params[:page])
+    # 総メモ数が存在するかどうかを事前に保持（検索結果の UI 用）
+    @total_memos_exist = current_user.memos.exists?
     @tags = current_user.memos.joins(:tags).group('tags.name').count
   end
 

@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
-  # ルートパス
-  root to: "memos#index"
+  # ルートパス: 最新メモを表示
+  root to: "memos#latest"
   
   # 認証関連
   resource :session, only: [:new, :create, :destroy], controller: 'sessions' do
