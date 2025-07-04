@@ -336,6 +336,8 @@
 }
 
 /* 検索入力のテーマ対応 */
+[data-theme="dark"] .search-input,
+[data-theme="dark"] .search_box,
 [data-theme="light"] .search-input,
 [data-theme="light"] .search_box {
   background-color: var(--card);
@@ -343,22 +345,10 @@
   color: var(--foreground);
 }
 
+[data-theme="dark"] .search-input:focus,
+[data-theme="dark"] .search_box:focus,
 [data-theme="light"] .search-input:focus,
 [data-theme="light"] .search_box:focus {
-  background-color: var(--muted);
-  border-color: var(--ring);
-  outline: none;
-}
-
-[data-theme="dark"] .search-input,
-[data-theme="dark"] .search_box {
-  background-color: var(--card);
-  border-color: var(--border);
-  color: var(--foreground);
-}
-
-[data-theme="dark"] .search-input:focus,
-[data-theme="dark"] .search_box:focus {
   background-color: var(--muted);
   border-color: var(--ring);
   outline: none;

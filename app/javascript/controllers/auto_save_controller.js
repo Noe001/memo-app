@@ -109,17 +109,16 @@ export default class extends Controller {
             this.urlValue = `/memos/${this.memoId}`
             this.element.action = this.urlValue
 
-            // URL を更新（ブラウザの履歴に追加せずに）
-            if (window.history && window.history.replaceState) {
+            // URL と画面遷移を Turbo に任せて履歴を置き換え
+            if (window.Turbo) {
+              // Turbo が利用可能なら action: "replace" で履歴を置き換える
+              window.Turbo.visit(`/memos/${this.memoId}`, { action: 'replace' })
+            } else if (window.history && window.history.replaceState) {
+              // Turbo が無い環境へのフォールバック
               window.history.replaceState({}, '', `/memos/${this.memoId}`)
             }
 
             this.showSaveStatus('保存完了', 'success')
-
-            // 必要に応じて表示を更新（Turbo が利用可能なら遷移で一覧を更新）
-            if (window.Turbo) {
-              window.Turbo.visit(`/memos/${this.memoId}`)
-            }
           }
         } else if (contentType.includes('turbo-stream')) {
           // Turbo Stream レスポンス (フォールバック) の場合は既存ロジックを利用
@@ -146,7 +145,9 @@ export default class extends Controller {
               this.urlValue = `/memos/${this.memoId}`
               this.element.action = this.urlValue
 
-              if (window.history && window.history.replaceState) {
+              if (window.Turbo) {
+                window.Turbo.visit(`/memos/${this.memoId}`, { action: 'replace' })
+              } else if (window.history && window.history.replaceState) {
                 window.history.replaceState({}, '', `/memos/${this.memoId}`)
               }
             }

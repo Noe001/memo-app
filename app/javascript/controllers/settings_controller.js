@@ -122,19 +122,24 @@ export default class extends Controller {
 
   // 保存状態を表示
   showSaveStatus(message, type = 'success') {
-    this.saveStatusTarget.innerHTML = `
-      <div class="popup-save-message popup-save-message-${type}">
-        <i data-lucide="${type === 'success' ? 'check' : 'x'}" class="save-icon"></i>
-        <span>${message}</span>
-      </div>
+    // 成功メッセージは表示しない（静かに完了）
+    if (type === 'success') return
+
+    // エラーメッセージのみ表示
+    this.showFlashMessage(message)
+  }
+
+  // フラッシュメッセージとして表示
+  showFlashMessage(message) {
+    const flashContainer = document.querySelector('#flash-messages')
+    if (!flashContainer) return
+
+    flashContainer.innerHTML = `
+      <div class="alert">${message}</div>
     `
-    
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons()
-    }
-    
+
     setTimeout(() => {
-      this.saveStatusTarget.innerHTML = ''
+      flashContainer.innerHTML = ''
     }, 3000)
   }
 

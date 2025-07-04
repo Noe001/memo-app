@@ -62,9 +62,9 @@
             <i data-lucide="keyboard" style="width: 1.125rem; height: 1.125rem;"></i>
             キーボードショートカット
           </h3>
-          <button type="button" 
-                  class="shortcuts-panel-close" 
-                  onclick="document.querySelector('[data-controller*=keyboard-shortcuts]').querySelector('[data-keyboard-shortcuts-target=panel]').style.display='none'"
+          <button type="button"
+                  class="shortcuts-panel-close"
+                  data-action="click->keyboard-shortcuts#hideShortcutsPanel"
                   aria-label="閉じる">
             <i data-lucide="x" style="width: 1rem; height: 1rem;"></i>
           </button>
