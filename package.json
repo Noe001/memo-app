@@ -1,0 +1,27 @@
+{
+  "name": "memo-app",
+  "version": "1.0.0",
+  "description": "[![Ruby on Rails](https://img.shields.io/badge/Ruby%20on%20Rails-7.1.3-red.svg)](https://rubyonrails.org/) [![Ruby Version](https://img.shields.io/badge/Ruby-3.2.3-red.svg)](https://www.ruby-lang.org/) [![Test Coverage](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg)](#testing) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "devDependencies": {
+    "supabase": "^2.30.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Noe001/memo-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Noe001/memo-app/issues"
+  },
+  "homepage": "https://github.com/Noe001/memo-app#readme"
+}

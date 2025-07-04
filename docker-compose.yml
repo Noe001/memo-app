@@ -1,22 +1,16 @@
-version: '3.8'
-
 services:
   db:
-    image: mysql:8.0
-    platform: linux/amd64
+    image: postgres:15-alpine
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: memo_app_development
-      MYSQL_USER: memo_user
-      MYSQL_PASSWORD: memo_password
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: memo_app_development
     volumes:
-      - mysql_data:/var/lib/mysql
-      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - "3306:3306"
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+      - "5432:5432"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       timeout: 20s
       retries: 10
 
@@ -35,7 +29,7 @@ services:
         condition: service_healthy
     environment:
       RAILS_ENV: development
-      DATABASE_URL: mysql2://memo_user:memo_password@db:3306/memo_app_development
+      DATABASE_URL: postgres://postgres:postgres@db:5432/memo_app_development
       REDIS_URL: redis://redis:6379/0
     stdin_open: true
     tty: true
@@ -49,6 +43,6 @@ services:
     command: redis-server --appendonly yes
 
 volumes:
-  mysql_data:
+  postgres_data:
   redis_data:
   bundle_cache:

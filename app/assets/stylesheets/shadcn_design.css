@@ -216,10 +216,9 @@ p {
   width: 100%;
   border: 1px solid var(--input);
   background-color: var(--background);
-  padding: 0.625rem 0.75rem;
   font-size: 0.875rem;
   transition: all 0.2s ease;
-  min-height: 2.5rem;
+  min-height: 1.5rem;
 }
 
 .input:focus {

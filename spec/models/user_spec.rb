@@ -101,14 +101,7 @@ RSpec.describe User, type: :model do
       end
     end
 
-    describe 'font_size' do
-      it { should validate_inclusion_of(:font_size).in_array(%w[small medium large x-large]) }
-      it 'gives a custom message for invalid font_size' do
-        user = build(:user, font_size: 'invalid_size')
-        expect(user).not_to be_valid
-        expect(user.errors[:font_size]).to include('は有効なフォントサイズを選択してください')
-      end
-    end
+
   end
 
   describe 'associations' do

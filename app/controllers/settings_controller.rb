@@ -26,6 +26,6 @@ class SettingsController < ApplicationController
   private
   
   def settings_params
-    params.require(:user).permit(:theme, :font_size, :keyboard_shortcuts_enabled)
+    params.require(:user).permit(:theme, :keyboard_shortcuts_enabled)
   end
 end 

@@ -1,0 +1,46 @@
+<%= turbo_stream.replace "memo-list" do %>
+  <%= render 'memo_list' %>
+<% end %>
+
+<%= turbo_stream.replace "tag-filter-container" do %>
+  <div id="tag-filter-container">
+    <% if @tags.present? %>
+      <div class="tag-filter" role="group" aria-label="タグによるフィルター">
+        <h3 class="filter-title">タグ</h3>
+        <div class="tag-list">
+          <% @tags.each do |tag_name, count| %>
+            <% active_class = @selected_tags&.include?(tag_name) ? 'active' : '' %>
+            <button class="tag-item <%= active_class %>" 
+                    data-tag="<%= tag_name %>"
+                    data-action="click->memo#toggleTag"
+                    data-memo-target="tagItem"
+                    title="<%= tag_name %>タグでフィルター">
+              <span class="tag-name"><%= tag_name %></span>
+              <span class="tag-count"><%= count %></span>
+            </button>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<%= turbo_stream.replace "pagination-container" do %>
+  <div id="pagination-container" class="pagination-container">
+    <%= paginate @memos, 
+                params: {
+                  sort_by: @current_sort_by,
+                  direction: @current_direction,
+                  word: params[:word],
+                  tags: @selected_tags
+                } %>
+  </div>
+<% end %>
+
+<%= turbo_stream.replace "flash-messages" do %>
+  <div id="flash-messages">
+    <% flash.each do |key, message| %>
+      <div class="<%= key %>"><%= message %></div>
+    <% end %>
+  </div>
+<% end %> 

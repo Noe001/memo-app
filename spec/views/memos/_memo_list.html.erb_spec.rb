@@ -9,8 +9,7 @@ RSpec.describe "memos/_memo_list.html.erb", type: :view do
     # ヘルパーメソッドをスタブ化
     allow(view).to receive(:document_icon).and_return('<i class="document-icon"></i>'.html_safe)
     allow(view).to receive(:visibility_icon).and_return('<i class="visibility-icon"></i>'.html_safe)
-    allow(view).to receive(:paginate).and_return(''.html_safe)
-    allow(view).to receive(:respond_to?).with(:paginate).and_return(false)
+
   end
 
   context "when memos exist" do

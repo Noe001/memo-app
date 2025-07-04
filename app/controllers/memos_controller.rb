@@ -6,10 +6,7 @@ class MemosController < ApplicationController
   before_action :authorize_memo_for_read, only: [:show] # New authorization for show
 
   def index
-    @user = current_user
-    @memo_new = current_user.memos.build
-    @memos = current_user.memos.includes(:tags).recent.page(params[:page])
-    @tags = current_user.memos.joins(:tags).group('tags.name').count
+    prepare_index_data
     
     # Removed logic that loaded a specific @selected memo by params[:id] in index.
     # Details of a specific memo should be viewed via the `show` action.
@@ -20,10 +17,7 @@ class MemosController < ApplicationController
     # The following lines seem to be for re-rendering index's list part,
     # which might be confusing if show is meant to display only one memo.
     # Consider a dedicated view for `show` or simplifying.
-    @user = current_user
-    @memo_new = current_user.memos.build # For a new memo form, perhaps in a sidebar
-    @memos = current_user.memos.includes(:tags).recent.page(params[:page]) # List for sidebar
-    @tags = current_user.memos.joins(:tags).group('tags.name').count # Tags for sidebar
+    prepare_index_data
 
     # Logic for "add this memo to my list" (if @selected is viewable and not owned)
     if @selected.user_id != current_user.id # Check if the selected memo is not owned by current user
@@ -75,10 +69,7 @@ class MemosController < ApplicationController
       # This part needs careful thought for UX. For now, re-render show's context.
       flash.now[:alert] = "メモの追加に失敗しました: #{@memo_to_add_to_own_list.errors.full_messages.join(', ')}"
       # Re-populate variables needed for rendering the 'show' view (which then renders 'index')
-      @user = current_user
-      @memo_new = current_user.memos.build
-      @memos = current_user.memos.includes(:tags).recent.page(params[:page])
-      @tags = current_user.memos.joins(:tags).group('tags.name').count
+      prepare_index_data
       if @selected.user_id != current_user.id
         @can_add_selected_memo = true
         # Rebuild @memo_to_add with submitted params if they exist, else from @selected
@@ -100,30 +91,78 @@ class MemosController < ApplicationController
     end
   end
 
-  def create
+    def create
     @memo_new = current_user.memos.build(memo_params)
+    
+    # タグがある場合は、タイトルと説明文が空でも保存を許可
+    if @memo_new.title.blank? && @memo_new.description.blank? && params[:tags].present?
+      @memo_new.title = "無題" # 一時的なタイトルを設定
+    end
     
     if @memo_new.save
       process_tags(@memo_new, params[:tags]) if params[:tags].present?
-      redirect_to memo_path(@memo_new), notice: 'メモを作成しました'
+      
+      # タグだけの場合は、一時的なタイトルを削除
+      if @memo_new.title == "無題" && @memo_new.description.blank? && params[:tags].present?
+        @memo_new.update_column(:title, nil)
+      end
+      
+      # リアルタイム更新用のデータを準備
+      prepare_index_data
+      @selected = @memo_new
+      
+      respond_to do |format|
+        format.html { redirect_to memo_path(@memo_new), notice: 'メモを作成しました' }
+        format.turbo_stream
+        format.json { render json: { status: 'success', message: 'メモを作成しました', memo_id: @memo_new.id } }
+      end
     else
-      @memos = current_user.memos.includes(:tags).recent.page(params[:page])
-      @tags = current_user.memos.joins(:tags).group('tags.name').count
-      flash.now[:alert] = 'メモの保存に失敗しました'
-      render :index
+      respond_to do |format|
+        format.html do
+          prepare_index_data
+          flash.now[:alert] = 'メモの保存に失敗しました'
+          render :index
+        end
+        format.turbo_stream
+        format.json { render json: { status: 'error', message: 'メモの保存に失敗しました', errors: @memo_new.errors.full_messages }, status: :unprocessable_entity }
+      end
     end
   end
 
-  def update
-    if @selected.update(memo_params)
+    def update
+    # タグがある場合は、タイトルと説明文が空でも保存を許可
+    memo_attributes = memo_params
+    if memo_attributes[:title].blank? && memo_attributes[:description].blank? && params[:tags].present?
+      memo_attributes[:title] = "無題" # 一時的なタイトルを設定
+      temp_title_set = true
+    end
+    
+    if @selected.update(memo_attributes)
       process_tags(@selected, params[:tags]) if params[:tags].present?
-      redirect_to memo_path(@selected), notice: 'メモを更新しました'
+      
+      # タグだけの場合は、一時的なタイトルを削除
+      if temp_title_set && @selected.description.blank? && params[:tags].present?
+        @selected.update_column(:title, nil)
+      end
+      
+      # リアルタイム更新用のデータを準備
+      prepare_index_data
+      
+      respond_to do |format|
+        format.html { redirect_to memo_path(@selected), notice: 'メモを更新しました' }
+        format.turbo_stream
+        format.json { render json: { status: 'success', message: 'メモを更新しました' } }
+      end
     else
-      @memos = current_user.memos.includes(:tags).recent.page(params[:page])
-      @memo_new = current_user.memos.build
-      @tags = current_user.memos.joins(:tags).group('tags.name').count
-      flash.now[:alert] = 'メモの更新に失敗しました'
-      render :index
+      respond_to do |format|
+        format.html do
+          prepare_index_data
+          flash.now[:alert] = 'メモの更新に失敗しました'
+          render :index
+        end
+        format.turbo_stream
+        format.json { render json: { status: 'error', message: 'メモの更新に失敗しました', errors: @selected.errors.full_messages } }
+      end
     end
   end
 
@@ -136,44 +175,91 @@ class MemosController < ApplicationController
   end
 
   def search
-    @user = current_user
-    @memo_new = current_user.memos.build
+    prepare_index_data
+
     search_word = params[:word]
-    @memos = current_user.memos.includes(:tags).search(search_word).recent.page(params[:page])
-    @tags = current_user.memos.joins(:tags).group('tags.name').count
-    # Removed @selected = Memo.includes(:user, :tags).find_by(id: params[:id])
-    # Search results are primary. Viewing details should go through `show` action for a specific memo.
-    
-    if @memos.empty? && search_word.present? # Only show if a search was actually performed
-      flash.now[:alert] = "「#{search_word}」に該当するメモは見つかりませんでした"
+    selected_tags = params[:tags] || []
+    # params[:tags] は文字列または配列の可能性がある
+    selected_tags = selected_tags.is_a?(Array) ? selected_tags : selected_tags.to_s.split(',')
+    selected_tags.map!(&:strip)
+
+    scope = current_user.memos.includes(:tags)
+    scope = scope.search(search_word) if search_word.present?
+    scope = scope.with_tags(selected_tags) if selected_tags.present?
+
+    @memos = scope.apply_sort(@current_sort_by, @current_direction).page(params[:page])
+
+    # 選択タグはビューでハイライトするために保持
+    @selected_tags = selected_tags
+
+    # 総メモ数が存在するかどうかを事前に保持（検索結果の UI 用）
+    @total_memos_exist = current_user.memos.exists?
+
+    # 空検索結果時の UI はビューで判定・表示する（フラッシュではなくメモリスト内で表示）
+
+    respond_to do |format|
+      format.html { render :index }
+      format.turbo_stream # search.turbo_stream.erb をレンダリング
     end
-    
-    render :index
   end
 
+  # ルートパスから呼ばれ、最新のメモを表示する
+  def latest
+    # ユーザーの最新更新メモを取得
+    latest_memo = current_user.memos.recent.first
 
+    if latest_memo
+      # 既存の show ビュー/ロジックを流用するためリダイレクト
+      redirect_to memo_path(latest_memo)
+    else
+      # メモがない場合は一覧ページ（新規作成フォーム付き）を表示
+      prepare_index_data
+      render :index
+    end
+  end
 
   private
+
+  def prepare_index_data
+    @user = current_user
+    @memo_new = current_user.memos.build unless @memo_new&.persisted?
+    @sort_options = Memo.sort_options
+    @current_sort_by = params[:sort_by] || 'updated_at'
+    @current_direction = params[:direction] || 'desc'
+    @memos = current_user.memos.includes(:tags).apply_sort(@current_sort_by, @current_direction).page(params[:page])
+    # 総メモ数が存在するかどうかを事前に保持（検索結果の UI 用）
+    @total_memos_exist = current_user.memos.exists?
+    @tags = current_user.memos.joins(:tags).group('tags.name').count
+  end
 
   def set_memo
     # Fetches any memo by ID, includes associations for efficiency.
     # Authorization is handled by separate before_actions.
     @selected = Memo.includes(:user, :tags).find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    redirect_to root_path, alert: '指定されたメモが見つかりません。'
+    respond_to do |format|
+      format.html { redirect_to root_path, alert: '指定されたメモが見つかりません。' }
+      format.json { render json: { status: 'error', message: '指定されたメモが見つかりません。' }, status: :not_found }
+    end
   end
 
   # For write actions (update, destroy)
   def authorize_memo_owner_for_write
-    unless @selected.user_id == current_user.id
-      redirect_to root_path, alert: 'このメモを編集または削除する権限がありません。'
+    return if @selected&.user_id == current_user&.id
+    
+    respond_to do |format|
+      format.html { redirect_to root_path, alert: 'このメモを編集または削除する権限がありません。' }
+      format.json { render json: { status: 'error', message: 'このメモを編集または削除する権限がありません。' }, status: :forbidden }
     end
   end
 
   # For read actions (show, potentially add_memo's source)
   def authorize_memo_for_read
-    unless can_read_memo?(@selected, current_user)
-      redirect_to root_path, alert: 'このメモを閲覧する権限がありません。'
+    return if can_read_memo?(@selected, current_user)
+    
+    respond_to do |format|
+      format.html { redirect_to root_path, alert: 'このメモを閲覧する権限がありません。' }
+      format.json { render json: { status: 'error', message: 'このメモを閲覧する権限がありません。' }, status: :forbidden }
     end
   end
 
@@ -264,10 +350,10 @@ class MemosController < ApplicationController
 
   def public_memos
     # TODO: Implement listing of public memos from all users
-    # May need pagination
+
     @user = current_user # For layout consistency
     @memo_new = current_user.memos.build # For layout consistency
-    @memos = Memo.where(visibility: :public_memo).includes(:user, :tags).recent.page(params[:page])
+    @memos = Memo.where(visibility: :public_memo).includes(:user, :tags).recent
     @tags = Memo.where(visibility: :public_memo).joins(:tags).group('tags.name').count
     flash.now[:notice] = "Listing all public memos." # Temporary message
     render :index # Re-use index view for listing, might need dedicated view later
@@ -279,7 +365,7 @@ class MemosController < ApplicationController
     @user = current_user # For layout consistency
     @memo_new = current_user.memos.build # For layout consistency
     # @memos = current_user.shared_with_me_memos.includes(:user, :tags).recent.page(params[:page]) # Example
-    @memos = current_user.memos.none.page(params[:page]) # Placeholder for no shared memos yet
+    @memos = current_user.memos.none # Placeholder for no shared memos yet
     @tags = current_user.memos.none.joins(:tags).group('tags.name').count # Placeholder
     flash.now[:notice] = "Shared memos functionality not yet implemented."
     render :index # Re-use index view, might need dedicated view
