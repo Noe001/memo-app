@@ -14,7 +14,7 @@
         <div class="input-group">
           <label class="label" for="memo_to_add_title">タイトル</label>
           <%= f.text_field :title, 
-                          placeholder: "メモのタイトルを入力", 
+                          placeholder: "タイトルを入力", 
                           class: "input title-input",
                           id: "memo_to_add_title",
                           data: { action: "input->auto-save#saveField blur->auto-save#saveField" } %>
@@ -26,7 +26,7 @@
           <input type="text" 
                  name="tags" 
                  id="memo_to_add_tags"
-                 placeholder="タグをカンマ区切りで入力（例: 仕事, アイデア）" 
+                 placeholder="カンマ区切りで入力（例: 仕事, アイデア）" 
                  class="input tags-input"
                  data-action="input->auto-save#saveField blur->auto-save#saveField">
         </div>
@@ -57,7 +57,7 @@
         <div class="input-group">
           <label class="label" for="memo_edit_title">タイトル</label>
           <%= f.text_field :title, 
-                          placeholder: "メモのタイトルを入力", 
+                          placeholder: "タイトルを入力", 
                           class: "input title-input",
                           id: "memo_edit_title",
                           data: { action: "input->auto-save#saveField blur->auto-save#saveField" } %>
@@ -70,7 +70,7 @@
                  name="tags" 
                  id="memo_edit_tags"
                  value="<%= @selected.tags.pluck(:name).join(', ') %>"
-                 placeholder="タグをカンマ区切りで入力（例: 仕事, アイデア）" 
+                 placeholder="カンマ区切りで入力（例: 仕事, アイデア）" 
                  class="input tags-input"
                  data-action="input->auto-save#saveField blur->auto-save#saveField">
         </div>
@@ -104,7 +104,7 @@
         <div class="input-group">
           <label class="label" for="memo_new_title">タイトル</label>
           <%= f.text_field :title, 
-                          placeholder: "メモのタイトルを入力", 
+                          placeholder: "タイトルを入力", 
                           class: "input title-input",
                           id: "memo_new_title",
                           data: { action: "input->auto-save#saveField blur->auto-save#saveField" } %>
@@ -116,7 +116,7 @@
           <input type="text" 
                  name="tags" 
                  id="memo_new_tags"
-                 placeholder="タグをカンマ区切りで入力（例: 仕事, アイデア, 重要）" 
+                 placeholder="カンマ区切りで入力（例: 仕事, アイデア, 重要）" 
                  class="input tags-input"
                  data-action="input->auto-save#saveField blur->auto-save#saveField">
         </div>
