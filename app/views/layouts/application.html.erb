@@ -32,30 +32,33 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
 
   <body class="<%= controller_name %>-<%= action_name %>-page" 
         data-theme="<%= current_user&.theme || 'light' %>"
         data-shortcuts-enabled="<%= current_user&.keyboard_shortcuts_enabled != false %>"
+        <% unless controller_name == 'sessions' || controller_name == 'users' || controller_name == 'errors' || controller_name == 'auth' %>
         data-controller="sidebar settings keyboard-shortcuts visibility-toggle"
         data-sidebar-active-class="active"
         data-settings-active-class="active"
         data-settings-url-value="<%= settings_path %>"
         data-settings-shortcuts-enabled-value="<%= current_user&.keyboard_shortcuts_enabled != false %>"
-        data-keyboard-shortcuts-enabled-value="<%= current_user&.keyboard_shortcuts_enabled != false %>">
+        data-keyboard-shortcuts-enabled-value="<%= current_user&.keyboard_shortcuts_enabled != false %>"
+        <% end %>>
     
     <!-- ナビゲーションサイドバー -->
-    <% unless controller_name == 'sessions' || controller_name == 'users' || controller_name == 'errors' %>
+    <% unless controller_name == 'sessions' || controller_name == 'users' || controller_name == 'errors' || controller_name == 'auth' %>
       <%= render 'layouts/navigation_sidebar' %>
     <% end %>
     
     <!-- 設定ポップアップ -->
-    <% unless controller_name == 'sessions' || controller_name == 'users' || controller_name == 'errors' %>
+    <% unless controller_name == 'sessions' || controller_name == 'users' || controller_name == 'errors' || controller_name == 'auth' %>
       <%= render 'layouts/settings_popup' %>
     <% end %>
     
     <!-- キーボードショートカット一覧パネル -->
-    <% unless controller_name == 'sessions' || controller_name == 'users' || controller_name == 'errors' %>
+    <% unless controller_name == 'sessions' || controller_name == 'users' || controller_name == 'errors' || controller_name == 'auth' %>
       <div class="shortcuts-panel" data-keyboard-shortcuts-target="panel">
         <div class="shortcuts-panel-header">
           <h3 class="shortcuts-panel-title">
@@ -156,7 +159,7 @@
         <%= render "layouts/notice" %>
       </div>
       
-      <main class="<%= controller_name == 'sessions' || controller_name == 'users' ? 'auth-main' : 'app-main-new' %>">
+      <main class="<%= controller_name == 'sessions' || controller_name == 'users' || controller_name == 'auth' ? 'auth-main' : 'app-main-new' %>">
         <%= yield %>
       </main>
     </div>

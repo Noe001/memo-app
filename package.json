@@ -23,5 +23,11 @@
   "bugs": {
     "url": "https://github.com/Noe001/memo-app/issues"
   },
-  "homepage": "https://github.com/Noe001/memo-app#readme"
+  "homepage": "https://github.com/Noe001/memo-app#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.50.3",
+    "axios": "^1.10.0",
+    "dotenv": "^17.0.1",
+    "pg": "^8.16.3"
+  }
 }

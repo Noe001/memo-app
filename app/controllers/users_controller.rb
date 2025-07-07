@@ -1,26 +1,14 @@
 class UsersController < ApplicationController
-  before_action :redirect_if_logged_in, only: [:signup, :create]
-
+  before_action :authenticate_user!, except: [:signup, :create]
+  
   def signup
-    @user = User.new
+    # Phase 4移行: AuthControllerに統一
+    redirect_to auth_login_path
   end
 
   def create
-    @user = User.new(user_params)
-    
-    if @user.save
-      # アカウント作成ログ
-      Rails.logger.info "New user created: #{@user.email} from IP: #{request.remote_ip}"
-      
-      # 自動ログイン
-      session[:user_id] = @user.id
-      
-      redirect_to root_path, notice: 'アカウントが作成されました。MemoAppへようこそ！'
-    else
-      # バリデーションエラーの詳細処理
-      handle_validation_errors
-      render :signup, status: :unprocessable_entity
-    end
+    # Phase 4移行: AuthControllerに統一
+    redirect_to auth_login_path
   end
   
   # プロファイル表示
@@ -29,10 +17,9 @@ class UsersController < ApplicationController
   # consistently uses current_user for show, edit, update.
   # This should ideally be a singular resource route like /profile.
   def show
-    authenticate_user!
     @user = current_user # Explicitly for the logged-in user
     if @user.nil? # Should not happen if authenticate_user! works
-      redirect_to login_path, alert: 'ログインしてください。'
+      redirect_to new_sessions_path, alert: 'ログインしてください。'
       return
     end
     @memos_count = @user.memos.count
@@ -44,14 +31,9 @@ class UsersController < ApplicationController
   # Given current setup, this will also show current_user's profile, similar to show.
   # If :id was intended to be used, authorization would be needed.
   def profile
-    authenticate_user!
-    # If params[:id] should be used to view other's profiles (not current design):
-    # @user = User.find(params[:id])
-    # authorize_user_profile_view!(@user) # Some authorization logic
-    # else, it's for current_user:
     @user = current_user
     if @user.nil?
-      redirect_to login_path, alert: 'ログインしてください。'
+      redirect_to new_sessions_path, alert: 'ログインしてください。'
       return
     end
     @memos_count = @user.memos.count
@@ -61,12 +43,10 @@ class UsersController < ApplicationController
   
   # プロファイル編集
   def edit
-    authenticate_user!
     @user = current_user
   end
   
   def update
-    authenticate_user!
     @user = current_user
     
     if @user.update(update_user_params)
@@ -78,22 +58,12 @@ class UsersController < ApplicationController
   end
 
   private
-
-  def user_params
-    params.require(:user).permit(:name, :email, :password, :password_confirmation)
-  end
   
   def update_user_params
     # パスワード更新時のみpasswordフィールドを許可
     permitted = [:name, :email]
     permitted += [:password, :password_confirmation] if params[:user][:password].present?
     params.require(:user).permit(permitted)
-  end
-  
-  def redirect_if_logged_in
-    if current_user
-      redirect_to root_path, notice: '既にログインしています'
-    end
   end
   
   def handle_validation_errors

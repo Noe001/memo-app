@@ -33,6 +33,11 @@ services:
       REDIS_URL: redis://redis:6379/0
     stdin_open: true
     tty: true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - default
+      - supabase_network_memo-app
 
   redis:
     image: redis:7-alpine
@@ -46,3 +51,7 @@ volumes:
   postgres_data:
   redis_data:
   bundle_cache:
+
+networks:
+  supabase_network_memo-app:
+    external: true
