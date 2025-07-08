@@ -84,7 +84,7 @@ class SupabaseAuth
         id: user_data['id'],
         email: user_data['email'],
         role: user_data['role'] || 'authenticated',
-        name: profile_data&.dig('name') || user_data['email']&.split('@')&.first,
+        name: profile_data&.dig('name') || user_data.dig('user_metadata', 'name') || user_data['email']&.split('@')&.first,
         theme: profile_data&.dig('theme') || 'light',
         keyboard_shortcuts_enabled: profile_data&.dig('keyboard_shortcuts_enabled') != false,
         token: token
@@ -128,7 +128,9 @@ class SupabaseAuth
   
   # プロフィール情報をSupabaseから取得
   def self.get_user_profile(user_id)
+    Rails.logger.info "Getting user profile for user_id: #{user_id}"
     uri = URI("#{supabase_url}/rest/v1/profiles?id=eq.#{user_id}&select=*")
+    Rails.logger.info "Profile request URI: #{uri}"
     
     http = Net::HTTP.new(uri.host, uri.port)
     request = Net::HTTP::Get.new(uri)
@@ -137,14 +139,23 @@ class SupabaseAuth
     request['Content-Type'] = 'application/json'
     
     response = http.request(request)
+    Rails.logger.info "Profile response code: #{response.code}"
+    Rails.logger.info "Profile response body: #{response.body}"
     
     if response.code == '200'
       profiles = JSON.parse(response.body)
-      profiles.first
+      Rails.logger.info "Parsed profiles: #{profiles.inspect}"
+      profile = profiles.first
+      Rails.logger.info "Selected profile: #{profile.inspect}"
+      profile
     else
       Rails.logger.warn "Failed to get profile from Supabase: #{response.code} #{response.body}"
       nil
     end
+  rescue => e
+    Rails.logger.error "Error getting user profile: #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
+    nil
   end
   
   # Supabaseでパスワードリセットリンクを生成
@@ -380,3 +391,4 @@ class SupabaseAuth
     sign_out(token)
   end
 end 
+ 

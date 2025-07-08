@@ -15,7 +15,10 @@ class ApplicationController < ActionController::Base
   def current_user_model
     return @current_user_model if defined?(@current_user_model)
     
+    Rails.logger.info "Getting current_user_model, current_user present: #{current_user.present?}"
     @current_user_model = get_user_model_instance
+    Rails.logger.info "current_user_model result: #{@current_user_model.present? ? 'present' : 'nil'}"
+    @current_user_model
   end
   helper_method :current_user_model
   
@@ -54,51 +57,91 @@ class ApplicationController < ActionController::Base
   def get_user_model_instance
     return nil unless current_user&.auth_method == 'supabase'
     
-    # Supabase認証の場合、profilesテーブルから元のRails IDを取得
-    profile_data = SupabaseAuth.get_user_profile(current_user.id)
+    Rails.logger.info "Getting user model instance for: #{current_user.email}"
     
-    if profile_data && profile_data['original_rails_id']
-      # 元のRails UserモデルがまだDBに存在する場合
-      existing_user = User.find_by(id: profile_data['original_rails_id'])
-      return existing_user if existing_user
+    begin
+      # まず既存のメールアドレスでUserモデルを検索
+      existing_user = User.find_by(email: current_user.email)
+      if existing_user
+        Rails.logger.info "Found existing user by email: #{existing_user.email}"
+        return existing_user
+      end
+      
+      # Supabase認証の場合、profilesテーブルから元のRails IDを取得
+      profile_data = SupabaseAuth.get_user_profile(current_user.id)
+      Rails.logger.info "Profile data: #{profile_data.present? ? 'present' : 'absent'}"
+      
+      if profile_data && profile_data['original_rails_id']
+        # 元のRails UserモデルがまだDBに存在する場合
+        existing_user = User.find_by(id: profile_data['original_rails_id'])
+        if existing_user
+          Rails.logger.info "Found existing user by original_rails_id: #{existing_user.email}"
+          return existing_user
+        end
+      end
+      
+      # 元のUserモデルが見つからない場合、新しいUserモデルを作成（移行期間中の互換性のため）
+      Rails.logger.info "Creating compatible user model"
+      create_compatible_user_model(profile_data)
+    rescue => e
+      Rails.logger.error "Error getting user model instance: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      nil
     end
-    
-    # 元のUserモデルが見つからない場合、新しいUserモデルを作成（移行期間中の互換性のため）
-    create_compatible_user_model(profile_data)
   end
   
   def create_compatible_user_model(profile_data)
+    Rails.logger.info "Creating compatible user model for: #{current_user.email}"
+    
     # Supabaseユーザーに対応するUserモデルを作成
     random_password = SecureRandom.alphanumeric(32)
     
     user_attributes = {
       email: current_user.email,
-      name: current_user.name,
+      name: (current_user.name.present? && current_user.name.length >= 2) ? current_user.name : 'User',
       theme: current_user.theme || 'light',
       keyboard_shortcuts_enabled: current_user.keyboard_shortcuts_enabled != false,
       password: random_password,
       password_confirmation: random_password
     }
     
+    Rails.logger.info "User attributes: #{user_attributes.except(:password, :password_confirmation)}"
+    
     # 既存のメールアドレスチェック
     existing_user = User.find_by(email: current_user.email)
     if existing_user
+      Rails.logger.info "Found existing user by email: #{existing_user.email}"
       # 既存ユーザーがいる場合は、そのユーザーを更新
-      existing_user.update!(
-        name: user_attributes[:name],
-        theme: user_attributes[:theme],
-        keyboard_shortcuts_enabled: user_attributes[:keyboard_shortcuts_enabled]
-      )
-      return existing_user
+      begin
+        existing_user.update!(
+          name: (user_attributes[:name].present? && user_attributes[:name].length >= 2) ? user_attributes[:name] : 'User',
+          theme: user_attributes[:theme],
+          keyboard_shortcuts_enabled: user_attributes[:keyboard_shortcuts_enabled]
+        )
+        Rails.logger.info "Updated existing user successfully"
+        return existing_user
+      rescue => e
+        Rails.logger.error "Failed to update existing user: #{e.message}"
+        return existing_user # 更新に失敗してもユーザーは返す
+      end
     end
     
     # 新しいユーザーを作成
     begin
-      User.create!(user_attributes)
+      new_user = User.create!(user_attributes)
+      Rails.logger.info "Created new user successfully: #{new_user.email}"
+      return new_user
     rescue ActiveRecord::RecordInvalid => e
       Rails.logger.error "Failed to create compatible user model: #{e.message}"
+      Rails.logger.error "Validation errors: #{e.record.errors.full_messages.join(', ')}"
       # 作成に失敗した場合、既存のユーザーを再検索
-      User.find_by(email: current_user.email)
+      fallback_user = User.find_by(email: current_user.email)
+      Rails.logger.info "Fallback user found: #{fallback_user.present?}"
+      return fallback_user
+    rescue => e
+      Rails.logger.error "Unexpected error creating user: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      return nil
     end
   end
   

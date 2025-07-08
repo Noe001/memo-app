@@ -5,10 +5,12 @@
 <%= stylesheet_link_tag "memos", "data-turbo-track": "reload" %>
 
 <div class="app-layout" 
-     data-controller="memo" 
-     data-memo-search-url-value="<%= search_memos_path %>">
+     data-controller="memo mobile-touch" 
+     data-memo-search-url-value="<%= search_memos_path %>"
+     data-mobile-touch-sidebar-target="sidebar"
+     data-mobile-touch-memo-list-target="memoList">
   <!-- サイドバー -->
-  <aside class="memo-sidebar">
+  <aside class="memo-sidebar" data-mobile-touch-target="sidebar">
     <%= render 'sidebar' %>
   </aside>
 

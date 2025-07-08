@@ -205,8 +205,22 @@ class MemosController < ApplicationController
 
   # ルートパスから呼ばれ、最新のメモを表示する
   def latest
+    # 認証チェック
+    unless current_user
+      redirect_to auth_login_path, alert: 'ログインしてください'
+      return
+    end
+
+    # current_user_modelがnilの場合の対応
+    user_model = current_user_model
+    unless user_model
+      Rails.logger.error "current_user_model is nil for user: #{current_user&.email}"
+      redirect_to auth_login_path, alert: 'ユーザー情報の取得に失敗しました。再度ログインしてください。'
+      return
+    end
+
     # ユーザーの最新更新メモを取得
-    latest_memo = current_user_model.memos.recent.first
+    latest_memo = user_model.memos.recent.first
 
     if latest_memo
       # 既存の show ビュー/ロジックを流用するためリダイレクト
@@ -222,14 +236,30 @@ class MemosController < ApplicationController
 
   def prepare_index_data
     @user = current_user
-    @memo_new = current_user_model.memos.build unless @memo_new&.persisted?
+    
+    # current_user_modelがnilの場合の対応
+    user_model = current_user_model
+    unless user_model
+      Rails.logger.error "current_user_model is nil in prepare_index_data for user: #{current_user&.email}"
+      # デフォルト値を設定してエラーを回避
+      @memo_new = Memo.new
+      @sort_options = Memo.sort_options
+      @current_sort_by = params[:sort_by] || 'updated_at'
+      @current_direction = params[:direction] || 'desc'
+      @memos = Memo.none.page(params[:page])
+      @total_memos_exist = false
+      @tags = {}
+      return
+    end
+    
+    @memo_new = user_model.memos.build unless @memo_new&.persisted?
     @sort_options = Memo.sort_options
     @current_sort_by = params[:sort_by] || 'updated_at'
     @current_direction = params[:direction] || 'desc'
-    @memos = current_user_model.memos.includes(:tags).apply_sort(@current_sort_by, @current_direction).page(params[:page])
+    @memos = user_model.memos.includes(:tags).apply_sort(@current_sort_by, @current_direction).page(params[:page])
     # 総メモ数が存在するかどうかを事前に保持（検索結果の UI 用）
-    @total_memos_exist = current_user_model.memos.exists?
-    @tags = current_user_model.memos.joins(:tags).group('tags.name').count
+    @total_memos_exist = user_model.memos.exists?
+    @tags = user_model.memos.joins(:tags).group('tags.name').count
   end
 
   def set_memo

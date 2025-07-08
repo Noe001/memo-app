@@ -1,0 +1,132 @@
+{
+  "name": "MemoApp - 簡単メモ管理",
+  "short_name": "MemoApp",
+  "description": "効率的なメモ管理ができるWebアプリケーション。タグ付け、検索、共有機能付き。",
+  "start_url": "/memos",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#0ea5e9",
+  "background_color": "#ffffff",
+  "lang": "ja",
+  "dir": "ltr",
+  
+  "icons": [
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAQMAAAD58POIAAABF0lEQVR42u3PMQ0AAAgDIN8/9K3hBjSQmIadJPSJeAEBBAgQIECAAAECBAgQIECAAAECBAgQIECAAIF/AfEAAR4Wb+93AAAAAElFTkSuQmCC",
+      "sizes": "144x144 152x152 192x192 384x384 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  
+  "screenshots": [
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile view of MemoApp"
+    },
+    {
+      "src": "/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Desktop view of MemoApp"
+    }
+  ],
+  
+  "categories": [
+    "productivity",
+    "utilities",
+    "business"
+  ],
+  
+  "shortcuts": [
+    {
+      "name": "新しいメモを作成",
+      "short_name": "新規メモ",
+      "description": "新しいメモを素早く作成",
+      "url": "/memos?action=new",
+      "icons": [
+        {
+          "src": "/shortcut-new.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "メモを検索",
+      "short_name": "検索",
+      "description": "メモを検索する",
+      "url": "/memos?focus=search",
+      "icons": [
+        {
+          "src": "/shortcut-search.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "設定",
+      "short_name": "設定",
+      "description": "アプリ設定を変更",
+      "url": "/settings",
+      "icons": [
+        {
+          "src": "/shortcut-settings.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  
+  "related_applications": [],
+  "prefer_related_applications": false,
+  
+  "protocol_handlers": [
+    {
+      "protocol": "web+memo",
+      "url": "/memos?shared=%s"
+    }
+  ],
+  
+  "file_handlers": [
+    {
+      "action": "/memos/import",
+      "accept": {
+        "text/markdown": [".md", ".markdown"],
+        "text/plain": [".txt"],
+        "application/json": [".json"]
+      }
+    }
+  ],
+  
+  "share_target": {
+    "action": "/memos/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "attachment",
+          "accept": ["text/plain", "text/markdown", "image/*"]
+        }
+      ]
+    }
+  },
+  
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  
+  "handle_links": "preferred"
+} 

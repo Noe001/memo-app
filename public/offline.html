@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>オフライン - MemoApp</title>
+    <style>
+        :root {
+            --primary-color: #0ea5e9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --border-color: #e2e8f0;
+            --border-radius: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --shadow-lg: 0 10px 15px -3px rgba(14, 165, 233, 0.1), 0 4px 6px -4px rgba(14, 165, 233, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #0284c7 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-md);
+        }
+
+        .offline-container {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .offline-icon {
+            font-size: 4rem;
+            margin-bottom: var(--spacing-lg);
+            color: var(--primary-color);
+            animation: pulse 2s infinite;
+        }
+
+        .offline-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .offline-message {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .offline-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0284c7;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .offline-tips {
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .tips-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .tips-list {
+            list-style: none;
+            space-y: var(--spacing-md);
+        }
+
+        .tips-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .tips-icon {
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-top: 0.125rem;
+        }
+
+        .tips-text {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .network-status {
+            position: fixed;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            background: #ef4444;
+        }
+
+        .network-status.online {
+            background: #10b981;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .offline-container {
+                padding: var(--spacing-lg);
+            }
+
+            .offline-title {
+                font-size: 1.5rem;
+            }
+
+            .offline-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --text-primary: #f9fafb;
+                --text-secondary: #d1d5db;
+                --bg-primary: #1f2937;
+                --bg-secondary: #111827;
+                --border-color: #374151;
+            }
+
+            body {
+                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="network-status" class="network-status">オフライン</div>
+    
+    <div class="offline-container">
+        <div class="offline-icon">📱</div>
+        
+        <h1 class="offline-title">オフラインです</h1>
+        
+        <p class="offline-message">
+            インターネット接続が利用できません。<br>
+            接続が復旧次第、自動的にメモアプリに戻ります。
+        </p>
+        
+        <div class="offline-actions">
+            <button onclick="location.reload()" class="btn btn-primary">
+                <span>🔄</span>
+                再読み込み
+            </button>
+            
+            <button onclick="goOffline()" class="btn btn-secondary">
+                <span>📝</span>
+                オフラインメモ
+            </button>
+        </div>
+        
+        <div class="offline-tips">
+            <h3 class="tips-title">💡 オフライン時のヒント</h3>
+            <ul class="tips-list">
+                <li class="tips-item">
+                    <span class="tips-icon">•</span>
+                    <span class="tips-text">作成済みのメモは引き続き閲覧できます</span>
+                </li>
+                <li class="tips-item">
+                    <span class="tips-icon">•</span>
+                    <span class="tips-text">新しいメモはローカルに保存され、接続復旧時に同期されます</span>
+                </li>
+                <li class="tips-item">
+                    <span class="tips-icon">•</span>
+                    <span class="tips-text">編集中のメモは自動的に下書き保存されます</span>
+                </li>
+                <li class="tips-item">
+                    <span class="tips-icon">•</span>
+                    <span class="tips-text">Wi-Fi設定を確認してください</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // ネットワーク状態の監視
+        function updateNetworkStatus() {
+            const status = document.getElementById('network-status');
+            if (navigator.onLine) {
+                status.textContent = 'オンライン';
+                status.classList.add('online');
+                // オンラインになったら自動的にリダイレクト
+                setTimeout(() => {
+                    window.location.href = '/memos';
+                }, 1000);
+            } else {
+                status.textContent = 'オフライン';
+                status.classList.remove('online');
+            }
+        }
+
+        // オフラインメモ機能
+        function goOffline() {
+            const offlineData = {
+                memos: JSON.parse(localStorage.getItem('offlineMemos') || '[]'),
+                lastSync: localStorage.getItem('lastSync') || Date.now()
+            };
+
+            // 簡易オフラインエディタ
+            const editor = document.createElement('div');
+            editor.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-primary); z-index: 1000; padding: 1rem;">
+                    <div style="max-width: 600px; margin: 0 auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+                            <h2>オフラインメモ</h2>
+                            <button onclick="closeOfflineEditor()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <input type="text" id="offline-title" placeholder="タイトル" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); margin-bottom: 0.5rem;">
+                            <textarea id="offline-content" placeholder="メモの内容..." style="width: 100%; height: 300px; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); resize: vertical;"></textarea>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button onclick="saveOfflineMemo()" class="btn btn-primary">保存</button>
+                            <button onclick="loadOfflineMemos()" class="btn btn-secondary">保存済みメモ表示</button>
+                        </div>
+                        <div id="offline-memos" style="margin-top: 1rem;"></div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(editor);
+        }
+
+        // オフラインエディタを閉じる
+        function closeOfflineEditor() {
+            const editor = document.querySelector('div[style*="position: fixed"]');
+            if (editor) {
+                editor.remove();
+            }
+        }
+
+        // オフラインメモの保存
+        function saveOfflineMemo() {
+            const title = document.getElementById('offline-title').value || '無題';
+            const content = document.getElementById('offline-content').value;
+            
+            if (!content.trim()) {
+                alert('メモの内容を入力してください');
+                return;
+            }
+
+            const memo = {
+                id: Date.now(),
+                title: title,
+                content: content,
+                createdAt: new Date().toISOString(),
+                synced: false
+            };
+
+            const offlineMemos = JSON.parse(localStorage.getItem('offlineMemos') || '[]');
+            offlineMemos.push(memo);
+            localStorage.setItem('offlineMemos', JSON.stringify(offlineMemos));
+
+            document.getElementById('offline-title').value = '';
+            document.getElementById('offline-content').value = '';
+            
+            alert('メモを保存しました（オンライン復旧時に同期されます）');
+            loadOfflineMemos();
+        }
+
+        // 保存済みオフラインメモの表示
+        function loadOfflineMemos() {
+            const offlineMemos = JSON.parse(localStorage.getItem('offlineMemos') || '[]');
+            const container = document.getElementById('offline-memos');
+            
+            if (offlineMemos.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">保存済みのオフラインメモはありません</p>';
+                return;
+            }
+
+            container.innerHTML = '<h3 style="margin-bottom: 0.5rem;">保存済みメモ</h3>' + 
+                offlineMemos.map(memo => `
+                    <div style="border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 0.75rem; margin-bottom: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <strong>${memo.title}</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-secondary);">${new Date(memo.createdAt).toLocaleString()}</span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.875rem;">${memo.content.substring(0, 100)}${memo.content.length > 100 ? '...' : ''}</p>
+                        <div style="margin-top: 0.5rem;">
+                            <span style="font-size: 0.75rem; color: ${memo.synced ? '#10b981' : '#f59e0b'};">
+                                ${memo.synced ? '✓ 同期済み' : '⏳ 同期待ち'}
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        // イベントリスナーの設定
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+
+        // 初期状態の設定
+        updateNetworkStatus();
+
+        // 定期的にネットワーク状態をチェック
+        setInterval(updateNetworkStatus, 5000);
+
+        // Service Workerの更新チェック
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(registration => {
+                registration.addEventListener('updatefound', () => {
+                    console.log('Service Worker updating...');
+                });
+            });
+        }
+    </script>
+</body>
+</html> 
