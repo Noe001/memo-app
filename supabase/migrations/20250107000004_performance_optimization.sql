@@ -19,10 +19,9 @@ WHERE visibility = 1;
 CREATE INDEX IF NOT EXISTS idx_memo_tags_tag_created 
 ON memo_tags(tag_id, created_at DESC);
 
--- Index for session cleanup
-CREATE INDEX IF NOT EXISTS idx_sessions_expires_cleanup 
-ON sessions(expires_at)
-WHERE expires_at < NOW() + INTERVAL '7 days';
+-- Index for session cleanup (avoid non-immutable functions in predicate)
+CREATE INDEX IF NOT EXISTS idx_sessions_expires_at 
+ON sessions(expires_at);
 
 -- Profile email search optimization
 CREATE INDEX IF NOT EXISTS idx_profiles_email_trgm 

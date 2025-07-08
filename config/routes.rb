@@ -37,6 +37,19 @@ Rails.application.routes.draw do
   post 'login', to: 'auth#login', as: 'create_sessions'
   delete 'login', to: 'auth#logout', as: 'destroy_sessions'
   
+  # グループ関連
+  resources :groups do
+    resources :invitations, only: [:create, :destroy], controller: 'groups/invitations'
+    
+    member do
+      post :switch_to  # グループ切り替え
+      delete 'members/:user_id', to: 'groups/members#destroy', as: 'remove_member'
+    end
+  end
+  
+  # 招待承認
+  get 'invitations/accept', to: 'invitations#accept', as: 'accept_invitation'
+  
   # メモ関連
   resources :memos do
     member do
@@ -68,6 +81,14 @@ Rails.application.routes.draw do
       
       resources :tags, except: [:new, :edit]
       
+      # グループAPI
+      resources :groups, except: [:new, :edit] do
+        resources :invitations, only: [:create, :destroy], controller: 'groups/invitations'
+        member do
+          post :switch_to
+        end
+      end
+      
       resource :user, only: [:show, :update] # This will need API auth using `authenticate_api_user!`
       
       # API Authentication routes
@@ -87,6 +108,14 @@ Rails.application.routes.draw do
       
       resources :tags, except: [:new, :edit]
       
+      # グループAPI v2
+      resources :groups, except: [:new, :edit] do
+        resources :invitations, only: [:create, :destroy], controller: 'groups/invitations'
+        member do
+          post :switch_to
+        end
+      end
+      
       resource :user, only: [:show, :update]
     end
   end
@@ -96,6 +125,7 @@ Rails.application.routes.draw do
     resources :users, only: [:index, :show, :update, :destroy]
     resources :memos, only: [:index, :show, :destroy]
     resources :tags, only: [:index, :show, :update, :destroy]
+    resources :groups, only: [:index, :show, :update, :destroy]
     
     root to: 'dashboard#index'
   end

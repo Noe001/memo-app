@@ -1,6 +1,7 @@
 class Memo < ApplicationRecord
   # ユーザー情報と関連付ける
   belongs_to :user 
+  belongs_to :group, optional: true
   
   # バリデーション強化
   validates :title, length: { maximum: 255 }
@@ -14,6 +15,17 @@ class Memo < ApplicationRecord
   # スコープ（検索・フィルタリング用）
   scope :recent, -> { order(updated_at: :desc) }
   scope :by_user, ->(user) { where(user: user) }
+  scope :by_group, ->(group) { where(group: group) }
+  scope :personal, -> { where(group: nil) }
+  scope :accessible_by, ->(user) {
+    left_joins(group: :user_groups)
+      .where(
+        '(memos.group_id IS NULL AND memos.user_id = ?) OR ' \
+        '(groups.owner_id = ?) OR ' \
+        '(user_groups.user_id = ?)',
+        user.id, user.id, user.id
+      )
+  }
   scope :search, ->(query) {
     # Using LOWER() for case-insensitive search compatible with MySQL and PostgreSQL
     fuzzy_query = "%#{query.to_s.downcase}%" # Ensure query is a string and downcased
@@ -67,6 +79,22 @@ class Memo < ApplicationRecord
   
   # 公開/非公開機能
   enum visibility: { private_memo: 0, public_memo: 1, shared: 2 }
+  
+  # グループ関連のメソッド
+  def personal?
+    group.nil?
+  end
+  
+  def group_memo?
+    group.present?
+  end
+  
+  def accessible_by?(user)
+    return true if self.user == user
+    return false if personal?
+    return true if group.owner == user
+    group.member?(user)
+  end
   
   private
   

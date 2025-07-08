@@ -22,8 +22,76 @@
         </div>
       </div>
       
+      <!-- グループ切り替えセクション -->
+      <% if defined?(@user_groups) %>
+        <div class="sidebar-section">
+          <h3 class="sidebar-section-title">
+            <i data-lucide="users" class="section-icon"></i>
+            グループ
+          </h3>
+          
+          <!-- 個人メモ（グループなし） -->
+          <button class="group-item <%= 'active' unless defined?(@current_group) && @current_group %>"
+                  data-action="click->sidebar#close"
+                  onclick="switchToPersonal()">
+            <div class="group-avatar personal">
+              <i data-lucide="user" class="group-icon"></i>
+            </div>
+            <div class="group-details">
+              <div class="group-name">個人メモ</div>
+              <div class="group-meta">プライベート</div>
+            </div>
+            <% unless defined?(@current_group) && @current_group %>
+              <i data-lucide="check" class="group-active-icon"></i>
+            <% end %>
+          </button>
+          
+          <!-- グループ一覧 -->
+          <% if @user_groups.present? %>
+            <% @user_groups.each do |group| %>
+              <button class="group-item <%= 'active' if defined?(@current_group) && @current_group&.id == group.id %>"
+                      data-action="click->sidebar#close"
+                      onclick="switchToGroup(<%= group.id %>)">
+                <div class="group-avatar">
+                  <%= group.name.first.upcase %>
+                </div>
+                <div class="group-details">
+                  <div class="group-name"><%= group.name %></div>
+                  <div class="group-meta">
+                    <%= pluralize(group.users.count, 'メンバー') %> • 
+                    <%= group.owner == current_user ? 'オーナー' : current_user.group_role(group)&.humanize || 'メンバー' %>
+                  </div>
+                </div>
+                <% if defined?(@current_group) && @current_group&.id == group.id %>
+                  <i data-lucide="check" class="group-active-icon"></i>
+                <% end %>
+              </button>
+            <% end %>
+          <% else %>
+            <p class="group-empty-message" style="font-size: 0.75rem; color: var(--muted-foreground); margin: 0 0 0.5rem 2.75rem;">まだグループがありません</p>
+          <% end %>
+          
+          <!-- グループ作成ボタン -->
+          <%= link_to new_group_path, 
+              class: "group-create-btn", 
+              data: { action: "click->sidebar#close" } do %>
+            <i data-lucide="plus" class="create-icon"></i>
+            <span>新しいグループを作成</span>
+          <% end %>
+        </div>
+      <% end %>
+      
       <!-- メニュー項目 -->
       <nav class="sidebar-nav">
+        <% if defined?(@user_groups) && @user_groups.present? %>
+          <%= link_to groups_path, 
+              class: "sidebar-nav-item", 
+              data: { action: "click->sidebar#close" } do %>
+            <i data-lucide="users" class="nav-icon"></i>
+            <span>グループ管理</span>
+          <% end %>
+        <% end %>
+        
         <button class="sidebar-nav-item" 
                 data-action="click->sidebar#close click->settings#open">
           <i data-lucide="settings" class="nav-icon"></i>
@@ -51,4 +119,50 @@
       </nav>
     <% end %>
   </div>
-</div> 
+</div>
+
+<script>
+function switchToGroup(groupId) {
+  fetch(`/groups/${groupId}/switch_to`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+    },
+    body: JSON.stringify({})
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // ページをリロードしてグループの切り替えを反映
+      window.location.reload();
+    } else {
+      alert('グループの切り替えに失敗しました');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('グループの切り替えに失敗しました');
+  });
+}
+
+function switchToPersonal() {
+  // セッションからグループIDを削除
+  fetch('/groups/personal/switch_to', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+    },
+    body: JSON.stringify({ personal: true })
+  })
+  .then(() => {
+    window.location.reload();
+  })
+  .catch(error => {
+    // フォールバック: 単純にページをリロード
+    sessionStorage.removeItem('current_group_id');
+    window.location.href = '/memos';
+  });
+}
+</script> 

@@ -1,0 +1,191 @@
+<% content_for :title, "グループ管理" %>
+<% content_for :description, "参加しているグループの管理と新しいグループの作成ができます。" %>
+
+<%= stylesheet_link_tag "groups", "data-turbo-track": "reload" %>
+
+<div class="groups-container">
+  <div class="groups-header">
+    <div class="groups-header-content">
+      <h1 class="groups-title">グループ管理</h1>
+      <p class="groups-subtitle">参加しているグループの管理と新しいグループの作成</p>
+    </div>
+    
+    <%= link_to new_group_path, class: "btn btn-primary" do %>
+      <i data-lucide="plus" class="btn-icon"></i>
+      新しいグループを作成
+    <% end %>
+  </div>
+  
+  <div class="groups-content">
+    <!-- 現在のグループ表示 -->
+    <% if @current_group %>
+      <div class="current-group-section">
+        <h2 class="section-title">
+          <i data-lucide="check-circle" class="section-icon"></i>
+          現在のグループ
+        </h2>
+        
+        <div class="group-card current">
+          <div class="group-card-header">
+            <div class="group-avatar large">
+              <%= @current_group.name.first.upcase %>
+            </div>
+            <div class="group-info">
+              <h3 class="group-name"><%= @current_group.name %></h3>
+              <p class="group-description"><%= @current_group.description %></p>
+              <div class="group-meta">
+                <%= pluralize(@current_group.users.count, 'メンバー') %> • 
+                <%= @current_group.owner == current_user ? 'オーナー' : current_user.group_role(@current_group)&.humanize || 'メンバー' %>
+              </div>
+            </div>
+          </div>
+          
+          <div class="group-actions">
+            <%= link_to @current_group, class: "btn btn-outline btn-sm" do %>
+              <i data-lucide="eye" class="btn-icon"></i>
+              詳細を見る
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    
+    <!-- 所有しているグループ -->
+    <% if @owned_groups.present? %>
+      <div class="groups-section">
+        <h2 class="section-title">
+          <i data-lucide="crown" class="section-icon"></i>
+          所有しているグループ
+        </h2>
+        
+        <div class="groups-grid">
+          <% @owned_groups.each do |group| %>
+            <div class="group-card <%= 'current' if @current_group&.id == group.id %>">
+              <div class="group-card-header">
+                <div class="group-avatar">
+                  <%= group.name.first.upcase %>
+                </div>
+                <div class="group-info">
+                  <h3 class="group-name"><%= group.name %></h3>
+                  <p class="group-description"><%= group.description %></p>
+                  <div class="group-meta">
+                    <%= pluralize(group.users.count, 'メンバー') %> • 
+                    <%= pluralize(group.memos.count, 'メモ') %>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="group-actions">
+                <% unless @current_group&.id == group.id %>
+                  <button class="btn btn-outline btn-sm" onclick="switchToGroup(<%= group.id %>)">
+                    <i data-lucide="arrow-right" class="btn-icon"></i>
+                    切り替え
+                  </button>
+                <% end %>
+                
+                <%= link_to group, class: "btn btn-outline btn-sm" do %>
+                  <i data-lucide="eye" class="btn-icon"></i>
+                  詳細
+                <% end %>
+                
+                <%= link_to edit_group_path(group), class: "btn btn-outline btn-sm" do %>
+                  <i data-lucide="edit" class="btn-icon"></i>
+                  編集
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+    
+    <!-- 参加しているグループ -->
+    <% if @member_groups.present? %>
+      <div class="groups-section">
+        <h2 class="section-title">
+          <i data-lucide="users" class="section-icon"></i>
+          参加しているグループ
+        </h2>
+        
+        <div class="groups-grid">
+          <% @member_groups.each do |group| %>
+            <div class="group-card <%= 'current' if @current_group&.id == group.id %>">
+              <div class="group-card-header">
+                <div class="group-avatar">
+                  <%= group.name.first.upcase %>
+                </div>
+                <div class="group-info">
+                  <h3 class="group-name"><%= group.name %></h3>
+                  <p class="group-description"><%= group.description %></p>
+                  <div class="group-meta">
+                    <%= pluralize(group.users.count, 'メンバー') %> • 
+                    オーナー: <%= group.owner.name %>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="group-actions">
+                <% unless @current_group&.id == group.id %>
+                  <button class="btn btn-outline btn-sm" onclick="switchToGroup(<%= group.id %>)">
+                    <i data-lucide="arrow-right" class="btn-icon"></i>
+                    切り替え
+                  </button>
+                <% end %>
+                
+                <%= link_to group, class: "btn btn-outline btn-sm" do %>
+                  <i data-lucide="eye" class="btn-icon"></i>
+                  詳細
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+    
+    <!-- グループがない場合 -->
+    <% if @owned_groups.empty? && @member_groups.empty? %>
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i data-lucide="users" style="width: 4rem; height: 4rem; opacity: 0.3;"></i>
+        </div>
+        <h3>グループがありません</h3>
+        <p>新しいグループを作成するか、他のユーザーからの招待を待ちましょう。</p>
+        <%= link_to new_group_path, class: "btn btn-primary" do %>
+          <i data-lucide="plus" class="btn-icon"></i>
+          最初のグループを作成
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+function switchToGroup(groupId) {
+  const button = event.target.closest('button');
+  button.classList.add('loading');
+  
+  fetch(`/groups/${groupId}/switch_to`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+    },
+    body: JSON.stringify({})
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      window.location.href = '/memos';
+    } else {
+      alert('グループの切り替えに失敗しました');
+      button.classList.remove('loading');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('グループの切り替えに失敗しました');
+    button.classList.remove('loading');
+  });
+}
+</script> 

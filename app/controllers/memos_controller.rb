@@ -183,7 +183,13 @@ class MemosController < ApplicationController
     selected_tags = selected_tags.is_a?(Array) ? selected_tags : selected_tags.to_s.split(',')
     selected_tags.map!(&:strip)
 
-    scope = current_user_model.memos.includes(:tags)
+    # グループに応じた検索範囲を設定
+    if @current_group
+      scope = @current_group.memos.accessible_by(current_user_model).includes(:tags, :user)
+    else
+      scope = current_user_model.memos.personal.includes(:tags)
+    end
+    
     scope = scope.search(search_word) if search_word.present?
     scope = scope.with_tags(selected_tags) if selected_tags.present?
 
@@ -193,7 +199,7 @@ class MemosController < ApplicationController
     @selected_tags = selected_tags
 
     # 総メモ数が存在するかどうかを事前に保持（検索結果の UI 用）
-    @total_memos_exist = current_user_model.memos.exists?
+    @total_memos_exist = scope.exists?
 
     # 空検索結果時の UI はビューで判定・表示する（フラッシュではなくメモリスト内で表示）
 
@@ -249,17 +255,33 @@ class MemosController < ApplicationController
       @memos = Memo.none.page(params[:page])
       @total_memos_exist = false
       @tags = {}
+      @current_group = nil
+      @user_groups = []
       return
     end
     
-    @memo_new = user_model.memos.build unless @memo_new&.persisted?
+    # グループ関連の設定
+    @current_group = session[:current_group_id] ? Group.find_by(id: session[:current_group_id]) : nil
+    @user_groups = user_model.all_groups.includes(:owner, :users)
+    
+    # メモの取得範囲を決定
+    if @current_group
+      # グループが選択されている場合はグループのメモのみ
+      memo_scope = @current_group.memos.accessible_by(user_model)
+      @memo_new = @current_group.memos.build(user: user_model) unless @memo_new&.persisted?
+    else
+      # グループが選択されていない場合は個人のメモのみ
+      memo_scope = user_model.memos.personal
+      @memo_new = user_model.memos.build unless @memo_new&.persisted?
+    end
+    
     @sort_options = Memo.sort_options
     @current_sort_by = params[:sort_by] || 'updated_at'
     @current_direction = params[:direction] || 'desc'
-    @memos = user_model.memos.includes(:tags).apply_sort(@current_sort_by, @current_direction).page(params[:page])
+    @memos = memo_scope.includes(:tags, :user).apply_sort(@current_sort_by, @current_direction).page(params[:page])
     # 総メモ数が存在するかどうかを事前に保持（検索結果の UI 用）
-    @total_memos_exist = user_model.memos.exists?
-    @tags = user_model.memos.joins(:tags).group('tags.name').count
+    @total_memos_exist = memo_scope.exists?
+    @tags = memo_scope.joins(:tags).group('tags.name').count
   end
 
   def set_memo
@@ -307,7 +329,7 @@ class MemosController < ApplicationController
   end
 
   def memo_params # For create and update of own memos
-    params.require(:memo).permit(:title, :description, :visibility, :tags_string)
+    params.require(:memo).permit(:title, :description, :visibility, :tags_string, :group_id)
   end
 
   # Specific params for the 'add_memo' action when copying a memo.
