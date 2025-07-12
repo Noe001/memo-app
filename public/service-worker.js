@@ -69,12 +69,14 @@ self.addEventListener('fetch', (event) => {
               return response;
             }
 
-            // レスポンスをキャッシュに保存
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
+            // GETリクエストのみキャッシュ
+            if (event.request.method === 'GET') {
+              const responseToCache = response.clone();
+              caches.open(CACHE_NAME)
+                .then((cache) => {
+                  cache.put(event.request, responseToCache);
+                });
+            }
 
             return response;
           })

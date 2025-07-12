@@ -13,29 +13,26 @@
   
   "icons": [
     {
-      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAQMAAAD58POIAAABF0lEQVR42u3PMQ0AAAgDIN8/9K3hBjSQmIadJPSJeAEBBAgQIECAAAECBAgQIECAAAECBAgQIECAAIF/AfEAAR4Wb+93AAAAAElFTkSuQmCC",
-      "sizes": "144x144 152x152 192x192 384x384 512x512",
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
   
-  "screenshots": [
-    {
-      "src": "/screenshot-mobile.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Mobile view of MemoApp"
-    },
-    {
-      "src": "/screenshot-desktop.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Desktop view of MemoApp"
-    }
-  ],
+  
   
   "categories": [
     "productivity",
@@ -43,44 +40,44 @@
     "business"
   ],
   
-  "shortcuts": [
-    {
-      "name": "新しいメモを作成",
-      "short_name": "新規メモ",
-      "description": "新しいメモを素早く作成",
-      "url": "/memos?action=new",
-      "icons": [
-        {
-          "src": "/shortcut-new.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "メモを検索",
-      "short_name": "検索",
-      "description": "メモを検索する",
-      "url": "/memos?focus=search",
-      "icons": [
-        {
-          "src": "/shortcut-search.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "設定",
-      "short_name": "設定",
-      "description": "アプリ設定を変更",
-      "url": "/settings",
-      "icons": [
-        {
-          "src": "/shortcut-settings.png",
-          "sizes": "96x96"
-        }
-      ]
-    }
-  ],
+  // "shortcuts": [
+  //   {
+  //     "name": "新しいメモを作成",
+  //     "short_name": "新規メモ",
+  //     "description": "新しいメモを素早く作成",
+  //     "url": "/memos?action=new",
+  //     "icons": [
+  //       {
+  //         "src": "/shortcut-new.png",
+  //         "sizes": "96x96"
+  //       }
+  //     ]
+  //   },
+  //   {
+  //     "name": "メモを検索",
+  //     "short_name": "検索",
+  //     "description": "メモを検索する",
+  //     "url": "/memos?focus=search",
+  //     "icons": [
+  //       {
+  //         "src": "/shortcut-search.png",
+  //         "sizes": "96x96"
+  //       }
+  //     ]
+  //   },
+  //   {
+  //     "name": "設定",
+  //     "short_name": "設定",
+  //     "description": "アプリ設定を変更",
+  //     "url": "/settings",
+  //     "icons": [
+  //       {
+  //         "src": "/shortcut-settings.png",
+  //         "sizes": "96x96"
+  //       }
+  //     ]
+  //   }
+  // ],
   
   "related_applications": [],
   "prefer_related_applications": false,

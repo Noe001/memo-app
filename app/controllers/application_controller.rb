@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::Base
-  # CSRF保護は必要に応じて設定
-  protect_from_forgery with: :null_session, if: -> { request.format.json? }
+  # CSRF保護はデフォルトで有効になっています。
+  # APIエンドポイントや特定のケースで無効化する場合は、対象のコントローラーで個別に設定してください。
+  # 例: protect_from_forgery with: :null_session, if: -> { request.format.json? }
+  protect_from_forgery with: :exception, unless: -> { request.format.json? }
   
   before_action :set_current_user
   
