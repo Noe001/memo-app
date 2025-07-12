@@ -5,7 +5,7 @@ class Groups::InvitationsController < ApplicationController
   
   def create
     @invitation = @group.invitations.build(invitation_params)
-    @invitation.invited_by = current_user
+    @invitation.invited_by = current_user_model
     
     # 既存ユーザーをチェック
     if params[:invitation][:email].present?
@@ -39,7 +39,7 @@ class Groups::InvitationsController < ApplicationController
   end
   
   def ensure_group_management
-    unless @group.can_manage?(current_user)
+    unless @group.can_manage?(current_user_model)
       redirect_to @group, alert: 'この操作を実行する権限がありません。'
     end
   end

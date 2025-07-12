@@ -47,7 +47,7 @@ class UsersController < ApplicationController
   end
   
   def update
-    @user = current_user
+    @user = current_user_model
     
     if @user.update(update_user_params)
       redirect_to user_path(@user), notice: 'プロファイルを更新しました'

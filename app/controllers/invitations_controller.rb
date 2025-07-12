@@ -31,7 +31,7 @@ class InvitationsController < ApplicationController
       return
     end
     
-    if @invitation.accept!(current_user)
+    if @invitation.accept!(current_user_model)
       # グループに切り替え
       session[:current_group_id] = @invitation.group.id
       redirect_to @invitation.group, notice: "#{@invitation.group.name}に参加しました。"

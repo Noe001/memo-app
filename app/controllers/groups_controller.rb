@@ -14,7 +14,7 @@ class GroupsController < ApplicationController
     @members = @group.members.includes(:user_groups)
     @memos = @group.memos.includes(:user, :tags).accessible_by(current_user).recent.limit(10)
     @pending_invitations = @group.invitations.pending.includes(:invited_by)
-    @can_manage = @group.can_manage?(current_user)
+    @can_manage = @group.can_manage?(current_user_model)
   end
   
   def new
@@ -97,13 +97,13 @@ class GroupsController < ApplicationController
   end
   
   def ensure_group_access
-    unless current_user.can_access_group?(@group)
+    unless current_user_model.can_access_group?(@group)
       redirect_to groups_path, alert: 'このグループにアクセスする権限がありません。'
     end
   end
   
   def ensure_group_management
-    unless @group.can_manage?(current_user)
+    unless @group.can_manage?(current_user_model)
       redirect_to @group, alert: 'この操作を実行する権限がありません。'
     end
   end
