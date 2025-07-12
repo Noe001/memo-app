@@ -20,9 +20,9 @@ class MemosController < ApplicationController
     prepare_index_data
 
     # Logic for "add this memo to my list" (if @selected is viewable and not owned)
-    if @selected.user_id != current_user.id # Check if the selected memo is not owned by current user
+    if @selected.user_id != current_user_model.id # Check if the selected memo is not owned by current user
       @can_add_selected_memo = true # Flag to show "add to my memos" button
-      @memo_to_add = current_user.memos.build(
+      @memo_to_add = current_user_model.memos.build(
         title: @selected.title,
         description: @selected.description,
         visibility: :private_memo # Default to private when copying
@@ -45,16 +45,16 @@ class MemosController < ApplicationController
     # For now, let's assume if they got to the button to trigger this, they could see it.
     # A more robust check would be to call authorize_memo_for_read here too.
     # However, authorize_memo_for_read redirects. Let's handle it manually:
-    unless can_read_memo?(@selected, current_user)
+    unless can_read_memo?(@selected, current_user_model)
       redirect_to root_path, alert: 'このメモを閲覧または追加する権限がありません。'
       return
     end
 
     # Build the new memo for the current user, copying content from @selected.
-    @memo_to_add_to_own_list = current_user.memos.build(
+    @memo_to_add_to_own_list = current_user_model.memos.build(
       title: @selected.title,
       description: @selected.description,
-      visibility: memo_params_for_add[:visibility] || :private_memo # User can choose visibility for their copy
+      visibility: memo_params[:visibility] || :private_memo # User can choose visibility for their copy
       # Tags from @selected are not automatically copied here.
       # If params[:tags] is intended for the new copy, it should be handled.
     )
@@ -70,7 +70,7 @@ class MemosController < ApplicationController
       flash.now[:alert] = "メモの追加に失敗しました: #{@memo_to_add_to_own_list.errors.full_messages.join(', ')}"
       # Re-populate variables needed for rendering the 'show' view (which then renders 'index')
       prepare_index_data
-      if @selected.user_id != current_user.id
+      if @selected.user_id != current_user_model.id
         @can_add_selected_memo = true
         # Rebuild @memo_to_add with submitted params if they exist, else from @selected
         # This assumes memo_params_for_add might be submitted via a form for add_memo
@@ -78,7 +78,7 @@ class MemosController < ApplicationController
         submitted_description = params.dig(:memo, :description) || @selected.description
         submitted_visibility = params.dig(:memo, :visibility) || :private_memo
 
-        @memo_to_add = current_user.memos.build(
+        @memo_to_add = current_user_model.memos.build(
           title: submitted_title,
           description: submitted_description,
           visibility: submitted_visibility
@@ -92,7 +92,7 @@ class MemosController < ApplicationController
   end
 
     def create
-    @memo_new = current_user.memos.build(memo_params)
+    @memo_new = current_user_model.memos.build(memo_params)
     
     # タグがある場合は、タイトルと説明文が空でも保存を許可
     if @memo_new.title.blank? && @memo_new.description.blank? && params[:tags].present?
@@ -114,7 +114,7 @@ class MemosController < ApplicationController
       respond_to do |format|
         format.html { redirect_to memo_path(@memo_new), notice: 'メモを作成しました' }
         format.turbo_stream
-        format.json { render json: { status: 'success', message: 'メモを作成しました', memo_id: @memo_new.id } }
+        format.json { render json: { status: 'success', message: 'メモを作成しました', memo_id: @memo_new.id }, status: :created }
       end
     else
       respond_to do |format|
@@ -183,7 +183,13 @@ class MemosController < ApplicationController
     selected_tags = selected_tags.is_a?(Array) ? selected_tags : selected_tags.to_s.split(',')
     selected_tags.map!(&:strip)
 
-    scope = current_user.memos.includes(:tags)
+    # グループに応じた検索範囲を設定
+    if @current_group
+      scope = @current_group.memos.accessible_by(current_user_model).includes(:tags, :user)
+    else
+      scope = current_user_model.memos.personal.includes(:tags)
+    end
+    
     scope = scope.search(search_word) if search_word.present?
     scope = scope.with_tags(selected_tags) if selected_tags.present?
 
@@ -193,7 +199,7 @@ class MemosController < ApplicationController
     @selected_tags = selected_tags
 
     # 総メモ数が存在するかどうかを事前に保持（検索結果の UI 用）
-    @total_memos_exist = current_user.memos.exists?
+    @total_memos_exist = scope.exists?
 
     # 空検索結果時の UI はビューで判定・表示する（フラッシュではなくメモリスト内で表示）
 
@@ -205,8 +211,22 @@ class MemosController < ApplicationController
 
   # ルートパスから呼ばれ、最新のメモを表示する
   def latest
+    # 認証チェック
+    unless current_user
+      redirect_to auth_login_path, alert: 'ログインしてください'
+      return
+    end
+
+    # current_user_modelがnilの場合の対応
+    user_model = current_user_model
+    unless user_model
+      Rails.logger.error "current_user_model is nil for user: #{current_user&.email}"
+      redirect_to auth_login_path, alert: 'ユーザー情報の取得に失敗しました。再度ログインしてください。'
+      return
+    end
+
     # ユーザーの最新更新メモを取得
-    latest_memo = current_user.memos.recent.first
+    latest_memo = user_model.memos.recent.first
 
     if latest_memo
       # 既存の show ビュー/ロジックを流用するためリダイレクト
@@ -222,14 +242,46 @@ class MemosController < ApplicationController
 
   def prepare_index_data
     @user = current_user
-    @memo_new = current_user.memos.build unless @memo_new&.persisted?
+    
+    # current_user_modelがnilの場合の対応
+    user_model = current_user_model
+    unless user_model
+      Rails.logger.error "current_user_model is nil in prepare_index_data for user: #{current_user&.email}"
+      # デフォルト値を設定してエラーを回避
+      @memo_new = Memo.new
+      @sort_options = Memo.sort_options
+      @current_sort_by = params[:sort_by] || 'updated_at'
+      @current_direction = params[:direction] || 'desc'
+      @memos = Memo.none.page(params[:page])
+      @total_memos_exist = false
+      @tags = {}
+      @current_group = nil
+      @user_groups = []
+      return
+    end
+    
+    # グループ関連の設定
+    @current_group = session[:current_group_id] ? Group.find_by(id: session[:current_group_id]) : nil
+    @user_groups = user_model.all_groups.includes(:owner, :users)
+    
+    # メモの取得範囲を決定
+    if @current_group
+      # グループが選択されている場合はグループのメモのみ
+      memo_scope = @current_group.memos.accessible_by(user_model)
+      @memo_new = @current_group.memos.build(user: user_model) unless @memo_new&.persisted?
+    else
+      # グループが選択されていない場合は個人のメモのみ
+      memo_scope = user_model.memos.personal
+      @memo_new = user_model.memos.build unless @memo_new&.persisted?
+    end
+    
     @sort_options = Memo.sort_options
     @current_sort_by = params[:sort_by] || 'updated_at'
     @current_direction = params[:direction] || 'desc'
-    @memos = current_user.memos.includes(:tags).apply_sort(@current_sort_by, @current_direction).page(params[:page])
+    @memos = memo_scope.includes(:tags, :user).apply_sort(@current_sort_by, @current_direction).page(params[:page])
     # 総メモ数が存在するかどうかを事前に保持（検索結果の UI 用）
-    @total_memos_exist = current_user.memos.exists?
-    @tags = current_user.memos.joins(:tags).group('tags.name').count
+    @total_memos_exist = memo_scope.exists?
+    @tags = memo_scope.joins(:tags).group('tags.name').count
   end
 
   def set_memo
@@ -245,7 +297,7 @@ class MemosController < ApplicationController
 
   # For write actions (update, destroy)
   def authorize_memo_owner_for_write
-    return if @selected&.user_id == current_user&.id
+    return if @selected&.user_id == current_user_model&.id
     
     respond_to do |format|
       format.html { redirect_to root_path, alert: 'このメモを編集または削除する権限がありません。' }
@@ -255,7 +307,7 @@ class MemosController < ApplicationController
 
   # For read actions (show, potentially add_memo's source)
   def authorize_memo_for_read
-    return if can_read_memo?(@selected, current_user)
+    return if can_read_memo?(@selected, current_user_model)
     
     respond_to do |format|
       format.html { redirect_to root_path, alert: 'このメモを閲覧する権限がありません。' }
@@ -277,14 +329,10 @@ class MemosController < ApplicationController
   end
 
   def memo_params # For create and update of own memos
-    params.require(:memo).permit(:title, :description, :visibility, :tags_string)
+    params.require(:memo).permit(:title, :description, :visibility, :tags_string, :group_id)
   end
 
-  # Specific params for the 'add_memo' action when copying a memo.
-  # Allows user to set their own visibility for the copy.
-  def memo_params_for_add
-    params.require(:memo).permit(:title, :description, :visibility, :tags_string)
-  end
+  
 
   def process_tags(memo, tag_names_string)
     return if tag_names_string.blank?
@@ -352,7 +400,7 @@ class MemosController < ApplicationController
     # TODO: Implement listing of public memos from all users
 
     @user = current_user # For layout consistency
-    @memo_new = current_user.memos.build # For layout consistency
+    @memo_new = current_user_model.memos.build # For layout consistency
     @memos = Memo.where(visibility: :public_memo).includes(:user, :tags).recent
     @tags = Memo.where(visibility: :public_memo).joins(:tags).group('tags.name').count
     flash.now[:notice] = "Listing all public memos." # Temporary message
@@ -363,10 +411,10 @@ class MemosController < ApplicationController
     # TODO: Implement listing of memos shared with current_user
     # This requires a sharing mechanism (e.g., through a join table)
     @user = current_user # For layout consistency
-    @memo_new = current_user.memos.build # For layout consistency
-    # @memos = current_user.shared_with_me_memos.includes(:user, :tags).recent.page(params[:page]) # Example
-    @memos = current_user.memos.none # Placeholder for no shared memos yet
-    @tags = current_user.memos.none.joins(:tags).group('tags.name').count # Placeholder
+    @memo_new = current_user_model.memos.build # For layout consistency
+    # @memos = current_user_model.shared_with_me_memos.includes(:user, :tags).recent.page(params[:page]) # Example
+    @memos = current_user_model.memos.none # Placeholder for no shared memos yet
+    @tags = current_user_model.memos.none.joins(:tags).group('tags.name').count # Placeholder
     flash.now[:notice] = "Shared memos functionality not yet implemented."
     render :index # Re-use index view, might need dedicated view
   end

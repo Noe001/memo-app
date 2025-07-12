@@ -87,6 +87,7 @@ export default class extends Controller {
       const response = await fetch(this.urlValue, {
         method: 'POST',
         body: formData,
+        credentials: 'same-origin', // Cookie を送信してセッションを維持
         headers: {
           // JSON を優先しつつ Turbo Stream をフォールバック用に許可
           'Accept': 'application/json, text/vnd.turbo-stream.html',
@@ -175,6 +176,7 @@ export default class extends Controller {
       const response = await fetch(this.urlValue, {
         method: 'PATCH',
         body: formData,
+        credentials: 'same-origin', // Cookie を送信してセッションを維持
         headers: {
           'Accept': 'text/vnd.turbo-stream.html, application/json',
           'X-Requested-With': 'XMLHttpRequest',

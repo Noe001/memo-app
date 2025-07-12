@@ -1,0 +1,9 @@
+<% content_for :title, "新しいグループを作成" %>
+<% content_for :description, "グループ名と説明を入力して作成します。" %>
+
+<%= stylesheet_link_tag "groups", "data-turbo-track": "reload" %>
+
+<div class="groups-container" style="max-width:640px;margin:0 auto;padding:2rem;">
+  <h1 class="groups-title" style="font-size:1.75rem;font-weight:700;margin-bottom:1.5rem;">新しいグループを作成</h1>
+  <%= render "form", group: @group %>
+</div> 

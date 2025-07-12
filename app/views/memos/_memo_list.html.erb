@@ -1,4 +1,4 @@
-<div id="memo-list" class="memo-list" role="list" aria-label="メモ一覧">
+<div id="memo-list" class="memo-list" role="list" aria-label="メモ一覧" data-mobile-touch-target="memoList">
   <% if @memos.any? %>
     <% @memos.each do |memo| %>
       <% memo_class = "memo-item" %>
@@ -9,7 +9,7 @@
                               word: params[:word]), 
                   class: memo_class,
                   role: "listitem",
-                  data: { memo_id: memo.id, action: "click->memo#selectMemo" },
+                  data: { memo_id: memo.id, action: "click->memo#selectMemo", mobile_touch_target: "memoItem" },
                   "aria-label": "#{memo.title.present? ? memo.title : '無題'} のメモを選択" do %>
         
         <div class="memo-header">

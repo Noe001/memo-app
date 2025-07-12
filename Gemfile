@@ -111,3 +111,4 @@ group :production do
   # 本番環境用
   gem "rack-timeout"  # タイムアウト設定
 end
+gem "jwt"

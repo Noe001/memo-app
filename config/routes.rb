@@ -2,7 +2,17 @@ Rails.application.routes.draw do
   # ルートパス: 最新メモを表示
   root to: "memos#latest"
   
-  # 認証関連
+  # 認証関連（新しいAuthController）
+  scope '/auth' do
+    get '/', to: 'auth#new', as: 'auth_login'
+    post '/login', to: 'auth#login'
+    post '/signup', to: 'auth#signup', as: 'auth_signup'
+    delete '/logout', to: 'auth#logout'
+    post '/refresh_token', to: 'auth#refresh_token'
+    get '/current_user_info', to: 'auth#current_user_info'
+  end
+  
+  # 認証関連（レガシーSessionsController - 段階的移行のため）
   resource :session, only: [:new, :create, :destroy], controller: 'sessions' do
     collection do
       delete :destroy_all  # 全セッション削除
@@ -18,14 +28,27 @@ Rails.application.routes.draw do
   # 設定
   resource :settings, only: [:show, :update]
   
-  # ユーザー登録
-  get 'signup', to: 'users#signup', as: 'signup'
-  post 'signup', to: 'users#create'
+  # ユーザー登録（AuthControllerに統一）
+  get 'signup', to: 'auth#new', as: 'signup'
+  post 'signup', to: 'auth#signup'
   
   # ログイン関連のエイリアス（既存との互換性）
-  get 'login', to: 'sessions#new', as: 'new_sessions'
-  post 'login', to: 'sessions#create', as: 'create_sessions'
-  delete 'login', to: 'sessions#destroy', as: 'destroy_sessions'
+  get 'login', to: 'auth#new', as: 'new_sessions'
+  post 'login', to: 'auth#login', as: 'create_sessions'
+  delete 'login', to: 'auth#logout', as: 'destroy_sessions'
+  
+  # グループ関連
+  resources :groups do
+    resources :invitations, only: [:create, :destroy], controller: 'groups/invitations'
+    
+    member do
+      post :switch_to  # グループ切り替え
+      delete 'members/:user_id', to: 'groups/members#destroy', as: 'remove_member'
+    end
+  end
+  
+  # 招待承認
+  get 'invitations/accept', to: 'invitations#accept', as: 'accept_invitation'
   
   # メモ関連
   resources :memos do
@@ -58,12 +81,42 @@ Rails.application.routes.draw do
       
       resources :tags, except: [:new, :edit]
       
+      # グループAPI
+      resources :groups, except: [:new, :edit] do
+        resources :invitations, only: [:create, :destroy], controller: 'groups/invitations'
+        member do
+          post :switch_to
+        end
+      end
+      
       resource :user, only: [:show, :update] # This will need API auth using `authenticate_api_user!`
       
       # API Authentication routes
       # These will automatically map to Api::V1::SessionsController due to the namespace
       post 'auth/login', to: 'sessions#create'
       delete 'auth/logout', to: 'sessions#destroy'
+    end
+    
+    # API v2 - Supabase統合
+    namespace :v2 do
+      resources :memos, except: [:new, :edit] do
+        collection do
+          get :search
+          get :public_memos
+        end
+      end
+      
+      resources :tags, except: [:new, :edit]
+      
+      # グループAPI v2
+      resources :groups, except: [:new, :edit] do
+        resources :invitations, only: [:create, :destroy], controller: 'groups/invitations'
+        member do
+          post :switch_to
+        end
+      end
+      
+      resource :user, only: [:show, :update]
     end
   end
   
@@ -72,6 +125,7 @@ Rails.application.routes.draw do
     resources :users, only: [:index, :show, :update, :destroy]
     resources :memos, only: [:index, :show, :destroy]
     resources :tags, only: [:index, :show, :update, :destroy]
+    resources :groups, only: [:index, :show, :update, :destroy]
     
     root to: 'dashboard#index'
   end

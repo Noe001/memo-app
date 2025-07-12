@@ -6,7 +6,7 @@ class SettingsController < ApplicationController
   end
   
   def update
-    @user = current_user
+    @user = current_user_model
     
     if @user.update(settings_params)
       render json: { 

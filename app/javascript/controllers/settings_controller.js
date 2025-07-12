@@ -40,6 +40,9 @@ export default class extends Controller {
 
   // 設定変更イベントを処理
   bindSettingOptions() {
+    // フォームターゲットが存在しない場合はスキップ
+    if (!this.hasFormTarget) return
+    
     const settingOptions = this.formTarget.querySelectorAll('input[data-setting-option]')
     
     settingOptions.forEach(option => {

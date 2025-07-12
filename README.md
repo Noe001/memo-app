@@ -1,52 +1,182 @@
-# MemoApp (Rails × Supabase)
+# Supabase CLI (v1)
 
-## 1. 前提条件
-* Docker / Docker Compose
-* Node.js 18+（`npx` が使えれば OK）
-* Supabase CLI → `npm install -D supabase` または Homebrew で `brew install supabase/tap/supabase`
+[![Coverage Status](https://coveralls.io/repos/github/supabase/cli/badge.svg?branch=main)](https://coveralls.io/github/supabase/cli?branch=main)
 
-## 2. ローカル開発手順
+[Supabase](https://supabase.io) is an open source Firebase alternative. We're building the features of Firebase using enterprise-grade open source tools.
+
+This repository contains all the functionality for Supabase CLI.
+
+- [x] Running Supabase locally
+- [x] Managing database migrations
+- [x] Creating and deploying Supabase Functions
+- [x] Generating types directly from your database schema
+- [x] Making authenticated HTTP requests to [Management API](https://supabase.com/docs/reference/api/introduction)
+
+## Getting started
+
+### Install the CLI
+
+Available via [NPM](https://www.npmjs.com) as dev dependency. To install:
+
 ```bash
-# リポジトリ取得
-git clone <repo-url>
-cd memo-app
-
-# 依存イメージのビルド
-docker compose build --no-cache
-
-# コンテナ起動（Rails + Postgres + Redis）
-docker compose up -d
-
-# データベース準備（createやmigrate、seedを状況に合わせて行ってくれる）
-docker compose exec app bundle exec rails db:prepare
-
-# Supabase スタック起動（別ターミナル）
-# migrations に MySQL 用 SQL が残っている場合は退避してから実行
-npx supabase start
+npm i supabase --save-dev
 ```
-利用ポート
-* Rails : http://localhost:3000
-* Supabase Studio : http://localhost:54323
 
-停止は `docker compose down` / `npx supabase stop` で行えます。
+To install the beta release channel:
 
-## 3. Supabase とクラウド連携
 ```bash
-# プロジェクトをダッシュボードで作成し、Project Ref を取得
-npx supabase link --project-ref <PROJECT_REF>
-
-# ローカル schema をクラウドへ反映
-npx supabase db push --verbose
+npm i supabase@beta --save-dev
 ```
-マイグレーション差分を生成する場合は `npx supabase db diff -f <file>.sql` を使用してください。
 
-## 4. よく使うコマンド
-| 操作 | コマンド |
-| ---- | -------- |
-| Rails テスト | `docker compose exec app rspec` |
-| Supabase Edge Function 生成 | `npx supabase functions new <name>` |
-| Edge Function デプロイ | `npx supabase functions deploy <name>` |
-| CLI 更新 | `npm update supabase --save-dev` |
+When installing with yarn 4, you need to disable experimental fetch with the following nodejs config.
 
----
-MIT License ©️ 2025 MemoApp
+```
+NODE_OPTIONS=--no-experimental-fetch yarn add supabase
+```
+
+> **Note**
+For Bun versions below v1.0.17, you must add `supabase` as a [trusted dependency](https://bun.sh/guides/install/trusted) before running `bun add -D supabase`.
+
+<details>
+  <summary><b>macOS</b></summary>
+
+  Available via [Homebrew](https://brew.sh). To install:
+
+  ```sh
+  brew install supabase/tap/supabase
+  ```
+
+  To install the beta release channel:
+  
+  ```sh
+  brew install supabase/tap/supabase-beta
+  brew link --overwrite supabase-beta
+  ```
+  
+  To upgrade:
+
+  ```sh
+  brew upgrade supabase
+  ```
+</details>
+
+<details>
+  <summary><b>Windows</b></summary>
+
+  Available via [Scoop](https://scoop.sh). To install:
+
+  ```powershell
+  scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
+  scoop install supabase
+  ```
+
+  To upgrade:
+
+  ```powershell
+  scoop update supabase
+  ```
+</details>
+
+<details>
+  <summary><b>Linux</b></summary>
+
+  Available via [Homebrew](https://brew.sh) and Linux packages.
+
+  #### via Homebrew
+
+  To install:
+
+  ```sh
+  brew install supabase/tap/supabase
+  ```
+
+  To upgrade:
+
+  ```sh
+  brew upgrade supabase
+  ```
+
+  #### via Linux packages
+
+  Linux packages are provided in [Releases](https://github.com/supabase/cli/releases). To install, download the `.apk`/`.deb`/`.rpm`/`.pkg.tar.zst` file depending on your package manager and run the respective commands.
+
+  ```sh
+  sudo apk add --allow-untrusted <...>.apk
+  ```
+
+  ```sh
+  sudo dpkg -i <...>.deb
+  ```
+
+  ```sh
+  sudo rpm -i <...>.rpm
+  ```
+
+  ```sh
+  sudo pacman -U <...>.pkg.tar.zst
+  ```
+</details>
+
+<details>
+  <summary><b>Other Platforms</b></summary>
+
+  You can also install the CLI via [go modules](https://go.dev/ref/mod#go-install) without the help of package managers.
+
+  ```sh
+  go install github.com/supabase/cli@latest
+  ```
+
+  Add a symlink to the binary in `$PATH` for easier access:
+
+  ```sh
+  ln -s "$(go env GOPATH)/cli" /usr/bin/supabase
+  ```
+
+  This works on other non-standard Linux distros.
+</details>
+
+<details>
+  <summary><b>Community Maintained Packages</b></summary>
+
+  Available via [pkgx](https://pkgx.sh/). Package script [here](https://github.com/pkgxdev/pantry/blob/main/projects/supabase.com/cli/package.yml).
+  To install in your working directory:
+
+  ```bash
+  pkgx install supabase
+  ```
+
+  Available via [Nixpkgs](https://nixos.org/). Package script [here](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/supabase-cli/default.nix).
+</details>
+
+### Run the CLI
+
+```bash
+supabase bootstrap
+```
+
+Or using npx:
+
+```bash
+npx supabase bootstrap
+```
+
+The bootstrap command will guide you through the process of setting up a Supabase project using one of the [starter](https://github.com/supabase-community/supabase-samples/blob/main/samples.json) templates.
+
+## Docs
+
+Command & config reference can be found [here](https://supabase.com/docs/reference/cli/about).
+
+## Breaking changes
+
+We follow semantic versioning for changes that directly impact CLI commands, flags, and configurations.
+
+However, due to dependencies on other service images, we cannot guarantee that schema migrations, seed.sql, and generated types will always work for the same CLI major version. If you need such guarantees, we encourage you to pin a specific version of CLI in package.json.
+
+## Developing
+
+To run from source:
+
+```sh
+# Go >= 1.22
+go run . help
+```

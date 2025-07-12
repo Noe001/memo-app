@@ -1,0 +1,548 @@
+/* リアルタイム機能のスタイル */
+
+/* プレゼンス表示 */
+.presence-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+  animation: slideInDown 0.3s ease-out;
+}
+
+.presence-indicator.active {
+  animation: pulse 2s infinite;
+}
+
+.presence-avatars {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.presence-avatar {
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.avatar-initial {
+  font-size: 0.75rem;
+  color: white;
+}
+
+.presence-status {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.presence-status.editing {
+  background: #10b981; /* 緑：編集中 */
+  animation: pulse 1.5s infinite;
+}
+
+.presence-status.viewing {
+  background: #3b82f6; /* 青：閲覧中 */
+}
+
+.presence-status.idle {
+  background: #f59e0b; /* 黄：待機中 */
+}
+
+.presence-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-count {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.user-label {
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+/* プレゼンスユーザーリスト */
+.presence-user-list {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.presence-user-list h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.presence-user-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.presence-user-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.presence-user-item:last-child {
+  border-bottom: none;
+}
+
+.user-avatar {
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 500;
+  color: #111827;
+  font-size: 0.875rem;
+}
+
+.user-status {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* コンフリクト解決ダイアログ */
+.conflict-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.conflict-dialog {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  max-width: 48rem;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.conflict-dialog h3 {
+  margin: 0 0 1rem 0;
+  color: #dc2626;
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.conflict-dialog h3::before {
+  content: "⚠️";
+  font-size: 1.5rem;
+}
+
+.conflict-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.conflict-local,
+.conflict-remote {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 2px solid #e5e7eb;
+}
+
+.conflict-local {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.conflict-remote {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.conflict-local h4,
+.conflict-remote h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.conflict-local h4 {
+  color: #1d4ed8;
+}
+
+.conflict-remote h4 {
+  color: #d97706;
+}
+
+.conflict-content {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #374151;
+}
+
+.conflict-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* マージモード */
+.merge-mode-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.merge-mode {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  max-width: 56rem;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.merge-mode h4 {
+  margin: 0 0 1rem 0;
+  color: #059669;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.merge-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.merge-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.merge-field label {
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+.merge-field input,
+.merge-field textarea {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.merge-field input:focus,
+.merge-field textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.merge-field textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.merge-field input[readonly],
+.merge-field textarea[readonly] {
+  background: #f9fafb;
+  color: #6b7280;
+}
+
+.merge-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* 通知システム */
+.notification-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.notification {
+  pointer-events: auto;
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #3b82f6;
+  max-width: 20rem;
+  animation: slideInRight 0.3s ease-out;
+}
+
+.notification.notification-success {
+  border-left-color: #10b981;
+}
+
+.notification.notification-error {
+  border-left-color: #ef4444;
+}
+
+.notification.notification-warning {
+  border-left-color: #f59e0b;
+}
+
+.notification.notification-info {
+  border-left-color: #3b82f6;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.notification-message {
+  font-size: 0.875rem;
+  color: #374151;
+  line-height: 1.4;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+}
+
+.notification-close:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* メモ更新エフェクト */
+.memo-updated {
+  animation: highlightUpdate 2s ease-out;
+}
+
+@keyframes highlightUpdate {
+  0% {
+    background: #dbeafe;
+    transform: scale(1.02);
+  }
+  100% {
+    background: transparent;
+    transform: scale(1);
+  }
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .conflict-comparison,
+  .merge-fields {
+    grid-template-columns: 1fr;
+  }
+  
+  .presence-indicator {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+  }
+  
+  .presence-avatar {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  
+  .avatar-initial {
+    font-size: 0.625rem;
+  }
+  
+  .notification-container {
+    left: 1rem;
+    right: 1rem;
+  }
+  
+  .notification {
+    max-width: none;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .presence-user-list {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  
+  .presence-user-list h4 {
+    color: #d1d5db;
+  }
+  
+  .user-name {
+    color: #f9fafb;
+  }
+  
+  .user-status {
+    color: #9ca3af;
+  }
+  
+  .conflict-dialog,
+  .merge-mode {
+    background: #1f2937;
+    color: #f9fafb;
+  }
+  
+  .conflict-local {
+    background: #1e3a8a;
+    border-color: #3b82f6;
+  }
+  
+  .conflict-remote {
+    background: #92400e;
+    border-color: #f59e0b;
+  }
+  
+  .notification {
+    background: #1f2937;
+    color: #f9fafb;
+  }
+} 

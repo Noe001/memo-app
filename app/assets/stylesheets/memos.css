@@ -4,7 +4,7 @@
  */
 
 /* Main Layout */
-.memo-app {
+.notetree {
   display: flex;
   min-height: calc(100vh - 73px); /* ヘッダーの高さを除く */
   background: var(--bg-secondary);
@@ -450,7 +450,7 @@
 }
 
 @media (max-width: 768px) {
-  .memo-app {
+  .notetree {
     flex-direction: column;
     min-height: calc(100vh - 73px);
   }
