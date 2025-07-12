@@ -33,7 +33,7 @@
           <!-- 個人メモ（グループなし） -->
           <button class="group-item <%= 'active' unless defined?(@current_group) && @current_group %>"
                   data-action="click->sidebar#close"
-                  onclick="switchToPersonal()">
+                  data-controller="group-switcher" data-action="click->group-switcher#switchToPersonal click->sidebar#close">
             <div class="group-avatar personal">
               <i data-lucide="user" class="group-icon"></i>
             </div>
@@ -51,7 +51,7 @@
             <% @user_groups.each do |group| %>
               <button class="group-item <%= 'active' if defined?(@current_group) && @current_group&.id == group.id %>"
                       data-action="click->sidebar#close"
-                      onclick="switchToGroup(<%= group.id %>)">
+                      data-controller="group-switcher" data-group-switcher-group-id-value="<%= group.id %>" data-action="click->group-switcher#switchToGroup click->sidebar#close">
                 <div class="group-avatar">
                   <%= group.name.first.upcase %>
                 </div>
@@ -121,48 +121,4 @@
   </div>
 </div>
 
-<script>
-function switchToGroup(groupId) {
-  fetch(`/groups/${groupId}/switch_to`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
-    },
-    body: JSON.stringify({})
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      // ページをリロードしてグループの切り替えを反映
-      window.location.reload();
-    } else {
-      alert('グループの切り替えに失敗しました');
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('グループの切り替えに失敗しました');
-  });
-}
-
-function switchToPersonal() {
-  // セッションからグループIDを削除
-  fetch('/groups/personal/switch_to', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
-    },
-    body: JSON.stringify({ personal: true })
-  })
-  .then(() => {
-    window.location.reload();
-  })
-  .catch(error => {
-    // フォールバック: 単純にページをリロード
-    sessionStorage.removeItem('current_group_id');
-    window.location.href = '/memos';
-  });
-}
-</script> 
+ 

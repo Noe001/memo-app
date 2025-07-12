@@ -77,7 +77,7 @@
               
               <div class="group-actions">
                 <% unless @current_group&.id == group.id %>
-                  <button class="btn btn-outline btn-sm" onclick="switchToGroup(<%= group.id %>)">
+                  <button class="btn btn-outline btn-sm" data-controller="group-switcher" data-group-switcher-group-id-value="<%= group.id %>" data-action="click->group-switcher#switchToGroup">
                     <i data-lucide="arrow-right" class="btn-icon"></i>
                     切り替え
                   </button>
@@ -126,7 +126,7 @@
               
               <div class="group-actions">
                 <% unless @current_group&.id == group.id %>
-                  <button class="btn btn-outline btn-sm" onclick="switchToGroup(<%= group.id %>)">
+                  <button class="btn btn-outline btn-sm" data-controller="group-switcher" data-group-switcher-group-id-value="<%= group.id %>" data-action="click->group-switcher#switchToGroup">
                     <i data-lucide="arrow-right" class="btn-icon"></i>
                     切り替え
                   </button>
@@ -160,32 +160,4 @@
   </div>
 </div>
 
-<script>
-function switchToGroup(groupId) {
-  const button = event.target.closest('button');
-  button.classList.add('loading');
-  
-  fetch(`/groups/${groupId}/switch_to`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
-    },
-    body: JSON.stringify({})
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      window.location.href = '/memos';
-    } else {
-      alert('グループの切り替えに失敗しました');
-      button.classList.remove('loading');
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('グループの切り替えに失敗しました');
-    button.classList.remove('loading');
-  });
-}
-</script> 
+ 

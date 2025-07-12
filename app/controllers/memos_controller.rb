@@ -54,7 +54,7 @@ class MemosController < ApplicationController
     @memo_to_add_to_own_list = current_user_model.memos.build(
       title: @selected.title,
       description: @selected.description,
-      visibility: memo_params_for_add[:visibility] || :private_memo # User can choose visibility for their copy
+      visibility: memo_params[:visibility] || :private_memo # User can choose visibility for their copy
       # Tags from @selected are not automatically copied here.
       # If params[:tags] is intended for the new copy, it should be handled.
     )
@@ -332,11 +332,7 @@ class MemosController < ApplicationController
     params.require(:memo).permit(:title, :description, :visibility, :tags_string, :group_id)
   end
 
-  # Specific params for the 'add_memo' action when copying a memo.
-  # Allows user to set their own visibility for the copy.
-  def memo_params_for_add
-    params.require(:memo).permit(:title, :description, :visibility, :tags_string)
-  end
+  
 
   def process_tags(memo, tag_names_string)
     return if tag_names_string.blank?

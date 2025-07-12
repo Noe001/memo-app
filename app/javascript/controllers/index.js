@@ -9,9 +9,11 @@ eagerLoadControllersFrom("controllers", application)
 // Import and register custom controllers
 import SidebarController from "./sidebar_controller"
 import SettingsController from "./settings_controller"
+import GroupSwitcherController from "./group_switcher_controller"
 
 application.register("sidebar", SidebarController)
 application.register("settings", SettingsController)
+application.register("group-switcher", GroupSwitcherController)
 
 // Lazy load controllers as they appear in the DOM (remember not to preload controllers in import map!)
 // import { lazyLoadControllersFrom } from "@hotwired/stimulus-loading"
