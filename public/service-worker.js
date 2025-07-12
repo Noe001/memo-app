@@ -1,7 +1,7 @@
-// Service Worker for MemoApp PWA
+// Service Worker for Notetree PWA
 // Phase 5: Mobile Optimization
 
-const CACHE_NAME = 'memoapp-v1.0.0';
+const CACHE_NAME = 'Notetree-v1.0.0';
 const urlsToCache = [
   '/',
   '/memos',
@@ -113,7 +113,7 @@ self.addEventListener('push', (event) => {
     actions: [
       {
         action: 'explore',
-        title: 'Open MemoApp',
+        title: 'Open Notetree',
         icon: '/images/checkmark.png'
       },
       {
@@ -125,7 +125,7 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification('MemoApp', options)
+    self.registration.showNotification('Notetree', options)
   );
 });
 

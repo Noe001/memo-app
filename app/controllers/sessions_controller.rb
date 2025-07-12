@@ -22,7 +22,7 @@ class SessionsController < ApplicationController
     user_data = SupabaseAuth.verify_token(supabase_token)
     
     if user_data
-      set_supabase_token(supabase_token)
+      set_supabase_token(user_data[:token], user_data[:refresh_token])
       redirect_to root_path, notice: 'ログインしました'
     else
       flash.now[:alert] = '認証に失敗しました'

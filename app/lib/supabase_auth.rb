@@ -5,7 +5,7 @@ require 'json'
 class SupabaseAuth
   # DockerコンテナからSupabaseにアクセスするため、複数のホストを試行
   SUPABASE_HOSTS = [
-    'supabase_kong_memo-app',  # Supabase コンテナ名
+    'supabase_kong_notetree',  # Supabase コンテナ名
     'host.docker.internal',
     '172.17.0.1',        # Docker デフォルトゲートウェイ
     'host-gateway',      # Docker Compose host-gateway
@@ -23,7 +23,7 @@ class SupabaseAuth
     SUPABASE_HOSTS.each do |host|
       begin
         # Supabaseコンテナの場合は8000ポート、それ以外は54321ポート
-        port = host == 'supabase_kong_memo-app' ? 8000 : 54321
+        port = host == 'supabase_kong_notetree' ? 8000 : 54321
         uri = URI("http://#{host}:#{port}/health")
         http = Net::HTTP.new(uri.host, uri.port)
         http.open_timeout = 2
@@ -48,7 +48,7 @@ class SupabaseAuth
   
   def self.supabase_url
     host = find_available_supabase_host
-    port = host == 'supabase_kong_memo-app' ? 8000 : 54321
+    port = host == 'supabase_kong_notetree' ? 8000 : 54321
     @supabase_url ||= "http://#{host}:#{port}"
   end
   

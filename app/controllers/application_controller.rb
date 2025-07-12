@@ -28,14 +28,36 @@ class ApplicationController < ActionController::Base
     Rails.logger.info "=== set_current_user called ==="
     
     # Supabase JWTトークンから認証
-    supabase_token = extract_supabase_token
-    Rails.logger.info "Supabase token: #{supabase_token.present? ? 'present' : 'absent'}"
-    
-    if supabase_token
-      Rails.logger.info "Attempting Supabase token verification..."
-      @current_user_data = SupabaseAuth.verify_token(supabase_token)
-      Rails.logger.info "Supabase verification result: #{@current_user_data.present? ? 'success' : 'failed'}"
-      
+    tokens = extract_supabase_token
+    supabase_access_token = tokens[:access_token]
+    supabase_refresh_token = tokens[:refresh_token]
+
+    Rails.logger.info "Supabase access token: #{supabase_access_token.present? ? 'present' : 'absent'}"
+    Rails.logger.info "Supabase refresh token: #{supabase_refresh_token.present? ? 'present' : 'absent'}"
+
+    if supabase_access_token
+      Rails.logger.info "Attempting Supabase access token verification..."
+      @current_user_data = SupabaseAuth.verify_token(supabase_access_token)
+      Rails.logger.info "Supabase access token verification result: #{@current_user_data.present? ? 'success' : 'failed'}"
+
+      unless @current_user_data
+        # アクセストークンが無効な場合、リフレッシュトークンを試す
+        if supabase_refresh_token
+          Rails.logger.info "Access token invalid, attempting to refresh token..."
+          refresh_result = SupabaseAuth.refresh_token(supabase_refresh_token)
+          if refresh_result[:success]
+            Rails.logger.info "Token refreshed successfully."
+            new_access_token = refresh_result[:access_token]
+            new_refresh_token = refresh_result[:refresh_token]
+            set_supabase_token(new_access_token, new_refresh_token) # 新しいトークンをクッキーに保存
+            @current_user_data = SupabaseAuth.verify_token(new_access_token) # 新しいアクセストークンで再検証
+            Rails.logger.info "New access token verification result: #{@current_user_data.present? ? 'success' : 'failed'}"
+          else
+            Rails.logger.warn "Failed to refresh token: #{refresh_result[:error]}"
+          end
+        end
+      end
+
       if @current_user_data
         @current_user = OpenStruct.new(
           id: @current_user_data[:id],
@@ -167,23 +189,31 @@ class ApplicationController < ActionController::Base
     if auth_header&.start_with?('Bearer ')
       token = auth_header.split(' ').last
       Rails.logger.info "Token extracted from Authorization header: #{token.present? ? 'present' : 'absent'}"
-      return token
+      return { access_token: token, refresh_token: nil }
     end
     
     # 2. Cookieから
-    cookie_token = cookies['supabase_token']
-    Rails.logger.info "Cookie token: #{cookie_token.present? ? 'present' : 'absent'}"
-    cookie_token
+    access_token = cookies['supabase_token']
+    refresh_token = cookies['supabase_refresh_token']
+    Rails.logger.info "Cookie access token: #{access_token.present? ? 'present' : 'absent'}"
+    Rails.logger.info "Cookie refresh token: #{refresh_token.present? ? 'present' : 'absent'}"
+    { access_token: access_token, refresh_token: refresh_token }
   end
   
   # Supabaseトークンを設定
-  def set_supabase_token(token)
+  def set_supabase_token(access_token, refresh_token = nil)
     cookies['supabase_token'] = {
-      value: token,
+      value: access_token,
       httponly: true,
-      secure: Rails.env.production?,
-      expires: 1.hour.from_now
+      secure: Rails.env.production?
     }
+    if refresh_token
+      cookies['supabase_refresh_token'] = {
+        value: refresh_token,
+        httponly: true,
+        secure: Rails.env.production?
+      }
+    end
   end
   
   # Supabaseトークンを削除

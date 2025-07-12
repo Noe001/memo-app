@@ -1,6 +1,6 @@
 {
-  "name": "MemoApp - 簡単メモ管理",
-  "short_name": "MemoApp",
+  "name": "Notetree - 簡単メモ管理",
+  "short_name": "Notetree",
   "description": "効率的なメモ管理ができるWebアプリケーション。タグ付け、検索、共有機能付き。",
   "start_url": "/memos",
   "scope": "/",

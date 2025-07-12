@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for?(:title) ? yield(:title) + " | MemoApp" : "MemoApp - 簡単メモ管理" %></title>
+    <title><%= content_for?(:title) ? yield(:title) + " | Notetree" : "Notetree - 簡単メモ管理" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="description" content="<%= content_for?(:description) ? yield(:description) : "効率的なメモ管理ができるWebアプリケーション。タグ付け、検索、共有機能付き。" %>">
     <meta name="keywords" content="メモ, ノート, タグ, 検索, 共有, 管理, アプリ">
-    <meta name="author" content="MemoApp">
+    <meta name="author" content="Notetree">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
@@ -18,7 +18,7 @@
     <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="MemoApp">
+    <meta name="apple-mobile-web-app-title" content="Notetree">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="msapplication-TileColor" content="#0ea5e9">
     <meta name="msapplication-config" content="/browserconfig.xml">
@@ -26,14 +26,14 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="<%= request.original_url %>">
-    <meta property="og:title" content="<%= content_for?(:title) ? yield(:title) + " | MemoApp" : "MemoApp - 簡単メモ管理" %>">
+    <meta property="og:title" content="<%= content_for?(:title) ? yield(:title) + " | Notetree" : "Notetree - 簡単メモ管理" %>">
     <meta property="og:description" content="<%= content_for?(:description) ? yield(:description) : "効率的なメモ管理ができるWebアプリケーション。タグ付け、検索、共有機能付き。" %>">
     <meta property="og:image" content="<%= request.base_url %>/apple-touch-icon.png">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="<%= request.original_url %>">
-    <meta property="twitter:title" content="<%= content_for?(:title) ? yield(:title) + " | MemoApp" : "MemoApp - 簡単メモ管理" %>">
+    <meta property="twitter:title" content="<%= content_for?(:title) ? yield(:title) + " | Notetree" : "Notetree - 簡単メモ管理" %>">
     <meta property="twitter:description" content="<%= content_for?(:description) ? yield(:description) : "効率的なメモ管理ができるWebアプリケーション。タグ付け、検索、共有機能付き。" %>">
     <meta property="twitter:image" content="<%= request.base_url %>/apple-touch-icon.png">
     

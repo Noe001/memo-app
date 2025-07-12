@@ -37,7 +37,7 @@ services:
       - "host.docker.internal:host-gateway"
     networks:
       - default
-      - supabase_network_memo-app
+      - supabase_network_notetree
 
   redis:
     image: redis:7-alpine
@@ -53,5 +53,5 @@ volumes:
   bundle_cache:
 
 networks:
-  supabase_network_memo-app:
+  supabase_network_notetree:
     external: true

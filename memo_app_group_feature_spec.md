@@ -1,7 +1,7 @@
 **機能概要**
 
 - 目的: メモアプリにグループ機能を追加し、メモやファイル・フォルダを複数ユーザーで共有・コラボレーションできるようにする。
-- 対象: Rails製の既存メモアプリ ([https://github.com/Noe001/memo-app](https://github.com/Noe001/memo-app)) をベースに拡張。
+- 対象: Rails製の既存メモアプリ ([https://github.com/Noe001/notetree](https://github.com/Noe001/notetree)) をベースに拡張。
 
 ---
 
@@ -136,5 +136,5 @@ Memo 1–M Attachment (ActiveStorage, Phase 2)
 
 ---
 
-以上が、「memo-app」にグループ機能を追加するための具体的な仕様書案です。 要望に応じてさらに詳細化できますので、気軽にフィードバックください！
+以上が、「notetree」にグループ機能を追加するための具体的な仕様書案です。 要望に応じてさらに詳細化できますので、気軽にフィードバックください！
 
