@@ -39,3 +39,6 @@
 .env
 
 node_modules/
+
+# Ignore gems installed by bundler
+/vendor/bundle

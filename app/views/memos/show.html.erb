@@ -1,0 +1,20 @@
+<div class="memo-detail-container">
+  <h1><%= @memo.title %></h1>
+  <p><%= @memo.description %></p>
+  <div class="memo-meta">
+    <span>作成者: <%= @memo.user.name %></span>
+    <span>作成日時: <%= @memo.created_at.strftime("%Y-%m-%d %H:%M") %></span>
+    <span>更新日時: <%= @memo.updated_at.strftime("%Y-%m-%d %H:%M") %></span>
+  </div>
+
+  <% if @can_add_memo %>
+    <%= form_with(model: @new_memo_for_current_user, url: add_memo_memo_path(@memo)) do |form| %>
+      <%# This form should also include fields for title, description, etc. if they are editable when adding %>
+      <%= form.hidden_field :title %>
+      <%= form.hidden_field :description %>
+      <%= form.submit "このメモを自分のリストに追加する" %>
+    <% end %>
+  <% end %>
+
+  <%= link_to 'メモ一覧に戻る', memos_path %>
+</div>

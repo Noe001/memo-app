@@ -36,7 +36,12 @@ class User < ApplicationRecord
   
   # グループ関連のメソッド
   def all_groups
-    Group.where(id: (owned_groups.pluck(:id) + groups.pluck(:id)).uniq)
+    # This method returns a relation of all groups a user is associated with (owned or member).
+    # It avoids N+1 queries compared to the previous implementation.
+    Group.left_joins(:user_groups)
+         .where(owner_id: self.id)
+         .or(Group.where(user_groups: { user_id: self.id }))
+         .distinct
   end
   
   def group_role(group)

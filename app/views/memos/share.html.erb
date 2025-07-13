@@ -1,0 +1,19 @@
+<div class="share-memo-container">
+  <h1><%= @memo.title %> を共有する</h1>
+
+  <p>このメモをどのグループと共有しますか？</p>
+
+  <%= form_with(model: @memo, url: memo_path(@memo), method: :patch) do |form| %>
+    <%= form.hidden_field :visibility, value: 'shared' %>
+
+    <div class="form-group">
+      <%= form.label :group_id, '共有先のグループ' %>
+      <%= form.collection_select :group_id, @user_groups, :id, :name, { prompt: 'グループを選択してください' }, { class: 'form-control' } %>
+    </div>
+
+    <%= form.submit '共有する', class: 'btn btn-primary' %>
+  <% end %>
+
+  <br>
+  <%= link_to 'キャンセル', memo_path(@memo) %>
+</div>
