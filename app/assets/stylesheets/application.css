@@ -301,6 +301,65 @@ a:hover {
   padding-right: 2.5rem;
 }
 
+/* Sidebar group create slide animations */
+.sidebar-content {
+  transition: transform 0.3s ease;
+}
+.sidebar-content.slide-out-left {
+  pointer-events: none;
+  transform: translateX(-100%);
+}
+.sidebar-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  padding: 1.5rem;
+  background: var(--card);
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+.sidebar-panel .field {
+  margin-bottom: 1rem;
+}
+.sidebar-panel .form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--muted-foreground);
+}
+.sidebar-panel .form-input,
+.sidebar-panel .form-textarea {
+  width: 100%;
+  background: var(--input-background, var(--card));
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--foreground);
+}
+.sidebar-panel .actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.sidebar-panel .btn {
+  flex: 1 1 auto;
+}
+
+.sidebar-panel.slide-in-right {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+.sidebar-panel.hidden-panel {
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(100%);
+}
+
 /* Notifications */
 .alert, .notice {
   position: fixed;
@@ -349,6 +408,11 @@ a:hover {
     transform: translateX(-50%) translateY(-100%);
     opacity: 0;
   }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Dark mode - Sky Theme */

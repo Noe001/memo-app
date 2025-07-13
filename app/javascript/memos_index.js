@@ -112,14 +112,22 @@ function initializeMemoIndex() {
   }
 
   // グローバル関数として定義（ボタンから呼び出すため）
-  window.clearTagFilter = clearTagFilter;
+  // Lucide アイコンを毎回描画し直す
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
 
-  
+  window.clearTagFilter = clearTagFilter;
 }
 
-// 初期化を複数のイベントで実行
+
+// 初期化を複数のイベントで実行 (Turbo/Traditional)
 document.addEventListener('DOMContentLoaded', initializeMemoIndex);
-document.addEventListener('turbolinks:load', initializeMemoIndex);
+document.addEventListener('turbolinks:load', initializeMemoIndex); // Legacy support
+// Rails 7 / Turbo Drive
+if (typeof Turbo !== 'undefined') {
+  document.addEventListener('turbo:load', initializeMemoIndex);
+}
 
 // ドロップダウン外をクリックした時に閉じる
 document.addEventListener('click', function(event) {

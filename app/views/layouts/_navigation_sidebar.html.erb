@@ -9,7 +9,8 @@
     <h2 class="sidebar-title">Notetree</h2>
   </div>
   
-  <div class="sidebar-content">
+  <div data-controller="group-create" class="sidebar-wrapper">
+    <div class="sidebar-content" data-group-create-target="content">
     <% if current_user %>
       <!-- ユーザー情報 -->
       <div class="sidebar-user-info">
@@ -72,9 +73,9 @@
           <% end %>
           
           <!-- グループ作成ボタン -->
-          <%= link_to new_group_path, 
-              class: "group-create-btn", 
-              data: { action: "click->sidebar#close" } do %>
+          <%= link_to '#',
+              class: "group-create-btn",
+              data: { action: "click->group-create#open" } do %>
             <i data-lucide="plus" class="create-icon"></i>
             <span>新しいグループを作成</span>
           <% end %>
@@ -118,7 +119,31 @@
         <% end %>
       </nav>
     <% end %>
-  </div>
-</div>
+    </div> <!-- end sidebar-content -->
 
- 
+    <!-- グループ作成パネル -->
+    <div id="group-create-panel" class="sidebar-panel hidden-panel" data-group-create-target="panel">
+      <h3 class="sidebar-section-title" style="margin-top:0">
+        <i data-lucide="plus" class="section-icon"></i>
+        新しいグループを作成
+      </h3>
+      <% new_group = Group.new %>
+      <%= form_with model: new_group, url: groups_path, local: true do |f| %>
+        <div class="field">
+          <%= f.label :name, "グループ名", class: "form-label" %>
+          <%= f.text_field :name, class: "form-input", required: true %>
+        </div>
+        <div class="field">
+          <%= f.label :description, "説明", class: "form-label" %>
+          <%= f.text_area :description, rows: 3, class: "form-textarea" %>
+        </div>
+        <div class="actions" style="margin-top:1rem;display:flex;gap:0.5rem;">
+          <%= f.submit "作成", class: "btn btn-primary" %>
+          <button type="button" class="btn btn-outline" data-action="click->group-create#close">
+            キャンセル
+          </button>
+        </div>
+      <% end %>
+    </div><!-- end panel -->
+  </div><!-- end wrapper -->
+ </div><!-- end slide-sidebar -->
