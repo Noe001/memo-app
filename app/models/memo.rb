@@ -18,13 +18,17 @@ class Memo < ApplicationRecord
   scope :by_group, ->(group) { where(group: group) }
   scope :personal, -> { where(group: nil) }
   scope :accessible_by, ->(user) {
+    memos = arel_table
+    groups = Group.arel_table
+    user_groups = UserGroup.arel_table
+
+    personal_memos = memos[:group_id].eq(nil).and(memos[:user_id].eq(user.id))
+    owned_group_memos = groups[:owner_id].eq(user.id)
+    member_group_memos = user_groups[:user_id].eq(user.id)
+
     left_joins(group: :user_groups)
-      .where(
-        '(memos.group_id IS NULL AND memos.user_id = ?) OR ' \
-        '(groups.owner_id = ?) OR ' \
-        '(user_groups.user_id = ?)',
-        user.id, user.id, user.id
-      )
+      .where(personal_memos.or(owned_group_memos).or(member_group_memos))
+      .distinct
   }
   scope :search, ->(query) {
     # Using LOWER() for case-insensitive search compatible with MySQL and PostgreSQL
@@ -94,6 +98,34 @@ class Memo < ApplicationRecord
     return false if personal?
     return true if group.owner == user
     group.member?(user)
+  end
+
+  def viewable_by?(user)
+    return true if public_memo?
+    return false unless user
+    return true if user == self.user
+    # In the future, this could be expanded to include group members for shared memos
+    accessible_by?(user) if group_memo?
+  end
+
+  def toggle_visibility!
+    if private_memo?
+      public_memo!
+    elsif public_memo?
+      private_memo!
+    end
+    # 'shared' state is not part of this toggle logic
+  end
+
+  # Virtual attribute for tags
+  def tags_string
+    tags.map(&:name).join(', ')
+  end
+
+  def tags_string=(names)
+    self.tags = names.split(',').map do |n|
+      Tag.find_or_create_by_name(n.strip)
+    end.compact
   end
   
   private

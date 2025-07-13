@@ -173,12 +173,12 @@ class ApplicationController < ActionController::Base
     Rails.logger.info "=== authenticate_user! called ==="
     Rails.logger.info "Current user present: #{current_user.present?}"
     
-    return if current_user
-    
-    Rails.logger.info "Authentication failed - redirecting to login"
-    respond_to do |format|
-      format.html { redirect_to auth_login_path, alert: 'ログインしてください' }
-      format.json { render json: { status: 'error', message: 'ログインが必要です' }, status: :unauthorized }
+    unless current_user && current_user_model
+      Rails.logger.warn "Authentication failed - redirecting to login. current_user: #{current_user.present?}, current_user_model: #{defined?(@current_user_model) && @current_user_model.present?}"
+      respond_to do |format|
+        format.html { redirect_to auth_login_path, alert: 'ログインセッションが無効です。再度ログインしてください。' }
+        format.json { render json: { status: 'error', message: 'ログインが必要です' }, status: :unauthorized }
+      end
     end
   end
   
@@ -219,5 +219,19 @@ class ApplicationController < ActionController::Base
   # Supabaseトークンを削除
   def clear_supabase_token
     cookies.delete('supabase_token')
+  end
+
+  protected
+
+  def authorize_owner!(resource, message: 'この操作を行う権限がありません。')
+    # `resource.user` or `resource.user_id` must exist
+    owner = resource.respond_to?(:user) ? resource.user : User.find(resource.user_id)
+
+    return if owner == current_user_model
+
+    respond_to do |format|
+      format.html { redirect_to root_path, alert: message }
+      format.json { render json: { status: 'error', message: message }, status: :forbidden }
+    end
   end
 end

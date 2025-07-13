@@ -1,6 +1,5 @@
-class Api::V1::SessionsController < Api::V1::BaseController
-  # No authentication needed for creating a session (login)
-  # before_action :authenticate_api_user!, only: [:destroy] # Authenticate for logout
+class Api::V1::SessionsController < Api::BaseController
+  before_action :authenticate_v1_user!, only: [:destroy]
 
   def create
     user = User.find_by(email: params[:email]&.downcase)
@@ -27,19 +26,17 @@ class Api::V1::SessionsController < Api::V1::BaseController
   end
 
   def destroy
+    # The token is found via authenticate_v1_user! and the user is set to @current_api_user
+    # We need to find the session associated with the token to destroy it.
     token = request.headers['Authorization']&.split(' ')&.last
-    if token.blank?
-      return render_error('Missing token.', :unauthorized)
-    end
-
-    session_record = Session.find_by(token: token)
+    session_record = Session.find_by(token: token, user: current_v1_user)
 
     if session_record
-      # We might also want to check if session_record.user == current_api_user if authenticate_api_user! was implemented and used
       session_record.destroy
-      render_success(nil, :no_content) # Successfully logged out
+      render_success(nil, :no_content)
     else
-      render_error('Invalid token or session already terminated.', :not_found)
+      # This case should ideally not be reached if authenticate_v1_user! is successful
+      render_error('Invalid token.', :not_found)
     end
   end
 
