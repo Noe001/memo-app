@@ -14,7 +14,7 @@ class GroupsController < ApplicationController
     @members = @group.members.includes(:user_groups)
     @memos = @group.memos.includes(:user, :tags).accessible_by(current_user).recent.limit(10)
     @pending_invitations = @group.invitations.pending.includes(:invited_by)
-    @can_manage = @group.can_manage?(current_user_model)
+    @can_manage = @group.can_manage?(current_user)
   end
   
   def new
@@ -60,20 +60,16 @@ class GroupsController < ApplicationController
   end
   
   def switch_to
-    # 個人モードへの切り替えを処理
     if params[:id] == 'personal' || params[:personal]
       session.delete(:current_group_id)
-      
       respond_to do |format|
         format.html { redirect_to memos_path, notice: '個人メモに切り替えました。' }
         format.json { render json: { success: true, group: { id: nil, name: '個人メモ' } } }
       end
       return
     end
-    
     if current_user.can_access_group?(@group)
       session[:current_group_id] = @group.id
-      
       respond_to do |format|
         format.html { redirect_to memos_path, notice: "#{@group.name}に切り替えました。" }
         format.json { render json: { success: true, group: { id: @group.id, name: @group.name } } }
@@ -97,13 +93,13 @@ class GroupsController < ApplicationController
   end
   
   def ensure_group_access
-    unless current_user_model.can_access_group?(@group)
+    unless current_user.can_access_group?(@group)
       redirect_to groups_path, alert: 'このグループにアクセスする権限がありません。'
     end
   end
   
   def ensure_group_management
-    unless @group.can_manage?(current_user_model)
+    unless @group.can_manage?(current_user)
       redirect_to @group, alert: 'この操作を実行する権限がありません。'
     end
   end

@@ -48,7 +48,26 @@
     <!-- エラーメッセージ -->
     <% if flash[:alert] %>
       <div class="alert alert-danger">
-        <%= flash[:alert] %>
+        <div class="error-message">
+          <i class="fas fa-exclamation-circle"></i>
+          <%= case flash[:alert]
+              when /ログインに失敗しました/ then 'メールアドレスまたはパスワードが正しくありません'
+              when /アカウント作成に失敗しました/ then 'アカウント作成に問題が発生しました'
+              when /ログイン中にエラーが発生しました/ then 'システムエラーが発生しました。時間をおいて再度お試しください'
+              when /アカウント作成中にエラーが発生しました/ then 'アカウント作成中に問題が発生しました'
+              when /connection failed|timeout/i then 'サーバーに接続できませんでした。ネットワーク接続を確認してください'
+              else flash[:alert]
+              end %>
+        </div>
+        <% if flash[:alert] =~ /connection failed|timeout/i %>
+          <div class="error-solution">
+            <p>対処方法:</p>
+            <ul>
+              <li>インターネット接続を確認してください</li>
+              <li>数分待ってから再度お試しください</li>
+            </ul>
+          </div>
+        <% end %>
       </div>
     <% end %>
     

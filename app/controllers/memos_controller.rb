@@ -4,6 +4,7 @@ class MemosController < ApplicationController
   before_action :set_memo, only: [:show, :update, :destroy, :add_memo] # add_memo uses @selected
   before_action :authorize_memo_owner_for_write, only: [:update, :destroy]
   before_action :authorize_memo_for_read, only: [:show] # New authorization for show
+  before_action :set_sort_options, only: [:index, :search, :show, :create, :update, :add_memo]
 
   def index
     prepare_index_data
@@ -13,106 +14,41 @@ class MemosController < ApplicationController
   end
 
   def show
-    # @selected is set by set_memo and authorized by authorize_memo_for_read
-    # The following lines seem to be for re-rendering index's list part,
-    # which might be confusing if show is meant to display only one memo.
-    # Consider a dedicated view for `show` or simplifying.
-    prepare_index_data
-
-    # Logic for "add this memo to my list" (if @selected is viewable and not owned)
-    if @selected.user_id != current_user_model.id # Check if the selected memo is not owned by current user
-      @can_add_selected_memo = true # Flag to show "add to my memos" button
-      @memo_to_add = current_user_model.memos.build(
-        title: @selected.title,
-        description: @selected.description,
-        visibility: :private_memo # Default to private when copying
-        # Tags are not copied by default here, could be an enhancement
-      )
-    else
-      @can_add_selected_memo = false
-    end
-    # The view for 'show' (e.g., show.html.erb) should primarily focus on @selected.
-    # If it reuses the index template, these extra variables are needed.
-    # For now, assuming it might render index or a similar layout.
-    render :index # This was the original behavior, keeping it for now.
+    @selected = @selected # 明示的にセット
+    prepare_index_data if defined?(prepare_index_data)
+    render :index
   end
 
   # This action is for when a user (current_user) wants to copy a visible memo (@selected)
   # (that they might not own) to their own list of memos.
   def add_memo
-    # Ensure the memo exists and current user can read it
-    set_memo
-    authorize_memo_for_read
-    
-    # Additional check in case authorize_memo_for_read doesn't redirect (defensive programming)
+    # @selectedはset_memoでセット済み、権限もauthorize_memo_for_readでチェック済み
     unless can_read_memo?(@selected, current_user_model)
       redirect_to root_path, alert: 'このメモを閲覧または追加する権限がありません。'
       return
     end
 
-    # Build the new memo for the current user, copying content from @selected.
-    @memo_to_add_to_own_list = current_user_model.memos.build(
+    new_memo = current_user_model.memos.build(
       title: @selected.title,
       description: @selected.description,
-      visibility: memo_params[:visibility] || :private_memo # User can choose visibility for their copy
-      # Tags from @selected are not automatically copied here.
-      # If params[:tags] is intended for the new copy, it should be handled.
+      visibility: memo_params[:visibility] || :private_memo
     )
-    
-    if @memo_to_add_to_own_list.save
-      # If params[:tags] are submitted with the "add_memo" form for the *new* memo
-      process_tags(@memo_to_add_to_own_list, params.dig(:memo, :tags_string) || params[:tags_string]) if params.dig(:memo, :tags_string).present? || params[:tags_string].present?
-      redirect_to memo_path(@memo_to_add_to_own_list), notice: 'メモをあなたのリストに追加しました。'
+    if new_memo.save
+      process_tags(new_memo, params[:tags]) if params[:tags].present?
+      redirect_to memo_path(new_memo), notice: 'メモをあなたのリストに追加しました。'
     else
-      # In case of failure, re-render the 'show' view of the original @selected memo
-      # or redirect to where the "add" button was.
-      # This part needs careful thought for UX. For now, re-render show's context.
-      flash.now[:alert] = "メモの追加に失敗しました: #{@memo_to_add_to_own_list.errors.full_messages.join(', ')}"
-      # Re-populate variables needed for rendering the 'show' view (which then renders 'index')
-      prepare_index_data
-      if @selected.user_id != current_user_model.id
-        @can_add_selected_memo = true
-        # Rebuild @memo_to_add with submitted params if they exist, else from @selected
-        # This assumes memo_params_for_add might be submitted via a form for add_memo
-        submitted_title = params.dig(:memo, :title) || @selected.title
-        submitted_description = params.dig(:memo, :description) || @selected.description
-        submitted_visibility = params.dig(:memo, :visibility) || :private_memo
-
-        @memo_to_add = current_user_model.memos.build(
-          title: submitted_title,
-          description: submitted_description,
-          visibility: submitted_visibility
-        )
-        @memo_to_add.errors.merge!(@memo_to_add_to_own_list.errors) # Show errors on this form object
-      else
-        @can_add_selected_memo = false
-      end
-      render :index, status: :unprocessable_entity
+      redirect_to memo_path(@selected), alert: "メモの追加に失敗しました: #{new_memo.errors.full_messages.join(', ')}"
     end
   end
 
     def create
     @memo_new = current_user_model.memos.build(memo_params)
-    
-    # タグがある場合は、タイトルと説明文が空でも保存を許可
-    if @memo_new.title.blank? && @memo_new.description.blank? && params[:tags].present?
-      @memo_new.title = "無題" # 一時的なタイトルを設定
-    end
+    # タグパラメータをバリデーション用にインスタンス変数で渡す
+    @memo_new.instance_variable_set(:@_tags_param, params[:tags].to_s.split(',').map(&:strip)) if params[:tags].present?
     
     if @memo_new.save
-      # リスト重複防止のため最新の@memos等を取得
-      prepare_index_data
       process_tags(@memo_new, params[:tags]) if params[:tags].present?
-      
-      # タグだけの場合は、一時的なタイトルを削除
-      if @memo_new.title == "無題" && @memo_new.description.blank? && params[:tags].present?
-        @memo_new.update_column(:title, nil)
-      end
-      
-      # リアルタイム更新用のデータを準備
-      prepare_index_data
       @selected = @memo_new
-      
       respond_to do |format|
         format.html { redirect_to memo_path(@memo_new), notice: 'メモを作成しました' }
         format.turbo_stream
@@ -121,9 +57,8 @@ class MemosController < ApplicationController
     else
       respond_to do |format|
         format.html do
-          prepare_index_data
-          flash.now[:alert] = 'メモの保存に失敗しました'
-          render :index
+          flash.now[:alert] = @memo_new.errors.full_messages.join(', ')
+          render :new
         end
         format.turbo_stream
         format.json { render json: { status: 'error', message: 'メモの保存に失敗しました', errors: @memo_new.errors.full_messages }, status: :unprocessable_entity }
@@ -132,24 +67,8 @@ class MemosController < ApplicationController
   end
 
     def update
-    # タグがある場合は、タイトルと説明文が空でも保存を許可
-    memo_attributes = memo_params
-    if memo_attributes[:title].blank? && memo_attributes[:description].blank? && params[:tags].present?
-      memo_attributes[:title] = "無題" # 一時的なタイトルを設定
-      temp_title_set = true
-    end
-    
-    if @selected.update(memo_attributes)
+    if @selected.update(memo_params)
       process_tags(@selected, params[:tags]) if params[:tags].present?
-      
-      # タグだけの場合は、一時的なタイトルを削除
-      if temp_title_set && @selected.description.blank? && params[:tags].present?
-        @selected.update_column(:title, nil)
-      end
-      
-      # リアルタイム更新用のデータを準備
-      prepare_index_data
-      
       respond_to do |format|
         format.html { redirect_to memo_path(@selected), notice: 'メモを更新しました' }
         format.turbo_stream
@@ -158,9 +77,8 @@ class MemosController < ApplicationController
     else
       respond_to do |format|
         format.html do
-          prepare_index_data
-          flash.now[:alert] = 'メモの更新に失敗しました'
-          render :index
+          flash.now[:alert] = @selected.errors.full_messages.join(', ')
+          render :edit
         end
         format.turbo_stream
         format.json { render json: { status: 'error', message: 'メモの更新に失敗しました', errors: @selected.errors.full_messages } }
@@ -177,37 +95,17 @@ class MemosController < ApplicationController
   end
 
   def search
-    prepare_index_data
-
     search_word = params[:word]
-    selected_tags = params[:tags] || []
-    # params[:tags] は文字列または配列の可能性がある
-    selected_tags = selected_tags.is_a?(Array) ? selected_tags : selected_tags.to_s.split(',')
-    selected_tags.map!(&:strip)
-
-    # グループに応じた検索範囲を設定
-    if @current_group
-      scope = @current_group.memos.accessible_by(current_user_model).includes(:tags, :user)
-    else
-      scope = current_user_model.memos.personal.includes(:tags)
-    end
-    
+    selected_tags = Array(params[:tags]).map(&:strip).reject(&:blank?)
+    scope = @current_group ? @current_group.memos.accessible_by(current_user_model).includes(:tags, :user) : current_user_model.memos.personal.includes(:tags)
     scope = scope.search(search_word) if search_word.present?
     scope = scope.with_tags(selected_tags) if selected_tags.present?
-
     @memos = scope.distinct.apply_sort(@current_sort_by, @current_direction).page(params[:page])
-
-    # 選択タグはビューでハイライトするために保持
     @selected_tags = selected_tags
-
-    # 総メモ数が存在するかどうかを事前に保持（検索結果の UI 用）
     @total_memos_exist = scope.exists?
-
-    # 空検索結果時の UI はビューで判定・表示する（フラッシュではなくメモリスト内で表示）
-
     respond_to do |format|
       format.html { render :index }
-      format.turbo_stream # search.turbo_stream.erb をレンダリング
+      format.turbo_stream
     end
   end
 
@@ -522,5 +420,10 @@ class MemosController < ApplicationController
     @user_groups = current_user_model.all_groups.includes(:owner, :users) if current_user_model
     
     render :index
+  end
+
+  private
+  def set_sort_options
+    @sort_options = Memo.sort_options
   end
 end

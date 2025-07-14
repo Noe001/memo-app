@@ -1,0 +1,18 @@
+current directory: /home/vee/memo-app/vendor/bundle/ruby/3.0.0/gems/bindex-0.8.1/ext/skiptrace
+/usr/bin/ruby3.0 extconf.rb
+creating Makefile
+
+current directory: /home/vee/memo-app/vendor/bundle/ruby/3.0.0/gems/bindex-0.8.1/ext/skiptrace
+make DESTDIR\= sitearchdir\=./.gem.20250714-44823-l7elvl sitelibdir\=./.gem.20250714-44823-l7elvl clean
+
+current directory: /home/vee/memo-app/vendor/bundle/ruby/3.0.0/gems/bindex-0.8.1/ext/skiptrace
+make DESTDIR\= sitearchdir\=./.gem.20250714-44823-l7elvl sitelibdir\=./.gem.20250714-44823-l7elvl
+compiling cruby.c
+linking shared-object skiptrace/internal/cruby.so
+
+current directory: /home/vee/memo-app/vendor/bundle/ruby/3.0.0/gems/bindex-0.8.1/ext/skiptrace
+make DESTDIR\= sitearchdir\=./.gem.20250714-44823-l7elvl sitelibdir\=./.gem.20250714-44823-l7elvl install
+/usr/bin/install -c -m 0755 cruby.so ./.gem.20250714-44823-l7elvl/skiptrace/internal
+
+current directory: /home/vee/memo-app/vendor/bundle/ruby/3.0.0/gems/bindex-0.8.1/ext/skiptrace
+make DESTDIR\= sitearchdir\=./.gem.20250714-44823-l7elvl sitelibdir\=./.gem.20250714-44823-l7elvl clean

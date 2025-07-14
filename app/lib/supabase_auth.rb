@@ -16,6 +16,9 @@ class SupabaseAuth
   SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
   JWT_SECRET = 'super-secret-jwt-token-with-at-least-32-characters-long'
   
+  # タイムアウト設定 (秒単位)
+  DEFAULT_TIMEOUT = ENV.fetch('SUPABASE_TIMEOUT', 2).to_i
+
   # 利用可能なSupabaseホストを検索
   def self.find_available_supabase_host
     return @available_host if @available_host
@@ -26,8 +29,8 @@ class SupabaseAuth
         port = host == 'supabase_kong_notetree' ? 8000 : 54321
         uri = URI("http://#{host}:#{port}/health")
         http = Net::HTTP.new(uri.host, uri.port)
-        http.open_timeout = 2
-        http.read_timeout = 2
+        http.open_timeout = DEFAULT_TIMEOUT
+        http.read_timeout = DEFAULT_TIMEOUT
         
         response = http.request(Net::HTTP::Get.new(uri))
         if response.code == '200'
@@ -188,56 +191,71 @@ class SupabaseAuth
     request['Authorization'] = "Bearer #{SUPABASE_ANON_KEY}"
     request['apikey'] = SUPABASE_ANON_KEY
     request['Content-Type'] = 'application/json'
-    request.body = { 
-      email: email, 
-      password: password 
+    request.body = {
+      email: email,
+      password: password
     }.to_json
     
     Rails.logger.info "Sign in request to: #{uri}"
     Rails.logger.info "Request body: #{request.body}"
     
-    response = http.request(request)
-    Rails.logger.info "Sign in response code: #{response.code}"
-    Rails.logger.info "Sign in response body: #{response.body}"
-    
-    if response.code == '200'
-      data = JSON.parse(response.body)
+    begin
+      response = http.request(request)
+      Rails.logger.info "Sign in response code: #{response.code}"
+      Rails.logger.info "Sign in response body: #{response.body}"
       
-             # プロフィール情報を取得または作成
-       profile_data = get_user_profile(data['user']['id'])
-       if profile_data.nil?
-         create_user_profile(data['user']['id'], data['user']['email'], nil, data['access_token'])
+      if response.code == '200'
+        data = JSON.parse(response.body)
+        
+               # プロフィール情報を取得または作成
          profile_data = get_user_profile(data['user']['id'])
-       end
-      
-      {
-        success: true,
-        access_token: data['access_token'],
-        refresh_token: data['refresh_token'],
-        user: {
-          id: data['user']['id'],
-          email: data['user']['email'],
-          name: profile_data&.dig('name') || data['user']['email']&.split('@')&.first,
-          theme: profile_data&.dig('theme') || 'light',
-          keyboard_shortcuts_enabled: profile_data&.dig('keyboard_shortcuts_enabled') != false
+         if profile_data.nil?
+           create_user_profile(data['user']['id'], data['user']['email'], nil, data['access_token'])
+           profile_data = get_user_profile(data['user']['id'])
+         end
+        
+        {
+          success: true,
+          access_token: data['access_token'],
+          refresh_token: data['refresh_token'],
+          user: {
+            id: data['user']['id'],
+            email: data['user']['email'],
+            name: profile_data&.dig('name') || data['user']['email']&.split('@')&.first,
+            theme: profile_data&.dig('theme') || 'light',
+            keyboard_shortcuts_enabled: profile_data&.dig('keyboard_shortcuts_enabled') != false
+          }
         }
-      }
-    else
-      error_data = JSON.parse(response.body) rescue { 'error' => 'Unknown error' }
-      Rails.logger.error "Sign in failed: #{error_data}"
-      
+      else
+        error_data = JSON.parse(response.body) rescue { 'error' => 'Unknown error' }
+        Rails.logger.error "Sign in failed: #{error_data}"
+        
+        error_message = case error_data['error']
+                       when 'invalid_grant' then 'メールアドレスまたはパスワードが正しくありません'
+                       when 'email_not_confirmed' then 'メールアドレスの確認が完了していません'
+                       when 'too_many_requests' then 'ログイン試行回数が多すぎます。しばらく待ってから再度お試しください'
+                       else 'ログインに失敗しました'
+                       end
+        
+        {
+          success: false,
+          error: error_message
+        }
+      end
+    rescue Net::OpenTimeout, Net::ReadTimeout => e
+      Rails.logger.error "Sign in timeout: #{e.message}"
       {
         success: false,
-        error: error_data.dig('error_description') || error_data.dig('error') || 'ログインに失敗しました'
+        error: 'サーバーへの接続がタイムアウトしました。ネットワーク接続を確認してください'
+      }
+    rescue => e
+      Rails.logger.error "Sign in error: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      {
+        success: false,
+        error: 'ログイン処理中に予期せぬエラーが発生しました'
       }
     end
-  rescue => e
-    Rails.logger.error "Sign in error: #{e.message}"
-    Rails.logger.error e.backtrace.join("\n")
-    {
-      success: false,
-      error: 'ログイン中にエラーが発生しました'
-    }
   end
   
   # サインアップ処理
@@ -284,9 +302,17 @@ class SupabaseAuth
       error_data = JSON.parse(response.body) rescue { 'error' => 'Unknown error' }
       Rails.logger.error "Sign up failed: #{error_data}"
       
+      error_message = case error_data['error']
+                     when 'User already registered' then 'このメールアドレスは既に登録されています'
+                     when 'Weak password' then 'パスワードは8文字以上で、大文字・小文字・数字を含めてください'
+                     when 'Invalid email' then '有効なメールアドレスを入力してください'
+                     when 'too_many_requests' then '登録試行回数が多すぎます。しばらく待ってから再度お試しください'
+                     else 'アカウント作成に失敗しました。入力内容を確認してください'
+                     end
+      
       {
         success: false,
-        error: error_data.dig('error_description') || error_data.dig('error') || 'アカウント作成に失敗しました'
+        error: error_message
       }
     end
   rescue => e

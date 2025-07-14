@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/Noe001/notetree#readme",
   "dependencies": {
+    "@playwright/mcp": "^0.0.29",
     "@supabase/supabase-js": "^2.50.3",
     "axios": "^1.10.0",
     "dotenv": "^17.0.1",

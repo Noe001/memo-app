@@ -1,0 +1,12 @@
+<div class="input-group">
+  <label class="label" for="<%= "#{form.object_name}_tags" %>">タグ</label>
+  <input type="text" 
+         name="tags" 
+         id="<%= "#{form.object_name}_tags" %>"
+         value="<%= defined?(tags_value) ? tags_value : '' %>"
+         placeholder="カンマ区切りで入力（例: 仕事, アイデア）" 
+         class="input tags-input"
+         data-action="input->auto-save#saveField blur->auto-save#saveField"
+         <%= 'required' if defined?(required) && required %>
+         <%= 'pattern=".*\S.*" title="タグを1つ以上入力してください"' if defined?(required) && required %>>
+</div>

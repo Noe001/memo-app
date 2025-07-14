@@ -83,4 +83,7 @@ Rails.application.configure do
 
   # SecureHeadersミドルウェアを削除
   config.middleware.delete "SecureHeaders::Middleware" if defined?(SecureHeaders::Middleware)
+
+  # 静的アセット配信を常に有効化
+  config.public_file_server.enabled = true
 end

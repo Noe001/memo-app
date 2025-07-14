@@ -33,8 +33,8 @@
           
           <!-- 個人メモ（グループなし） -->
           <button class="group-item <%= 'active' unless defined?(@current_group) && @current_group %>"
-                  data-action="click->sidebar#close"
-                  data-controller="group-switcher" data-action="click->group-switcher#switchToPersonal click->sidebar#close">
+                  data-controller="group-switcher"
+                  data-action="click->group-switcher#switchToPersonal">
             <div class="group-avatar personal">
               <i data-lucide="user" class="group-icon"></i>
             </div>
@@ -51,8 +51,9 @@
           <% if @user_groups.present? %>
             <% @user_groups.each do |group| %>
               <button class="group-item <%= 'active' if defined?(@current_group) && @current_group&.id == group.id %>"
-                      data-action="click->sidebar#close"
-                      data-controller="group-switcher" data-group-switcher-group-id-value="<%= group.id %>" data-action="click->group-switcher#switchToGroup click->sidebar#close">
+                      data-controller="group-switcher"
+                      data-group-switcher-group-id-value="<%= group.id %>"
+                      data-action="click->group-switcher#switchToGroup">
                 <div class="group-avatar">
                   <%= group.name.first.upcase %>
                 </div>
@@ -111,11 +112,9 @@
         
         <div class="nav-separator"></div>
         
-        <%= link_to destroy_sessions_path, 
-            class: "sidebar-nav-item nav-item-danger", 
-            data: { turbo_method: :delete } do %>
+        <%= link_to logout_path, class: "sidebar-nav-item nav-item-danger", data: { turbo_method: :delete } do %>
           <i data-lucide="log-out" class="nav-icon"></i>
-          <span>ログアウト</span>
+          ログアウト
         <% end %>
       </nav>
     <% end %>

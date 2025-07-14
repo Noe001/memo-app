@@ -2,23 +2,21 @@ Rails.application.routes.draw do
   # ルートパス: 最新メモを表示
   root to: "memos#latest"
   
-  # 認証関連（新しいAuthController）
+  # 認証関連（統一されたAuthController）
   scope '/auth' do
-    get '/', to: 'auth#new', as: 'auth_login'
+    get '/', to: 'auth#new', as: 'login'
     post '/login', to: 'auth#login'
-    post '/signup', to: 'auth#signup', as: 'auth_signup'
+    post '/signup', to: 'auth#signup'
     delete '/logout', to: 'auth#logout'
     post '/refresh_token', to: 'auth#refresh_token'
     get '/current_user_info', to: 'auth#current_user_info'
   end
   
-  # 認証関連（レガシーSessionsController - 段階的移行のため）
-  resource :session, only: [:new, :create, :destroy], controller: 'sessions' do
-    collection do
-      delete :destroy_all  # 全セッション削除
-    end
-  end
+  # レガシー互換性（段階的移行のため）
+  get 'signup', to: 'auth#new'
+  post 'signup', to: 'auth#signup'
   
+  # ユーザー管理
   resources :users, only: [:show, :edit, :update, :create] do
     member do
       get :profile
@@ -28,21 +26,12 @@ Rails.application.routes.draw do
   # 設定
   resource :settings, only: [:show, :update]
   
-  # ユーザー登録（AuthControllerに統一）
-  get 'signup', to: 'auth#new', as: 'signup'
-  post 'signup', to: 'auth#signup'
-  
-  # ログイン関連のエイリアス（既存との互換性）
-  get 'login', to: 'auth#new', as: 'new_sessions'
-  post 'login', to: 'auth#login', as: 'create_sessions'
-  delete 'login', to: 'auth#logout', as: 'destroy_sessions'
-  
-  # グループ関連
+  # グループ関連（シンプル化）
   resources :groups do
     resources :invitations, only: [:create, :destroy], controller: 'groups/invitations'
     
     member do
-      post :switch_to  # グループ切り替え
+      post :switch_to
       delete 'members/:user_id', to: 'groups/members#destroy', as: 'remove_member'
     end
   end
@@ -60,8 +49,8 @@ Rails.application.routes.draw do
     
     collection do
       get :search
-      get :public_memos  # 公開メモ一覧
-      get :shared_memos  # 共有メモ一覧
+      get :public_memos
+      get :shared_memos
     end
   end
   
@@ -70,34 +59,8 @@ Rails.application.routes.draw do
     resources :memos, only: [:index], controller: 'tags/memos'
   end
   
-  # API
+  # API v2（Supabase統合版のみ）
   namespace :api do
-    namespace :v1 do
-      resources :memos, except: [:new, :edit] do
-        collection do
-          get :search
-        end
-      end
-      
-      resources :tags, except: [:new, :edit]
-      
-      # グループAPI
-      resources :groups, except: [:new, :edit] do
-        resources :invitations, only: [:create, :destroy], controller: 'groups/invitations'
-        member do
-          post :switch_to
-        end
-      end
-      
-      resource :user, only: [:show, :update] # This will need API auth using `authenticate_api_user!`
-      
-      # API Authentication routes
-      # These will automatically map to Api::V1::SessionsController due to the namespace
-      post 'auth/login', to: 'sessions#create'
-      delete 'auth/logout', to: 'sessions#destroy'
-    end
-    
-    # API v2 - Supabase統合
     namespace :v2 do
       resources :memos, except: [:new, :edit] do
         collection do
@@ -108,7 +71,6 @@ Rails.application.routes.draw do
       
       resources :tags, except: [:new, :edit]
       
-      # グループAPI v2
       resources :groups, except: [:new, :edit] do
         resources :invitations, only: [:create, :destroy], controller: 'groups/invitations'
         member do
@@ -117,21 +79,12 @@ Rails.application.routes.draw do
       end
       
       resource :user, only: [:show, :update]
+      
+      # API認証
+      post 'auth/login', to: 'sessions#create'
+      delete 'auth/logout', to: 'sessions#destroy'
     end
   end
-  
-  # 管理者機能（将来の拡張用）
-  namespace :admin do
-    resources :users, only: [:index, :show, :update, :destroy]
-    resources :memos, only: [:index, :show, :destroy]
-    resources :tags, only: [:index, :show, :update, :destroy]
-    resources :groups, only: [:index, :show, :update, :destroy]
-    
-    root to: 'dashboard#index'
-  end
-  
-  # セキュリティ関連のルートを一時的に削除
-  # post '/csp-violation-report-endpoint', to: 'security#csp_violation_report'
   
   # エラーハンドリング
   match '/404', to: 'errors#not_found', via: :all, as: 'not_found'

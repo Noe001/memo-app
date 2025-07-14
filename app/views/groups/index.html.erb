@@ -10,10 +10,7 @@
       <p class="groups-subtitle">参加しているグループの管理と新しいグループの作成</p>
     </div>
     
-    <%= link_to new_group_path, class: "btn btn-primary" do %>
-      <i data-lucide="plus" class="btn-icon"></i>
-      新しいグループを作成
-    <% end %>
+    <%# 新しいグループを作成ボタン（new_group_pathへのリンク）は不要なので削除 %>
   </div>
   
   <div class="groups-content">
@@ -151,10 +148,7 @@
         </div>
         <h3>グループがありません</h3>
         <p>新しいグループを作成するか、他のユーザーからの招待を待ちましょう。</p>
-        <%= link_to new_group_path, class: "btn btn-primary" do %>
-          <i data-lucide="plus" class="btn-icon"></i>
-          最初のグループを作成
-        <% end %>
+        <%# 最初のグループを作成ボタン（new_group_pathへのリンク）は不要なので削除 %>
       </div>
     <% end %>
   </div>

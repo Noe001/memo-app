@@ -1,49 +1,21 @@
 import { Controller } from "@hotwired/stimulus"
+import GroupService from "../services/group_service"
 
 export default class extends Controller {
   static values = { groupId: String }
 
   connect() {
-    console.log("Group switcher controller connected")
+    console.debug("Group switcher controller connected")
   }
 
   switchToGroup(event) {
     const groupId = event.currentTarget.dataset.groupId || this.groupIdValue
-    console.log(`Switching to group: ${groupId}`)
-    fetch(`/groups/switch?group_id=${groupId}`, {
-      method: 'POST',
-      headers: {
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
-        'Content-Type': 'application/json'
-      }
-    }).then(response => {
-      if (response.ok) {
-        window.location.reload()
-      } else {
-        console.error('Failed to switch group')
-      }
-    }).catch(error => {
-      console.error('Error switching group:', error)
-    })
+    console.debug(`Switching to group: ${groupId}`)
+    GroupService.switchGroup(groupId)
   }
 
   switchToPersonal() {
-    console.log('Switching to personal memos')
-    fetch('/groups/switch', {
-      method: 'POST',
-      headers: {
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ group_id: null })
-    }).then(response => {
-      if (response.ok) {
-        window.location.reload()
-      } else {
-        console.error('Failed to switch to personal memos')
-      }
-    }).catch(error => {
-      console.error('Error switching to personal memos:', error)
-    })
+    console.debug('Switching to personal memos')
+    GroupService.switchGroup()
   }
 }

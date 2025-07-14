@@ -14,7 +14,7 @@ import GroupCreateController from "./group_create_controller"
 
 application.register("sidebar", SidebarController)
 application.register("settings", SettingsController)
-application.register("group-switcher", GroupSwitcherController)
+application.register("group_switcher", GroupSwitcherController)
 application.register("group-create", GroupCreateController)
 
 // Lazy load controllers as they appear in the DOM (remember not to preload controllers in import map!)

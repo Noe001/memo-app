@@ -6,7 +6,7 @@ class Memo < ApplicationRecord
   # バリデーション強化
   validates :title, length: { maximum: 255 }
   validates :description, length: { maximum: 10000 }
-  validate :title_or_description_present
+  validate :title_or_description_or_tags_present
   
   # タグ機能
   has_many :memo_tags, dependent: :destroy
@@ -98,9 +98,12 @@ class Memo < ApplicationRecord
   
   private
   
-  def title_or_description_present
-    if title.blank? && description.blank?
-      errors.add(:base, "Title or description must be present")
+  def title_or_description_or_tags_present
+    tags_count = self.tags.size
+    tags_param = (self.instance_variable_get(:@_tags_param) || []).reject(&:blank?)
+    tags_count += tags_param.size if tags_param.present?
+    if title.blank? && description.blank? && tags_count == 0
+      errors.add(:base, "タイトル・内容・タグのいずれかを入力してください")
     end
   end
 end
