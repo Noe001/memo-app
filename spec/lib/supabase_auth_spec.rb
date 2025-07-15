@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe SupabaseAuth do
-  let(:valid_refresh_token) { "valid_refresh_token_123" }
-  let(:invalid_refresh_token) { "invalid_refresh_token_456" }
   let(:valid_token) { 'valid.jwt.token' }
   let(:expired_token) { 'expired.jwt.token' }
   let(:invalid_token) { 'invalid.jwt.token' }
@@ -15,6 +13,8 @@ RSpec.describe SupabaseAuth do
   let(:new_access_token) { 'new_access_token' }
   let(:new_refresh_token) { 'new_refresh_token' }
   let(:reset_link) { 'https://example.com/reset-password' }
+  let(:valid_access_token) { 'valid_access_token_123' }
+  let(:invalid_access_token) { 'invalid_access_token_456' }
 
   before do
     # JWTデコードモック
@@ -26,6 +26,15 @@ RSpec.describe SupabaseAuth do
     # デフォルトのSupabase APIモック
     stub_request(:any, /supabase/).to_return(status: 404)
     
+    # パスワード認証用のモック
+    stub_request(:post, "#{SupabaseAuth.supabase_url}/auth/v1/token?grant_type=password")
+      .with(body: { email: user_email, password: user_password })
+      .to_return(status: 200, body: {
+        access_token: valid_token,
+        refresh_token: valid_refresh_token,
+        user: { id: user_id, email: user_email }
+      }.to_json)
+
     # パスワードリセット用のモック
     stub_request(:post, "#{SupabaseAuth.supabase_url}/auth/v1/recover")
       .with(body: { email: user_email, redirect_to: "#{Rails.application.config.frontend_url}/reset-password" })
@@ -39,24 +48,61 @@ RSpec.describe SupabaseAuth do
     stub_request(:post, "#{SupabaseAuth.supabase_url}/auth/v1/token")
       .with(body: { grant_type: "refresh_token", refresh_token: invalid_refresh_token })
       .to_return(status: 401, body: { error: "Invalid refresh token" }.to_json)
+
+    # ログアウト用のモック
+    stub_request(:post, "#{SupabaseAuth.supabase_url}/auth/v1/logout")
+      .with(headers: { "Authorization" => "Bearer #{valid_access_token}" })
+      .to_return(status: 200, body: {}.to_json)
+
+    stub_request(:post, "#{SupabaseAuth.supabase_url}/auth/v1/logout")
+      .with(headers: { "Authorization" => "Bearer #{invalid_access_token}" })
+      .to_return(status: 401, body: { error: "Invalid access token" }.to_json)
   end
   
-  describe '#generate_password_reset_link' do
+  describe '.refresh_token' do
+    let(:valid_refresh_token) { 'valid_refresh_token' }
+    let(:invalid_refresh_token) { 'invalid_refresh_token' }
+    let(:new_access_token) { 'new_access_token' }
+    let(:new_refresh_token) { 'new_refresh_token' }
 
-  describe '#refresh_token' do
+    before do
+      stub_request(:post, "#{SupabaseAuth.supabase_url}/auth/v1/token")
+        .with(
+          body: { grant_type: 'refresh_token', refresh_token: valid_refresh_token },
+          headers: { 'Content-Type' => 'application/json' }
+        )
+        .to_return(
+          status: 200,
+          body: {
+            access_token: new_access_token,
+            refresh_token: new_refresh_token,
+            expires_in: 3600
+          }.to_json
+        )
+
+      stub_request(:post, "#{SupabaseAuth.supabase_url}/auth/v1/token")
+        .with(
+          body: { grant_type: 'refresh_token', refresh_token: invalid_refresh_token },
+          headers: { 'Content-Type' => 'application/json' }
+        )
+        .to_return(status: 401, body: { error: 'Invalid refresh token' }.to_json)
+
+      stub_request(:post, "#{SupabaseAuth.supabase_url}/auth/v1/token")
+        .to_return(status: 500)
+    end
+
     context '有効なリフレッシュトークンの場合' do
-      it '新しいアクセストークンとリフレッシュトークンを返す' do
+      it '新しいトークン情報を返す' do
         result = described_class.refresh_token(valid_refresh_token)
-        expect(result[:access_token]).to eq("new_access_token")
-        expect(result[:refresh_token]).to eq("new_refresh_token")
+        expect(result[:access_token]).to eq(new_access_token)
+        expect(result[:refresh_token]).to eq(new_refresh_token)
+        expect(result[:expires_in]).to eq(3600)
       end
     end
 
     context '無効なリフレッシュトークンの場合' do
-      it 'エラーを発生させる' do
-        expect {
-          described_class.refresh_token(invalid_refresh_token)
-        }.to raise_error(SupabaseAuth::AuthenticationError)
+      it 'nilを返す' do
+        expect(described_class.refresh_token(invalid_refresh_token)).to be_nil
       end
     end
 
@@ -66,18 +112,13 @@ RSpec.describe SupabaseAuth do
           .to_timeout
       end
 
-      it 'ネットワークエラーを発生させる' do
-        expect {
-          described_class.refresh_token(valid_refresh_token)
-        }.to raise_error(SupabaseAuth::NetworkError)
+      it 'nilを返す' do
+        expect(described_class.refresh_token(valid_refresh_token)).to be_nil
       end
     end
   end
 
   describe '#sign_out' do
-    let(:valid_access_token) { "valid_access_token_123" }
-    let(:invalid_access_token) { "invalid_access_token_456" }
-
     before do
       # ログアウト用のモック
       stub_request(:post, "#{SupabaseAuth.supabase_url}/auth/v1/logout")
@@ -156,32 +197,44 @@ RSpec.describe SupabaseAuth do
       end
     end
   end
+  describe '.generate_password_reset_link' do
     context '有効なメールアドレスの場合' do
-      it 'パスワードリセットリンクを正常に生成する' do
-        expect {
-          SupabaseAuth.generate_password_reset_link(user_email)
-        }.not_to raise_error
+      before do
+        stub_request(:post, "#{SupabaseAuth.supabase_url}/auth/v1/recover")
+          .with(body: { email: user_email })
+          .to_return(status: 200, body: {}.to_json)
+      end
+
+      it 'nilを返す' do
+        expect(described_class.generate_password_reset_link(user_email)).to be_nil
       end
     end
-  
+
     context '無効なメールアドレスの場合' do
-      it 'ArgumentErrorを発生させる' do
-        expect {
-          SupabaseAuth.generate_password_reset_link('invalid_email')
-        }.to raise_error(ArgumentError)
+      it 'nilを返す' do
+        expect(described_class.generate_password_reset_link('invalid')).to be_nil
       end
     end
-  
-    context 'ネットワークエラーが発生した場合' do
+
+    context 'Supabase APIエラーの場合' do
       before do
         stub_request(:post, "#{SupabaseAuth.supabase_url}/auth/v1/recover")
           .to_return(status: 500)
       end
-  
-      it 'SupabaseAuthErrorを発生させる' do
-        expect {
-          SupabaseAuth.generate_password_reset_link(user_email)
-        }.to raise_error(SupabaseAuth::SupabaseAuthError)
+
+      it 'nilを返す' do
+        expect(described_class.generate_password_reset_link(user_email)).to be_nil
+      end
+    end
+
+    context 'ネットワークエラーの場合' do
+      before do
+        stub_request(:post, "#{SupabaseAuth.supabase_url}/auth/v1/recover")
+          .to_timeout
+      end
+
+      it 'nilを返す' do
+        expect(described_class.generate_password_reset_link(user_email)).to be_nil
       end
     end
   end

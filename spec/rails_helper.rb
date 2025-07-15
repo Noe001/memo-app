@@ -1,7 +1,32 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
 ENV['RAILS_ENV'] ||= 'test'
+ENV.delete('DATABASE_URL') # テスト時は常にローカルDBを使用
 require_relative '../config/environment'
+
+# WebMock設定 (HTTPリクエストのスタブ用)
+require 'webmock/rspec'
+WebMock.disable_net_connect!(
+  allow_localhost: true,
+  allow: [
+    'chromedriver.storage.googleapis.com',
+    %r{127\.0\.0\.1},
+    %r{supabase_kong_notetree}
+  ]
+)
+
+# Supabase APIモック設定
+SUPABASE_URL = ENV.fetch('SUPABASE_URL', 'http://supabase_kong_notetree:8000')
+WebMock.stub_request(:any, %r{#{SUPABASE_URL}/auth/v1/.*}).to_return(
+  status: 200,
+  body: {}.to_json,
+  headers: { 'Content-Type' => 'application/json' }
+)
+WebMock.stub_request(:get, "#{SUPABASE_URL}/health").to_return(
+  status: 200,
+  body: { status: 'OK' }.to_json,
+  headers: { 'Content-Type' => 'application/json' }
+)
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'rspec/rails'

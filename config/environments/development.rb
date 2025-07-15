@@ -14,6 +14,9 @@ Rails.application.configure do
   config.hosts << "0.0.0.0"
   
   # Web Console設定（Docker環境用）
+  # Supabase設定
+  ENV['SUPABASE_URL'] = 'http://supabase_kong_notetree:8000'
+  ENV['SUPABASE_ANON_KEY'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1cmVmb3JtYW5jZXRlc3QiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYxMjYwOTAyMiwiZXhwIjoxOTI4MTg1MDIyfQ.1qyFkXjJQY0XQ1Q0XQ1Q0XQ1Q0XQ1Q0XQ1Q0XQ1Q0' # Supabase匿名キー
   config.web_console.allowed_ips = ['172.0.0.0/8', '192.168.0.0/16', '10.0.0.0/8']
 
   # Do not eager load code on boot.
