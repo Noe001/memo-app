@@ -38,7 +38,13 @@ class ApplicationController < ActionController::Base
             new_refresh_token = refresh_result[:refresh_token]
             set_supabase_token(new_access_token, new_refresh_token)
             @current_user_data = SupabaseAuth.verify_token(new_access_token)
+          else
+            # リフレッシュトークンも無効な場合、トークンをクリア
+            clear_supabase_token
           end
+        else
+          # アクセストークンが無効でリフレッシュトークンもない場合、トークンをクリア
+          clear_supabase_token
         end
       end
 
@@ -126,6 +132,8 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.html { redirect_to login_path, alert: 'ログインしてください' }
       format.json { render json: { status: 'error', message: 'ログインが必要です' }, status: :unauthorized }
+      format.turbo_stream { render json: { status: 'error', message: 'ログインが必要です' }, status: :unauthorized }
+      format.any { render json: { status: 'error', message: 'ログインが必要です' }, status: :unauthorized }
     end
   end
   
@@ -161,5 +169,6 @@ class ApplicationController < ActionController::Base
   # Supabaseトークンを削除
   def clear_supabase_token
     cookies.delete('supabase_token')
+    cookies.delete('supabase_refresh_token')
   end
 end

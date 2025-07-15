@@ -15,12 +15,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_08_090000) do
   enable_extension "plpgsql"
 
   create_table "groups", force: :cascade do |t|
-    t.string "name", null: false
+    t.string "name"
     t.text "description"
-    t.bigint "owner_id"
+    t.integer "owner_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["owner_id"], name: "index_groups_on_owner_id"
   end
 
   create_table "groups_tables", force: :cascade do |t|
@@ -34,7 +33,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_08_090000) do
   create_table "invitations", force: :cascade do |t|
     t.bigint "group_id", null: false
     t.bigint "invited_by_id", null: false
-    t.bigint "invited_user_id", null: false
+    t.bigint "invited_user_id"
     t.string "email"
     t.string "token"
     t.integer "role"
@@ -113,7 +112,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_08_090000) do
     t.boolean "keyboard_shortcuts_enabled", default: true
   end
 
-  add_foreign_key "groups", "users", column: "owner_id"
   add_foreign_key "invitations", "groups"
   add_foreign_key "invitations", "users", column: "invited_by_id"
   add_foreign_key "invitations", "users", column: "invited_user_id"

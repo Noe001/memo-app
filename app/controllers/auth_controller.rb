@@ -1,4 +1,6 @@
 class AuthController < ApplicationController
+  skip_before_action :verify_authenticity_token, only: [:new, :signup]
+  protect_from_forgery with: :exception, unless: -> { request.format.json? }
   
   def new
     # ログインページを表示

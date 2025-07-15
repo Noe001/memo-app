@@ -111,6 +111,9 @@ class SupabaseAuth
     Rails.logger.info "Making request to: #{uri}"
     
     http = Net::HTTP.new(uri.host, uri.port)
+    http.open_timeout = DEFAULT_TIMEOUT
+    http.read_timeout = DEFAULT_TIMEOUT
+    
     request = Net::HTTP::Get.new(uri)
     request['Authorization'] = "Bearer #{token}"
     request['apikey'] = SUPABASE_ANON_KEY
@@ -127,6 +130,12 @@ class SupabaseAuth
       Rails.logger.error "Failed to get user from Supabase: #{response.code} #{response.body}"
       nil
     end
+  rescue Net::OpenTimeout, Net::ReadTimeout => e
+    Rails.logger.error "Timeout getting user from Supabase: #{e.message}"
+    nil
+  rescue => e
+    Rails.logger.error "Error getting user from Supabase: #{e.message}"
+    nil
   end
   
   # プロフィール情報をSupabaseから取得
@@ -360,37 +369,65 @@ class SupabaseAuth
   
   # トークンリフレッシュ
   def self.refresh_token(refresh_token)
+    return { success: false, error: 'リフレッシュトークンが提供されていません' } unless refresh_token
+    
     uri = URI("#{supabase_url}/auth/v1/token?grant_type=refresh_token")
     
     http = Net::HTTP.new(uri.host, uri.port)
+    http.open_timeout = DEFAULT_TIMEOUT
+    http.read_timeout = DEFAULT_TIMEOUT
+    
     request = Net::HTTP::Post.new(uri)
     request['Authorization'] = "Bearer #{SUPABASE_ANON_KEY}"
     request['apikey'] = SUPABASE_ANON_KEY
     request['Content-Type'] = 'application/json'
     request.body = { refresh_token: refresh_token }.to_json
     
-    response = http.request(request)
+    Rails.logger.info "Refresh token request to: #{uri}"
+    Rails.logger.info "Request body: #{request.body}"
     
-    if response.code == '200'
-      data = JSON.parse(response.body)
-      {
-        success: true,
-        access_token: data['access_token'],
-        refresh_token: data['refresh_token'],
-        user: data['user']
-      }
-    else
+    begin
+      response = http.request(request)
+      Rails.logger.info "Refresh token response code: #{response.code}"
+      Rails.logger.info "Refresh token response body: #{response.body}"
+      
+      if response.code == '200'
+        data = JSON.parse(response.body)
+        {
+          success: true,
+          access_token: data['access_token'],
+          refresh_token: data['refresh_token'],
+          user: data['user']
+        }
+      else
+        error_data = JSON.parse(response.body) rescue { 'error' => 'Unknown error' }
+        Rails.logger.error "Refresh token failed: #{error_data}"
+        
+        error_message = case error_data['error']
+                       when 'invalid_grant' then 'リフレッシュトークンが無効です'
+                       when 'token_expired' then 'リフレッシュトークンの期限が切れています'
+                       else 'トークンの更新に失敗しました'
+                       end
+        
+        {
+          success: false,
+          error: error_message
+        }
+      end
+    rescue Net::OpenTimeout, Net::ReadTimeout => e
+      Rails.logger.error "Refresh token timeout: #{e.message}"
       {
         success: false,
-        error: 'トークンの更新に失敗しました'
+        error: 'サーバーへの接続がタイムアウトしました'
+      }
+    rescue => e
+      Rails.logger.error "Refresh token error: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      {
+        success: false,
+        error: 'トークン更新中にエラーが発生しました'
       }
     end
-  rescue => e
-    Rails.logger.error "Refresh token error: #{e.message}"
-    {
-      success: false,
-      error: 'トークン更新中にエラーが発生しました'
-    }
   end
   
   # サインアウト処理

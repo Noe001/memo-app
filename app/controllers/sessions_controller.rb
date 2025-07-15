@@ -10,23 +10,46 @@ class SessionsController < ApplicationController
   end
 
   def create
-    # Supabaseトークンでのログイン
-    supabase_token = params[:supabase_token]
+    Rails.logger.info "SessionsController#create started with params: #{params.except(:supabase_token).inspect}"
     
-    unless supabase_token
-      flash.now[:alert] = 'ログインに失敗しました'
-      render :new, status: :unprocessable_entity
-      return
-    end
-    
-    user_data = SupabaseAuth.verify_token(supabase_token)
-    
-    if user_data
-      set_supabase_token(user_data[:token], user_data[:refresh_token])
-      redirect_to root_path, notice: 'ログインしました'
-    else
-      flash.now[:alert] = '認証に失敗しました'
-      render :new, status: :unprocessable_entity
+    begin
+      # Supabaseトークンでのログイン
+      supabase_token = params[:supabase_token]
+      Rails.logger.debug "Received supabase_token: #{supabase_token.present? ? 'present (first 8 chars: ' + supabase_token[0..7] + '...)' : 'missing'}"
+      
+      unless supabase_token
+        Rails.logger.warn "Missing supabase_token parameter. Full params: #{params.inspect}"
+        flash.now[:alert] = 'ログインに失敗しました'
+        render :new, status: :unprocessable_entity
+        return
+      end
+      
+      Rails.logger.info "Verifying supabase token (first 8 chars: #{supabase_token[0..7]}...)"
+      Rails.logger.debug "Token verification request to SupabaseAuth started at #{Time.current}"
+      user_data = SupabaseAuth.verify_token(supabase_token)
+      Rails.logger.debug "Token verification response: #{user_data.present? ? 'success' : 'failure'}"
+      
+      if user_data
+        Rails.logger.info "Token verification successful. User data keys: #{user_data.keys}"
+        Rails.logger.debug "Setting supabase tokens (token present: #{user_data[:token].present?}, refresh_token present: #{user_data[:refresh_token].present?})"
+        set_supabase_token(user_data[:token], user_data[:refresh_token])
+        redirect_to root_path, notice: 'ログインしました'
+      else
+        Rails.logger.warn "Token verification failed"
+        flash.now[:alert] = '認証に失敗しました'
+        render :new, status: :unprocessable_entity
+      end
+    rescue JWT::DecodeError => e
+      Rails.logger.error "JWT Decode Error in SessionsController#create: #{e.message}"
+      Rails.logger.error "Backtrace:\n#{e.backtrace.first(5).join("\n")}"
+    rescue SupabaseAuth::Error => e
+      Rails.logger.error "Supabase Auth Error in SessionsController#create: #{e.message}"
+      Rails.logger.error "Backtrace:\n#{e.backtrace.first(5).join("\n")}"
+    rescue => e
+      Rails.logger.error "Unexpected Error in SessionsController#create: #{e.class} - #{e.message}"
+      Rails.logger.error "Backtrace:\n#{e.backtrace.first(5).join("\n")}"
+      flash.now[:alert] = 'システムエラーが発生しました'
+      render :new, status: :internal_server_error
     end
   end
 

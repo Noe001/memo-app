@@ -31,6 +31,7 @@ services:
       RAILS_ENV: development
       DATABASE_URL: postgres://postgres:postgres@db:5432/memo_app_development
       REDIS_URL: redis://redis:6379/0
+      RAILS_MASTER_KEY: "12345678901234567890123456789012"
     stdin_open: true
     tty: true
     extra_hosts:
