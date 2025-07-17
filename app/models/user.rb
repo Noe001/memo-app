@@ -21,11 +21,32 @@ class User < ApplicationRecord
   # ユーザーが作成したメモと関連付ける
   has_many :memos, dependent: :destroy
   
+  # グループ関連の関連付け
+  has_many :owned_groups, class_name: 'Group', foreign_key: 'owner_id', dependent: :destroy
+  has_many :user_groups, dependent: :destroy
+  has_many :groups, through: :user_groups
+  has_many :sent_invitations, class_name: 'Invitation', foreign_key: 'invited_by_id', dependent: :destroy
+  has_many :received_invitations, class_name: 'Invitation', foreign_key: 'invited_user_id', dependent: :destroy
+  
   # セキュリティ：メールアドレスを小文字で保存
   before_save :downcase_email
   
   # セキュリティ強化：セッション管理
   has_many :sessions, dependent: :destroy
+  
+  # グループ関連のメソッド
+  def all_groups
+    Group.where(id: (owned_groups.pluck(:id) + groups.pluck(:id)).uniq)
+  end
+  
+  def group_role(group)
+    return 'owner' if group.owner == self
+    user_groups.find_by(group: group)&.role
+  end
+  
+  def can_access_group?(group)
+    group.owner == self || groups.include?(group)
+  end
   
   private
   

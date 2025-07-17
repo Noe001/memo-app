@@ -1,73 +1,83 @@
 class SessionsController < ApplicationController
-  before_action :set_user, only: [:create]
   before_action :logged_in, only: [:new, :create]
   
   # レート制限（後でRackミドルウェアで実装）
   # before_action :check_rate_limit, only: [:create]
 
   def new
+    # 新しいAuthControllerにリダイレクト（Phase 4移行対応）
+    redirect_to auth_login_path
   end
 
   def create
-    if @user&.authenticate(params[:password])
-      # セッションにuser_idを保存
-      session[:user_id] = @user.id
-      create_session_record # Call after @user is confirmed and session[:user_id] is set
+    Rails.logger.info "SessionsController#create started with params: #{params.except(:supabase_token).inspect}"
+    
+    begin
+      # Supabaseトークンでのログイン
+      supabase_token = params[:supabase_token]
+      Rails.logger.debug "Received supabase_token: #{supabase_token.present? ? 'present (first 8 chars: ' + supabase_token[0..7] + '...)' : 'missing'}"
       
-      redirect_to root_path, notice: 'ログインしました' # root_path を使用
-    else
-      flash.now[:alert] = 'メールアドレスまたはパスワードが正しくありません'
-      render :new, status: :unprocessable_entity
+      unless supabase_token
+        Rails.logger.warn "Missing supabase_token parameter. Full params: #{params.inspect}"
+        flash.now[:alert] = 'ログインに失敗しました'
+        render :new, status: :unprocessable_entity
+        return
+      end
+      
+      Rails.logger.info "Verifying supabase token (first 8 chars: #{supabase_token[0..7]}...)"
+      Rails.logger.debug "Token verification request to SupabaseAuth started at #{Time.current}"
+      user_data = SupabaseAuth.verify_token(supabase_token)
+      Rails.logger.debug "Token verification response: #{user_data.present? ? 'success' : 'failure'}"
+      
+      if user_data
+        Rails.logger.info "Token verification successful. User data keys: #{user_data.keys}"
+        Rails.logger.debug "Setting supabase tokens (token present: #{user_data[:token].present?}, refresh_token present: #{user_data[:refresh_token].present?})"
+        set_supabase_token(user_data[:token], user_data[:refresh_token])
+        redirect_to root_path, notice: 'ログインしました'
+      else
+        Rails.logger.warn "Token verification failed"
+        flash.now[:alert] = '認証に失敗しました'
+        render :new, status: :unprocessable_entity
+      end
+    rescue JWT::DecodeError => e
+      Rails.logger.error "JWT Decode Error in SessionsController#create: #{e.message}"
+      Rails.logger.error "Backtrace:\n#{e.backtrace.first(5).join("\n")}"
+    rescue SupabaseAuth::Error => e
+      Rails.logger.error "Supabase Auth Error in SessionsController#create: #{e.message}"
+      Rails.logger.error "Backtrace:\n#{e.backtrace.first(5).join("\n")}"
+    rescue => e
+      Rails.logger.error "Unexpected Error in SessionsController#create: #{e.class} - #{e.message}"
+      Rails.logger.error "Backtrace:\n#{e.backtrace.first(5).join("\n")}"
+      flash.now[:alert] = 'システムエラーが発生しました'
+      render :new, status: :internal_server_error
     end
   end
 
   def destroy
-    # For web sessions, we don't have a specific DB session token.
-    # destroy_session_record will delete the most recent one for the current_user.
-    destroy_session_record if current_user # Call before session[:user_id] is deleted
-    session.delete(:user_id)
-    redirect_to login_path, notice: 'ログアウトしました' # login_path を使用
+    # Supabaseログアウト
+    if current_user&.supabase_token
+      SupabaseAuth.logout(current_user.supabase_token)
+    end
+    clear_supabase_token
+    redirect_to auth_login_path, notice: 'ログアウトしました'
   end
   
   # 全セッションを削除（セキュリティ機能）
   def destroy_all
-    if current_user
-      current_user.sessions.destroy_all # DBのセッションレコードを削除
-      session.delete(:user_id) # 現在のWebセッションもクリア
-      redirect_to login_path, notice: '全てのデバイスからログアウトしました' # login_path を使用
-    else
-      redirect_to login_path # login_path を使用
+    # Supabaseの全セッションを削除
+    if current_user&.supabase_token
+      SupabaseAuth.logout(current_user.supabase_token)
     end
+    clear_supabase_token
+    redirect_to auth_login_path, notice: '全てのデバイスからログアウトしました'
   end
 
   private
-
-  def set_user
-    @user = User.find_by(email: params[:email]&.downcase)
-  end
 
   def logged_in
     if current_user
       redirect_to '/', notice: '既にログインしています'
     end
-  end
-  
-  def create_session_record
-    # セッション情報を記録（セキュリティのため）
-    begin
-      @user.sessions.create!(
-        user_agent: request.user_agent || 'Unknown',
-        ip_address: request.remote_ip || '0.0.0.0'
-      )
-    rescue ActiveRecord::RecordInvalid => e
-      Rails.logger.error "Failed to create session record: #{e.message}"
-      # セッション記録に失敗してもログイン処理は継続
-    end
-  end
-  
-  def destroy_session_record
-    # 現在のセッション記録を削除（最新のセッションを削除）
-    current_user.sessions.order(created_at: :desc).first&.destroy
   end
   
   # レート制限チェック（今後実装）

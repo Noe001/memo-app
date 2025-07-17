@@ -1,0 +1,730 @@
+/*
+ * Mobile Optimization Styles
+ * モバイル対応完全実装 - Phase 5
+ */
+
+/* ========================================
+   Mobile-First Responsive Design
+======================================== */
+
+/* Touch-Friendly Sizes */
+:root {
+  --touch-target-size: 44px; /* iOS Human Interface Guidelines */
+  --mobile-spacing: 1rem;
+  --mobile-border-radius: 0.75rem;
+  --mobile-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  
+  /* Mobile Typography */
+  --mobile-font-base: 1rem;
+  --mobile-font-sm: 0.875rem;
+  --mobile-font-lg: 1.125rem;
+  --mobile-font-xl: 1.25rem;
+  
+  /* Mobile Breakpoints */
+  --mobile-sm: 480px;
+  --mobile-md: 768px;
+  --tablet: 1024px;
+}
+
+/* Touch Optimization */
+@media (max-width: 768px) {
+  /* Ensure all interactive elements are touch-friendly */
+  button, a, input, textarea, select, .clickable {
+    min-height: var(--touch-target-size);
+    min-width: var(--touch-target-size);
+    padding: 0.75rem;
+  }
+  
+  /* Improve tap target spacing */
+  .memo-item {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: var(--mobile-border-radius);
+  }
+  
+  /* Touch-friendly form controls */
+  .input, .textarea {
+    padding: 1rem;
+    font-size: var(--mobile-font-base);
+    border-radius: var(--mobile-border-radius);
+    border: 2px solid var(--border);
+  }
+  
+  .input:focus, .textarea:focus {
+    border-width: 3px;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+  }
+}
+
+/* ========================================
+   Mobile Layout Adjustments
+======================================== */
+
+/* Mobile-First App Layout */
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .memo-sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100vh;
+    z-index: 1000;
+    background: var(--background);
+    transition: left 0.3s ease;
+    overflow-y: auto;
+  }
+  
+  .memo-sidebar.active {
+    left: 0;
+  }
+  
+  .memo-main {
+    flex: 1;
+    padding: 0;
+    overflow-y: auto;
+  }
+  
+  .memo-main-header {
+    padding: 1rem;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  /* Make hamburger menu more prominent */
+  .hamburger-btn {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1100;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--mobile-shadow);
+    transition: all 0.3s ease;
+  }
+  
+  .hamburger-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .hamburger-btn:active {
+    transform: scale(0.95);
+  }
+}
+
+/* ========================================
+   Mobile Form Optimization
+======================================== */
+
+@media (max-width: 768px) {
+  .memo-form {
+    padding: 1rem;
+  }
+  
+  .form-body {
+    gap: 1.5rem;
+  }
+  
+  .input-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .label {
+    font-size: var(--mobile-font-sm);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  
+  .content-textarea {
+    min-height: 200px;
+    font-size: var(--mobile-font-base);
+    line-height: 1.6;
+  }
+  
+  .title-input {
+    font-size: var(--mobile-font-lg);
+    font-weight: 600;
+  }
+  
+  .tags-input {
+    font-size: var(--mobile-font-sm);
+  }
+}
+
+/* ========================================
+   Mobile Navigation
+======================================== */
+
+@media (max-width: 768px) {
+  .sidebar-header {
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .sidebar-nav {
+    padding: 1rem;
+  }
+  
+  .nav-link {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: var(--mobile-border-radius);
+    font-size: var(--mobile-font-base);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .nav-link:hover {
+    background: var(--accent);
+  }
+  
+  .nav-link.active {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  
+  /* Mobile Search */
+  .search-container {
+    margin-bottom: 1rem;
+  }
+  
+  .search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: var(--mobile-font-base);
+    border-radius: var(--mobile-border-radius);
+  }
+  
+  .search-btn {
+    right: 1rem;
+    padding: 0.5rem;
+  }
+}
+
+/* ========================================
+   Mobile Memo List
+======================================== */
+
+@media (max-width: 768px) {
+  .memo-list {
+    padding: 1rem;
+  }
+  
+  .memo-item {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: var(--mobile-border-radius);
+    box-shadow: var(--mobile-shadow);
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+  }
+  
+  .memo-item:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  .memo-header {
+    margin-bottom: 0.75rem;
+  }
+  
+  .memo-title {
+    font-size: var(--mobile-font-lg);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  
+  .memo-date {
+    font-size: var(--mobile-font-sm);
+    color: var(--muted-foreground);
+  }
+  
+  .memo-preview {
+    font-size: var(--mobile-font-sm);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+    color: var(--muted-foreground);
+  }
+  
+  .memo-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .memo-tag {
+    padding: 0.25rem 0.75rem;
+    background: var(--accent);
+    color: var(--accent-foreground);
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  
+  .memo-visibility {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+}
+
+/* ========================================
+   Mobile Actions & Buttons
+======================================== */
+
+@media (max-width: 768px) {
+  .memo-actions {
+    gap: 1rem;
+    justify-content: flex-end;
+  }
+  
+  .memo-header-actions {
+    gap: 1rem;
+  }
+  
+  .visibility-btn, .delete-memo-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: var(--accent-foreground);
+    border: 2px solid var(--border);
+    box-shadow: var(--mobile-shadow);
+    transition: all 0.2s ease;
+  }
+  
+  .visibility-btn:hover, .delete-memo-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .visibility-btn:active, .delete-memo-btn:active {
+    transform: scale(0.95);
+  }
+  
+  .delete-memo-btn {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+  
+  .delete-memo-btn:hover {
+    background: #fecaca;
+  }
+  
+  .visibility-icon, .delete-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+/* ========================================
+   Mobile Typography
+======================================== */
+
+@media (max-width: 768px) {
+  body {
+    font-size: var(--mobile-font-base);
+    line-height: 1.6;
+  }
+  
+  h1 {
+    font-size: var(--mobile-font-xl);
+    margin-bottom: 1rem;
+  }
+  
+  h2 {
+    font-size: var(--mobile-font-lg);
+    margin-bottom: 0.75rem;
+  }
+  
+  h3 {
+    font-size: var(--mobile-font-base);
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  
+  /* Ensure readable text */
+  .memo-preview {
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* ========================================
+   Mobile Accessibility
+======================================== */
+
+@media (max-width: 768px) {
+  /* Focus indicators */
+  *:focus {
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+  }
+  
+  /* Skip link for keyboard navigation */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 9999;
+  }
+  
+  .skip-link:focus {
+    top: 6px;
+  }
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .memo-item {
+      border-width: 2px;
+    }
+    
+    .memo-tag {
+      border: 1px solid var(--border);
+    }
+    
+    button, .clickable {
+      border: 2px solid var(--border);
+    }
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ========================================
+   Mobile Gestures & Interactions
+======================================== */
+
+@media (max-width: 768px) {
+  /* Touch callout disabled for better UX */
+  .memo-item, .memo-tag, button {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  /* Allow text selection in content areas */
+  .content-textarea, .memo-preview, .memo-title {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+  
+  /* Swipe indicators */
+  .swipe-indicator {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    padding: 0.5rem;
+    border-radius: 50%;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  .swipe-indicator.left {
+    left: 1rem;
+  }
+  
+  .swipe-indicator.right {
+    right: 1rem;
+  }
+  
+  .swipe-indicator.active {
+    opacity: 1;
+  }
+}
+
+/* ========================================
+   Mobile Performance Optimizations
+======================================== */
+
+@media (max-width: 768px) {
+  /* GPU acceleration for smooth scrolling */
+  .memo-list, .memo-sidebar {
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+  }
+  
+  /* Optimize animations */
+  .memo-item, .hamburger-btn, .visibility-btn, .delete-memo-btn {
+    will-change: transform;
+  }
+  
+  /* Reduce repaints */
+  .memo-main-header {
+    contain: layout;
+  }
+  
+  /* Lazy load optimization */
+  .memo-item img {
+    loading: lazy;
+  }
+}
+
+/* ========================================
+   Mobile Dark Mode
+======================================== */
+
+@media (max-width: 768px) {
+  [data-theme="dark"] {
+    /* Dark mode specific mobile adjustments */
+    .memo-item {
+      background: var(--card);
+      border-color: var(--border);
+    }
+    
+    .hamburger-btn {
+      background: var(--primary);
+      color: var(--primary-foreground);
+    }
+    
+    .search-input {
+      background: var(--card);
+      border-color: var(--border);
+      color: var(--foreground);
+    }
+    
+    .memo-tag {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+}
+
+/* ========================================
+   Mobile Landscape Mode
+======================================== */
+
+@media (max-width: 768px) and (orientation: landscape) {
+  .memo-sidebar {
+    width: 60%;
+  }
+  
+  .memo-main-header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .hamburger-btn {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .content-textarea {
+    min-height: 150px;
+  }
+}
+
+/* ========================================
+   Tablet Adjustments
+======================================== */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .app-layout {
+    flex-direction: row;
+  }
+  
+  .memo-sidebar {
+    position: relative;
+    width: 300px;
+    left: 0;
+  }
+  
+  .hamburger-btn {
+    display: none;
+  }
+  
+  .memo-main {
+    flex: 1;
+  }
+  
+  .memo-item {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .visibility-btn, .delete-memo-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ========================================
+   PWA Mobile Optimizations
+======================================== */
+
+@media (max-width: 768px) {
+  /* PWA safe areas */
+  .app-layout {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  
+  .memo-main-header {
+    padding-top: calc(1rem + env(safe-area-inset-top));
+  }
+  
+  .hamburger-btn {
+    top: calc(1rem + env(safe-area-inset-top));
+    right: calc(1rem + env(safe-area-inset-right));
+  }
+  
+  /* Prevent zoom on input focus */
+  input[type="text"], input[type="email"], input[type="password"], textarea {
+    font-size: 16px;
+  }
+  
+  /* Optimize for mobile keyboards */
+  .content-textarea:focus {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    background: var(--background);
+    border: none;
+    border-radius: 0;
+    padding: 1rem;
+    font-size: 16px;
+  }
+}
+
+/* ========================================
+   Mobile Loading States
+======================================== */
+
+@media (max-width: 768px) {
+  .loading-skeleton {
+    background: linear-gradient(90deg, var(--muted) 25%, transparent 50%, var(--muted) 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+  }
+  
+  @keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  
+  .memo-item.loading {
+    background: var(--muted);
+    color: transparent;
+  }
+  
+  .memo-item.loading * {
+    background: var(--muted);
+    color: transparent;
+  }
+}
+
+/* ========================================
+   Mobile Pull-to-Refresh
+======================================== */
+
+@media (max-width: 768px) {
+  .pull-to-refresh {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .pull-to-refresh-indicator {
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-foreground);
+    transition: top 0.2s ease;
+  }
+  
+  .pull-to-refresh.pulling .pull-to-refresh-indicator {
+    top: 10px;
+  }
+  
+  .pull-to-refresh.refreshing .pull-to-refresh-indicator {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: translateX(-50%) rotate(0deg); }
+    to { transform: translateX(-50%) rotate(360deg); }
+  }
+}
+
+/* ========================================
+   Mobile Error States
+======================================== */
+
+@media (max-width: 768px) {
+  .error-message {
+    padding: 1rem;
+    background: var(--destructive);
+    color: var(--destructive-foreground);
+    border-radius: var(--mobile-border-radius);
+    margin: 1rem;
+    text-align: center;
+  }
+  
+  .offline-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--warning);
+    color: var(--warning-foreground);
+    padding: 0.5rem;
+    text-align: center;
+    font-size: var(--mobile-font-sm);
+    z-index: 9999;
+  }
+} 

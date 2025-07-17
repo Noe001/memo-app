@@ -13,8 +13,8 @@ export default class extends Controller {
   }
 
   connect() {
-    // デバウンス設定（300ms）
-    this.debouncedSearch = this.debounce(() => this.performSearch(), 300)
+    // デバウンス設定（500msに延長）
+    this.debouncedSearch = this.debounce(() => this.performSearch(), 500)
 
     // 選択タグを保持するセット
     this.selectedTags = new Set()
@@ -170,6 +170,11 @@ export default class extends Controller {
     memoItems.forEach(item => item.classList.remove('active'))
     memoItems[newIndex].classList.add('active')
     memoItems[newIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }
+
+  // auto-save用: Ajax失敗時のエラー表示
+  handleAutoSaveError(error) {
+    alert('保存に失敗しました: ' + (error.message || 'ネットワークエラー'));
   }
 } 
  

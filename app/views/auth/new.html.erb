@@ -1,0 +1,229 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2 class="auth-title">Notetree</h2>
+    
+    <!-- ログインフォーム -->
+    <div id="login-form" class="auth-form">
+      <h3>ログイン</h3>
+      <%= form_with url: '/auth/login', method: :post, local: true, class: 'auth-form-inner', id: 'login-form-element', data: { turbo: false } do |f| %>
+        <div class="form-group">
+          <%= f.email_field :email, placeholder: 'メールアドレス', class: 'form-control', required: true, id: 'login-email', autocomplete: 'email' %>
+        </div>
+        <div class="form-group">
+          <%= f.password_field :password, placeholder: 'パスワード', class: 'form-control', required: true, id: 'login-password', autocomplete: 'current-password' %>
+        </div>
+        <div class="form-group">
+          <%= f.submit 'ログイン', class: 'btn btn-primary btn-block' %>
+        </div>
+      <% end %>
+      
+      <div class="auth-switch">
+        <p>アカウントをお持ちでない方は <a href="#" id="show-signup">サインアップ</a></p>
+      </div>
+    </div>
+    
+    <!-- サインアップフォーム -->
+    <div id="signup-form" class="auth-form" style="display: none;">
+      <h3>サインアップ</h3>
+      <%= form_with url: '/auth/signup', method: :post, local: true, class: 'auth-form-inner', id: 'signup-form-element', data: { turbo: false } do |f| %>
+        <div class="form-group">
+          <%= f.text_field :name, placeholder: '名前', class: 'form-control', required: true, id: 'signup-name', autocomplete: 'name' %>
+        </div>
+        <div class="form-group">
+          <%= f.email_field :email, placeholder: 'メールアドレス', class: 'form-control', required: true, id: 'signup-email', autocomplete: 'email' %>
+        </div>
+        <div class="form-group">
+          <%= f.password_field :password, placeholder: 'パスワード', class: 'form-control', required: true, minlength: 6, id: 'signup-password', autocomplete: 'new-password' %>
+        </div>
+        <div class="form-group">
+          <%= f.submit 'サインアップ', class: 'btn btn-primary btn-block' %>
+        </div>
+      <% end %>
+      
+      <div class="auth-switch">
+        <p>既にアカウントをお持ちの方は <a href="#" id="show-login">ログイン</a></p>
+      </div>
+    </div>
+    
+    <!-- エラーメッセージ -->
+    <% if flash[:alert] %>
+      <div class="alert alert-danger">
+        <div class="error-message">
+          <i class="fas fa-exclamation-circle"></i>
+          <%= case flash[:alert]
+              when /ログインに失敗しました/ then 'メールアドレスまたはパスワードが正しくありません'
+              when /アカウント作成に失敗しました/ then 'アカウント作成に問題が発生しました'
+              when /ログイン中にエラーが発生しました/ then 'システムエラーが発生しました。時間をおいて再度お試しください'
+              when /アカウント作成中にエラーが発生しました/ then 'アカウント作成中に問題が発生しました'
+              when /connection failed|timeout/i then 'サーバーに接続できませんでした。ネットワーク接続を確認してください'
+              else flash[:alert]
+              end %>
+        </div>
+        <% if flash[:alert] =~ /connection failed|timeout/i %>
+          <div class="error-solution">
+            <p>対処方法:</p>
+            <ul>
+              <li>インターネット接続を確認してください</li>
+              <li>数分待ってから再度お試しください</li>
+            </ul>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+    
+    <!-- 成功メッセージ -->
+    <% if flash[:notice] %>
+      <div class="alert alert-success">
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+  .auth-container {
+    min-width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+    padding: 20px;
+  }
+  
+  .auth-card {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 30px;
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .auth-title {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 30px;
+  }
+  
+  .auth-form h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #555;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  
+  .form-control:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+  
+  .btn {
+    padding: 10px 16px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+  }
+  
+  .btn-primary {
+    background: #003366;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background: #002244;
+  }
+  
+  .btn-block {
+    width: 100%;
+  }
+  
+  .auth-switch {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .auth-switch a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .auth-switch a:hover {
+    text-decoration: underline;
+  }
+  
+  .alert {
+    padding: 10px;
+    margin-top: 15px;
+    border: 1px solid transparent;
+  }
+  
+  .alert-danger {
+    background: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+  }
+  
+  .alert-success {
+    background: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const showSignup = document.getElementById('show-signup');
+    const showLogin = document.getElementById('show-login');
+    
+    // サインアップフォームを表示
+    showSignup.addEventListener('click', function(e) {
+      e.preventDefault();
+      loginForm.style.display = 'none';
+      signupForm.style.display = 'block';
+    });
+    
+    // ログインフォームを表示
+    showLogin.addEventListener('click', function(e) {
+      e.preventDefault();
+      signupForm.style.display = 'none';
+      loginForm.style.display = 'block';
+    });
+    
+    // フォーム送信時のハンドリング
+    const loginFormElement = document.getElementById('login-form-element');
+    const signupFormElement = document.getElementById('signup-form-element');
+    
+    if (loginFormElement) {
+      loginFormElement.addEventListener('submit', function(e) {
+        const submitBtn = this.querySelector('input[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.value = 'ログイン中...';
+      });
+    }
+    
+    if (signupFormElement) {
+      signupFormElement.addEventListener('submit', function(e) {
+        const submitBtn = this.querySelector('input[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.value = 'サインアップ中...';
+      });
+    }
+  });
+</script> 

@@ -23,6 +23,9 @@ gem "turbo-rails"
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem "stimulus-rails"
 
+# Tailwind CSS for Rails [https://github.com/rails/tailwindcss-rails]
+gem "tailwindcss-rails", "~> 2.0"
+
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
@@ -111,3 +114,4 @@ group :production do
   # 本番環境用
   gem "rack-timeout"  # タイムアウト設定
 end
+gem "jwt"

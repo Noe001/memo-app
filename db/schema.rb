@@ -10,9 +10,41 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_24_000001) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_08_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "groups", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.integer "owner_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "groups_tables", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.integer "owner_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "invitations", force: :cascade do |t|
+    t.bigint "group_id", null: false
+    t.bigint "invited_by_id", null: false
+    t.bigint "invited_user_id"
+    t.string "email"
+    t.string "token"
+    t.integer "role"
+    t.datetime "expires_at"
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id"], name: "index_invitations_on_group_id"
+    t.index ["invited_by_id"], name: "index_invitations_on_invited_by_id"
+    t.index ["invited_user_id"], name: "index_invitations_on_invited_user_id"
+  end
 
   create_table "memo_tags", force: :cascade do |t|
     t.bigint "memo_id", null: false
@@ -30,6 +62,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_24_000001) do
     t.datetime "updated_at", null: false
     t.integer "user_id"
     t.integer "visibility", default: 0
+    t.bigint "group_id"
+    t.index ["group_id"], name: "index_memos_on_group_id"
     t.index ["user_id", "updated_at"], name: "index_memos_on_user_id_and_updated_at"
     t.index ["user_id", "visibility"], name: "index_memos_on_user_id_and_visibility"
     t.index ["visibility"], name: "index_memos_on_visibility"
@@ -58,6 +92,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_24_000001) do
     t.index ["name"], name: "index_tags_on_name", unique: true
   end
 
+  create_table "user_groups", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "group_id", null: false
+    t.integer "role"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id"], name: "index_user_groups_on_group_id"
+    t.index ["user_id"], name: "index_user_groups_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "email"
@@ -68,7 +112,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_24_000001) do
     t.boolean "keyboard_shortcuts_enabled", default: true
   end
 
+  add_foreign_key "invitations", "groups"
+  add_foreign_key "invitations", "users", column: "invited_by_id"
+  add_foreign_key "invitations", "users", column: "invited_user_id"
   add_foreign_key "memo_tags", "memos"
   add_foreign_key "memo_tags", "tags"
+  add_foreign_key "memos", "groups"
   add_foreign_key "sessions", "users"
+  add_foreign_key "user_groups", "groups"
+  add_foreign_key "user_groups", "users"
 end

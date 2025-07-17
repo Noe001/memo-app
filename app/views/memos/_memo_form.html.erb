@@ -21,15 +21,7 @@
         </div>
         
         <!-- タグ入力 -->
-        <div class="input-group">
-          <label class="label" for="memo_to_add_tags">タグ</label>
-          <input type="text" 
-                 name="tags" 
-                 id="memo_to_add_tags"
-                 placeholder="カンマ区切りで入力（例: 仕事, アイデア）" 
-                 class="input tags-input"
-                 data-action="input->auto-save#saveField blur->auto-save#saveField">
-        </div>
+        <%= render partial: 'memos/tag_input', locals: { form: f } %>
         
         <div class="input-group">
           <label class="label" for="memo_to_add_description">内容</label>
@@ -64,16 +56,10 @@
         </div>
         
         <!-- タグ入力 -->
-        <div class="input-group">
-          <label class="label" for="memo_edit_tags">タグ</label>
-          <input type="text" 
-                 name="tags" 
-                 id="memo_edit_tags"
-                 value="<%= @selected.tags.pluck(:name).join(', ') %>"
-                 placeholder="カンマ区切りで入力（例: 仕事, アイデア）" 
-                 class="input tags-input"
-                 data-action="input->auto-save#saveField blur->auto-save#saveField">
-        </div>
+        <%= render partial: 'memos/tag_input', locals: {
+          form: f,
+          tags_value: @selected.tags.pluck(:name).join(', ')
+        } %>
         
         <div class="input-group">
           <label class="label" for="memo_edit_description">内容</label>
@@ -111,15 +97,10 @@
         </div>
         
         <!-- タグ入力 -->
-        <div class="input-group">
-          <label class="label" for="memo_new_tags">タグ</label>
-          <input type="text" 
-                 name="tags" 
-                 id="memo_new_tags"
-                 placeholder="カンマ区切りで入力（例: 仕事, アイデア, 重要）" 
-                 class="input tags-input"
-                 data-action="input->auto-save#saveField blur->auto-save#saveField">
-        </div>
+        <%= render partial: 'memos/tag_input', locals: {
+          form: f,
+          required: true
+        } %>
         
         <div class="input-group">
           <label class="label" for="memo_new_description">内容</label>
@@ -134,6 +115,15 @@
       
 
     <% end %>
+  </div>
+<% end %>
+<% if @memo_new && @memo_new.errors.any? %>
+  <div class="alert alert-danger">
+    <ul>
+      <% @memo_new.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
   </div>
 <% end %>
 </div>

@@ -13,7 +13,10 @@
     </div>
     
     <div class="settings-popup-content">
-      <%= form_with model: current_user || User.new, 
+      <% if current_user %>
+        <% if current_user.respond_to?(:param_key) %>
+          <!-- 従来のRailsユーザーの場合 -->
+          <%= form_with model: current_user, 
                     url: settings_path, 
                     method: :patch, 
                     local: false, 
@@ -65,8 +68,6 @@
           </div>
         </div>
         
-        <!-- 文字サイズ設定 - REMOVED -->
-        
         <!-- キーボードショートカット設定 -->
         <div class="popup-section">
           <h3 class="popup-section-title">
@@ -87,6 +88,89 @@
           </div>
         </div>
         
+          <% end %>
+        <% else %>
+          <!-- Supabaseユーザーの場合（OpenStructオブジェクト） -->
+          <form data-settings-target="form" data-turbo="false">
+            
+            <!-- 色設定 -->
+            <div class="popup-section">
+              <h3 class="popup-section-title">
+                <i data-lucide="palette" class="section-icon"></i>
+                色設定
+              </h3>
+              
+              <div class="theme-options-compact">
+                <div class="theme-option-compact">
+                  <input type="radio" 
+                         name="theme" 
+                         value="light" 
+                         id="popup_theme_light"
+                         <%= (current_user&.theme == "light") || (current_user&.theme.blank?) ? "checked" : "" %>
+                         data-setting-option="theme">
+                  <label for="popup_theme_light" class="theme-label-compact">
+                    <div class="theme-preview-mini theme-preview-light"></div>
+                    <span>ライト</span>
+                  </label>
+                </div>
+                
+                <div class="theme-option-compact">
+                  <input type="radio" 
+                         name="theme" 
+                         value="dark" 
+                         id="popup_theme_dark"
+                         <%= current_user&.theme == "dark" ? "checked" : "" %>
+                         data-setting-option="theme">
+                  <label for="popup_theme_dark" class="theme-label-compact">
+                    <div class="theme-preview-mini theme-preview-dark"></div>
+                    <span>ダーク</span>
+                  </label>
+                </div>
+                
+                <div class="theme-option-compact">
+                  <input type="radio" 
+                         name="theme" 
+                         value="high-contrast" 
+                         id="popup_theme_high_contrast"
+                         <%= current_user&.theme == "high-contrast" ? "checked" : "" %>
+                         data-setting-option="theme">
+                  <label for="popup_theme_high_contrast" class="theme-label-compact">
+                    <div class="theme-preview-mini theme-preview-high-contrast"></div>
+                    <span>高コントラスト</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <!-- キーボードショートカット設定 -->
+            <div class="popup-section">
+              <h3 class="popup-section-title">
+                <i data-lucide="keyboard" class="section-icon"></i>
+                キーボードショートカット
+              </h3>
+              
+              <div class="toggle-setting-compact">
+                <input type="checkbox" 
+                       name="keyboard_shortcuts_enabled" 
+                       id="popup_keyboard_shortcuts_enabled"
+                       <%= current_user&.keyboard_shortcuts_enabled != false ? "checked" : "" %>
+                       data-setting-option="keyboard_shortcuts"
+                       class="toggle-input">
+                <label for="popup_keyboard_shortcuts_enabled" class="toggle-label-compact">
+                  <span class="toggle-slider-compact"></span>
+                  <span class="toggle-text">有効にする</span>
+                </label>
+              </div>
+            </div>
+            
+          </form>
+        <% end %>
+      <% else %>
+        <div class="popup-section">
+          <p class="text-center text-gray-500">
+            設定を変更するには、まずログインしてください。
+          </p>
+        </div>
       <% end %>
       
       <div class="popup-save-status" 

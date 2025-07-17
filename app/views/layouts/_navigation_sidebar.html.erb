@@ -6,10 +6,11 @@
 <!-- 右スライドサイドバー -->
 <div class="slide-sidebar" data-sidebar-target="sidebar">
   <div class="sidebar-header">
-    <h2 class="sidebar-title">MemoApp</h2>
+    <h2 class="sidebar-title">Notetree</h2>
   </div>
   
-  <div class="sidebar-content">
+  <div data-controller="group-create" class="sidebar-wrapper">
+    <div class="sidebar-content" data-group-create-target="content">
     <% if current_user %>
       <!-- ユーザー情報 -->
       <div class="sidebar-user-info">
@@ -22,8 +23,77 @@
         </div>
       </div>
       
+      <!-- グループ切り替えセクション -->
+      <% if defined?(@user_groups) %>
+        <div class="sidebar-section">
+          <h3 class="sidebar-section-title">
+            <i data-lucide="users" class="section-icon"></i>
+            グループ
+          </h3>
+          
+          <!-- 個人メモ（グループなし） -->
+          <button class="group-item <%= 'active' unless defined?(@current_group) && @current_group %>"
+                  data-controller="group-switcher"
+                  data-action="click->group-switcher#switchToPersonal">
+            <div class="group-avatar personal">
+              <i data-lucide="user" class="group-icon"></i>
+            </div>
+            <div class="group-details">
+              <div class="group-name">個人メモ</div>
+              <div class="group-meta">プライベート</div>
+            </div>
+            <% unless defined?(@current_group) && @current_group %>
+              <i data-lucide="check" class="group-active-icon"></i>
+            <% end %>
+          </button>
+          
+          <!-- グループ一覧 -->
+          <% if @user_groups.present? %>
+            <% @user_groups.each do |group| %>
+              <button class="group-item <%= 'active' if defined?(@current_group) && @current_group&.id == group.id %>"
+                      data-controller="group-switcher"
+                      data-group-switcher-group-id-value="<%= group.id %>"
+                      data-action="click->group-switcher#switchToGroup">
+                <div class="group-avatar">
+                  <%= group.name.first.upcase %>
+                </div>
+                <div class="group-details">
+                  <div class="group-name"><%= group.name %></div>
+                  <div class="group-meta">
+                    <%= pluralize(group.users.count, 'メンバー') %> • 
+                    <%= group.owner == current_user ? 'オーナー' : current_user.group_role(group)&.humanize || 'メンバー' %>
+                  </div>
+                </div>
+                <% if defined?(@current_group) && @current_group&.id == group.id %>
+                  <i data-lucide="check" class="group-active-icon"></i>
+                <% end %>
+              </button>
+            <% end %>
+          <% else %>
+            <p class="group-empty-message" style="font-size: 0.75rem; color: var(--muted-foreground); margin: 0 0 0.5rem 2.75rem;">まだグループがありません</p>
+          <% end %>
+          
+          <!-- グループ作成ボタン -->
+          <%= link_to '#',
+              class: "group-create-btn",
+              data: { action: "click->group-create#open" } do %>
+            <i data-lucide="plus" class="create-icon"></i>
+            <span>新しいグループを作成</span>
+          <% end %>
+        </div>
+      <% end %>
+      
       <!-- メニュー項目 -->
       <nav class="sidebar-nav">
+        <% if defined?(@user_groups) && @user_groups.present? %>
+          <%= link_to groups_path, 
+              class: "sidebar-nav-item", 
+              data: { action: "click->sidebar#close" } do %>
+            <i data-lucide="users" class="nav-icon"></i>
+            <span>グループ管理</span>
+          <% end %>
+        <% end %>
+        
         <button class="sidebar-nav-item" 
                 data-action="click->sidebar#close click->settings#open">
           <i data-lucide="settings" class="nav-icon"></i>
@@ -42,13 +112,37 @@
         
         <div class="nav-separator"></div>
         
-        <%= link_to destroy_sessions_path, 
-            class: "sidebar-nav-item nav-item-danger", 
-            data: { turbo_method: :delete } do %>
+        <%= link_to logout_path, class: "sidebar-nav-item nav-item-danger", data: { turbo_method: :delete } do %>
           <i data-lucide="log-out" class="nav-icon"></i>
-          <span>ログアウト</span>
+          ログアウト
         <% end %>
       </nav>
     <% end %>
-  </div>
-</div> 
+    </div> <!-- end sidebar-content -->
+
+    <!-- グループ作成パネル -->
+    <div id="group-create-panel" class="sidebar-panel hidden-panel" data-group-create-target="panel">
+      <h3 class="sidebar-section-title" style="margin-top:0">
+        <i data-lucide="plus" class="section-icon"></i>
+        新しいグループを作成
+      </h3>
+      <% new_group = Group.new %>
+      <%= form_with model: new_group, url: groups_path, local: true do |f| %>
+        <div class="field">
+          <%= f.label :name, "グループ名", class: "form-label" %>
+          <%= f.text_field :name, class: "form-input", required: true %>
+        </div>
+        <div class="field">
+          <%= f.label :description, "説明", class: "form-label" %>
+          <%= f.text_area :description, rows: 3, class: "form-textarea" %>
+        </div>
+        <div class="actions" style="margin-top:1rem;display:flex;gap:0.5rem;">
+          <%= f.submit "作成", class: "btn btn-primary" %>
+          <button type="button" class="btn btn-outline" data-action="click->group-create#close">
+            キャンセル
+          </button>
+        </div>
+      <% end %>
+    </div><!-- end panel -->
+  </div><!-- end wrapper -->
+ </div><!-- end slide-sidebar -->
