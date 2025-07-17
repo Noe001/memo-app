@@ -28,9 +28,6 @@
       </div>
     </header>
     <div class="memo-content-area">
-      <div class="memo-list-area">
-        <%= render 'memo_list' %>
-      </div>
       <div class="memo-detail-area">
         <% if @selected.present? %>
           <%= render partial: 'memo_form', locals: { selected: @selected } %>

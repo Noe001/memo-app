@@ -8,6 +8,7 @@
     "test": "test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.1",
     "supabase": "^2.30.4"
   },
   "scripts": {
@@ -25,10 +26,12 @@
   },
   "homepage": "https://github.com/Noe001/notetree#readme",
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.15.1",
     "@playwright/mcp": "^0.0.29",
     "@supabase/supabase-js": "^2.50.3",
     "axios": "^1.10.0",
     "dotenv": "^17.0.1",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "playwright": "^1.54.1"
   }
 }

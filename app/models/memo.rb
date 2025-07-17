@@ -20,11 +20,11 @@ class Memo < ApplicationRecord
   scope :accessible_by, ->(user) {
     left_joins(group: :user_groups)
       .where(
-        '(memos.group_id IS NULL AND memos.user_id = ?) OR ' \
-        '(groups.owner_id = ?) OR ' \
-        '(user_groups.user_id = ?)',
-        user.id, user.id, user.id
-      )
+        '(memos.user_id = :user_id AND memos.group_id IS NULL) OR ' +
+        '(groups.owner_id = :user_id) OR ' +
+        '(user_groups.user_id = :user_id)',
+        user_id: user.id
+      ).distinct
   }
   scope :search, ->(query) {
     # Using LOWER() for case-insensitive search compatible with MySQL and PostgreSQL
